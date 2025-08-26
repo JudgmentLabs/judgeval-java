@@ -26,9 +26,11 @@ jobs:
       - name: Import GPG key
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import --batch --yes
+          echo "use-agent" >> ~/.gnupg/gpg.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          gpg-connect-agent reloadagent /bye
           gpg --list-secret-keys --keyid-format LONG
-        env:
-          GPG_TTY: $(tty)
           
       - name: Publish to Central Portal
         run: mvn --batch-mode deploy
