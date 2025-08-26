@@ -26,22 +26,23 @@ jobs:
       - name: Import GPG key
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import --batch --yes
+          # Configure GPG for non-interactive use
           echo "use-agent" >> ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
+          # Verify the key was imported
           gpg --list-secret-keys --keyid-format LONG
           
       - name: Publish to Central Portal
-        run: mvn --batch-mode deploy
+        run: |
+          # Export GPG TTY for proper operation
+          export GPG_TTY=$(tty)
+          # Run Maven deploy with GPG passphrase
+          mvn --batch-mode deploy \
+            -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
+            -Dgpg.pinentry-mode=loopback
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      # Optional: If using Maven-like API that requires manual deployment completion
-      - name: Complete deployment (if needed)
-        run: |
-          # This step may be needed depending on your Maven plugin configuration
-          # Check Central Portal documentation for your specific use case
-          echo "Deployment completed - check Central Portal for publication status"
