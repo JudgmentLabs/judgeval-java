@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.judgmentlabs</groupId>
     <artifactId>judgeval-java</artifactId>
-    <version>0.1.0</version>
+    <version>0.0.1</version>
     <packaging>jar</packaging>
     <name>Judgeval Java</name>
     <description>Java SDK for Judgeval evaluation framework</description>
@@ -137,16 +137,6 @@
                     </execution>
                 </executions>
             </plugin>
-            
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.1.1</version>
-                <configuration>
-                    <mainClass>com.judgmentlabs.judgeval.Main</mainClass>
-                </configuration>
-            </plugin>
-            
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>

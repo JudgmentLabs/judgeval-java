@@ -197,7 +197,7 @@ def get_java_type(schema: Dict[str, Any]) -> str:
 
 def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
     lines = [
-        "package com.judgment.judgeval.api.models;",
+        "package com.judgmentlabs.judgeval.api.models;",
         "",
         "import com.fasterxml.jackson.annotation.JsonProperty;",
         "import com.fasterxml.jackson.annotation.JsonAnySetter;",
@@ -421,7 +421,7 @@ def generate_client_class(
     className: str, methods: List[Dict[str, Any]], is_async: bool
 ) -> str:
     lines = [
-        "package com.judgment.judgeval.api;",
+        "package com.judgmentlabs.judgeval.api;",
         "",
         "import com.fasterxml.jackson.databind.ObjectMapper;",
         "import com.fasterxml.jackson.core.type.TypeReference;",
@@ -432,7 +432,7 @@ def generate_client_class(
         "import java.net.http.HttpResponse;",
         "import java.util.HashMap;",
         "import java.util.Map;",
-        "import com.judgment.judgeval.api.models.*;",
+        "import com.judgmentlabs.judgeval.api.models.*;",
     ]
 
     if is_async:
@@ -534,7 +534,7 @@ def generate_api_files(spec: Dict[str, Any]) -> None:
     import os
     import shutil
 
-    models_dir = "src/main/java/com/judgment/judgeval/api/models"
+    models_dir = "src/main/java/com/judgmentlabs/judgeval/api/models"
 
     if os.path.exists(models_dir):
         print(f"Clearing existing models directory: {models_dir}", file=sys.stderr)
@@ -601,7 +601,7 @@ def generate_api_files(spec: Dict[str, Any]) -> None:
 
     import os
 
-    api_dir = "src/main/java/com/judgment/judgeval/api"
+    api_dir = "src/main/java/com/judgmentlabs/judgeval/api"
     os.makedirs(api_dir, exist_ok=True)
 
     with open(f"{api_dir}/JudgmentSyncClient.java", "w") as f:
