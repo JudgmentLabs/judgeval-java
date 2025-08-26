@@ -534,7 +534,7 @@ def generate_api_files(spec: Dict[str, Any]) -> None:
     import os
     import shutil
 
-    models_dir = "src/main/java/com/judgment/judgeval/api/models"
+    models_dir = "src/main/java/com/judgmentlabs/judgeval/api/models"
 
     if os.path.exists(models_dir):
         print(f"Clearing existing models directory: {models_dir}", file=sys.stderr)
@@ -601,7 +601,7 @@ def generate_api_files(spec: Dict[str, Any]) -> None:
 
     import os
 
-    api_dir = "src/main/java/com/judgment/judgeval/api"
+    api_dir = "src/main/java/com/judgmentlabs/judgeval/api"
     os.makedirs(api_dir, exist_ok=True)
 
     with open(f"{api_dir}/JudgmentSyncClient.java", "w") as f:
