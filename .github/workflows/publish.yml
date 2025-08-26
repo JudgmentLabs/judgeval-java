@@ -23,8 +23,23 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
           
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import --batch --yes
+          gpg --list-secret-keys --keyid-format LONG
+        env:
+          GPG_TTY: $(tty)
+          
       - name: Publish to Central Portal
         run: mvn --batch-mode deploy
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+
+      # Optional: If using Maven-like API that requires manual deployment completion
+      - name: Complete deployment (if needed)
+        run: |
+          # This step may be needed depending on your Maven plugin configuration
+          # Check Central Portal documentation for your specific use case
+          echo "Deployment completed - check Central Portal for publication status"
