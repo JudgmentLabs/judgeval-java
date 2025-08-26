@@ -19,6 +19,7 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          # Note: server-id must match the publishingServerId in pom.xml
           server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
@@ -26,23 +27,26 @@ jobs:
       - name: Import GPG key
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import --batch --yes
-          # Configure GPG for non-interactive use
           echo "use-agent" >> ~/.gnupg/gpg.conf
           echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
-          # Verify the key was imported
           gpg --list-secret-keys --keyid-format LONG
           
-      - name: Publish to Central Portal
+      - name: Deploy to Central Portal
         run: |
-          # Export GPG TTY for proper operation
-          export GPG_TTY=$(tty)
-          # Run Maven deploy with GPG passphrase
-          mvn --batch-mode deploy \
+          # Use the central-publishing plugin's deploy goal
+          mvn --batch-mode clean deploy \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          
+      # The central-publishing-maven-plugin handles deployment automatically
+      # when autoPublish is set to true in the pom.xml
+      - name: Deployment Status
+        run: |
+          echo "Deployment initiated - the central-publishing-maven-plugin will handle publication"
+          echo "Check https://central.sonatype.com for deployment status"
