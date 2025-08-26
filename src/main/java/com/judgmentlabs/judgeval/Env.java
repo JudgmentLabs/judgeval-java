@@ -9,6 +9,7 @@ public final class Env {
             getEnvVar("JUDGMENT_API_URL", "https://api.judgmentlabs.ai");
     public static final String JUDGMENT_DEFAULT_GPT_MODEL =
             getEnvVar("JUDGMENT_DEFAULT_GPT_MODEL", "gpt-4");
+    public static final String JUDGMENT_NO_COLOR = getEnvVar("JUDGMENT_NO_COLOR");
 
     private static String getEnvVar(String varName) {
         return getEnvVar(varName, null);

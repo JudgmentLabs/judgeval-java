@@ -14,6 +14,7 @@ import com.judgmentlabs.judgeval.data.ScorerData;
 import com.judgmentlabs.judgeval.data.ScoringResult;
 import com.judgmentlabs.judgeval.exceptions.JudgmentRuntimeError;
 import com.judgmentlabs.judgeval.exceptions.JudgmentTestError;
+import com.judgmentlabs.judgeval.utils.Logger;
 
 public class JudgmentClient {
     private final String apiKey;
@@ -122,13 +123,12 @@ public class JudgmentClient {
                         }
                     }
                     if (!missingParams.isEmpty()) {
-                        System.out.println(
-                                "⚠️  WARNING: Example is missing required parameters for scorer "
+                        Logger.warning(
+                                "Example is missing required parameters for scorer "
                                         + scorerConfig.getScoreType());
-                        System.out.println(
-                                "Missing parameters: " + String.join(", ", missingParams));
-                        System.out.println("Example: " + example.getAdditionalProperties());
-                        System.out.println("-".repeat(40));
+                        Logger.warning("Missing parameters: " + String.join(", ", missingParams));
+                        Logger.warning("Example: " + example.getAdditionalProperties());
+                        Logger.warning("-".repeat(40));
                         promptUser = true;
                     }
                 }
@@ -143,10 +143,10 @@ public class JudgmentClient {
                 if (!"y".equalsIgnoreCase(userInput)) {
                     System.exit(0);
                 } else {
-                    System.out.println("Continuing...");
+                    Logger.info("Continuing...");
                 }
             } catch (Exception e) {
-                System.out.println("Continuing...");
+                Logger.info("Continuing...");
             } finally {
                 scanner.close();
             }
@@ -175,9 +175,9 @@ public class JudgmentClient {
     private List<ScoringResult> runEval(EvaluationRun eval) {
         JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL);
         try {
-            System.out.println("Submitting evaluation to API...");
+            Logger.info("Submitting evaluation to API...");
             Object response = client.addToRunEvalQueue(apiKey, organizationId, eval);
-            System.out.println("API Response: " + response);
+            Logger.debug("API Response: " + response);
 
             if (response instanceof Map) {
                 Map<String, Object> responseMap = (Map<String, Object>) response;
@@ -189,7 +189,7 @@ public class JudgmentClient {
 
             return pollEvaluationUntilComplete(eval, client);
         } catch (Exception e) {
-            System.err.println(
+            Logger.error(
                     "Exception details: " + e.getClass().getSimpleName() + ": " + e.getMessage());
             e.printStackTrace();
             throw new JudgmentRuntimeError("Failed to run evaluation", e);
@@ -215,7 +215,7 @@ public class JudgmentClient {
             pollCount++;
             try {
                 long elapsed = (System.currentTimeMillis() - startTime) / 1000;
-                System.out.println("Running evaluation... (" + elapsed + " sec)");
+                Logger.info("Running evaluation... (" + elapsed + " sec)");
 
                 Object statusResponse =
                         client.getEvaluationStatus(
@@ -352,68 +352,56 @@ public class JudgmentClient {
         }
 
         if (!failedCases.isEmpty()) {
-            System.out.println("\n" + "=".repeat(80));
+            Logger.info("=".repeat(80));
 
             int totalTests = results.size();
             int failedTests = failedCases.size();
             int passedTests = totalTests - failedTests;
 
             if (failedTests == 0) {
-                System.out.println(
-                        "\u001B[1;32m🎉 ALL TESTS PASSED! "
+                Logger.success(
+                        "ALL TESTS PASSED! "
                                 + passedTests
                                 + "/"
                                 + totalTests
-                                + " tests successful\u001B[0m");
+                                + " tests successful");
             } else {
-                System.out.println(
-                        "\u001B[1;31m⚠️  TEST RESULTS: "
+                Logger.error(
+                        "TEST RESULTS: "
                                 + passedTests
                                 + "/"
                                 + totalTests
                                 + " passed ("
                                 + failedTests
-                                + " failed)\u001B[0m");
+                                + " failed)");
             }
-            System.out.println("=".repeat(80) + "\n");
+            Logger.info("=".repeat(80));
 
             for (int i = 0; i < results.size(); i++) {
                 int testNum = i + 1;
                 ScoringResult result = results.get(i);
                 if (result.getSuccess() != null && result.getSuccess()) {
-                    System.out.println("\u001B[32m✓ Test " + testNum + ": PASSED\u001B[0m");
+                    Logger.success("Test " + testNum + ": PASSED");
                 } else {
-                    System.out.println("\u001B[31m✗ Test " + testNum + ": FAILED\u001B[0m");
+                    Logger.error("Test " + testNum + ": FAILED");
                     if (result.getScorersData() != null) {
                         List<ScorerData> scorersData = (List<ScorerData>) result.getScorersData();
                         for (ScorerData scorerData : scorersData) {
                             if (!Boolean.TRUE.equals(scorerData.getSuccess())) {
-                                System.out.println(
-                                        "  \u001B[33mScorer: "
-                                                + scorerData.getName()
-                                                + "\u001B[0m");
-                                System.out.println(
-                                        "  \u001B[31m  Score: "
-                                                + scorerData.getScore()
-                                                + "\u001B[0m");
-                                System.out.println(
-                                        "  \u001B[31m  Reason: "
-                                                + scorerData.getReason()
-                                                + "\u001B[0m");
+                                Logger.warning("  Scorer: " + scorerData.getName());
+                                Logger.error("    Score: " + scorerData.getScore());
+                                Logger.error("    Reason: " + scorerData.getReason());
                                 if (scorerData.getError() != null) {
-                                    System.out.println(
-                                            "  \u001B[31m  Error: "
-                                                    + scorerData.getError()
-                                                    + "\u001B[0m");
+                                    Logger.error("    Error: " + scorerData.getError());
                                 }
                             }
                         }
                     }
-                    System.out.println("  " + "-".repeat(40));
+                    Logger.info("  " + "-".repeat(40));
                 }
             }
 
-            System.out.println("\n" + "=".repeat(80));
+            Logger.info("=".repeat(80));
 
             StringBuilder errorMsg = new StringBuilder("The following test cases failed: \n");
             for (java.util.Map<String, Object> failCase : failedCases) {
