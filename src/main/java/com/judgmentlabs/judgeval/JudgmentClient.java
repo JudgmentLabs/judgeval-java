@@ -350,7 +350,7 @@ public class JudgmentClient {
             int passedTests = totalTests - failedTests;
 
             if (failedTests == 0) {
-                Logger.success(
+                Logger.info(
                         "ALL TESTS PASSED! "
                                 + passedTests
                                 + "/"
@@ -372,7 +372,7 @@ public class JudgmentClient {
                 int testNum = i + 1;
                 ScoringResult result = results.get(i);
                 if (result.getSuccess() != null && result.getSuccess()) {
-                    Logger.success("Test " + testNum + ": PASSED");
+                    Logger.info("Test " + testNum + ": PASSED");
                 } else {
                     Logger.error("Test " + testNum + ": FAILED");
                     if (result.getScorersData() != null) {
