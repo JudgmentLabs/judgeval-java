@@ -21,11 +21,17 @@ public class JudgmentClient {
 
     public JudgmentClient(String apiKey, String organizationId) {
         this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");
-        this.organizationId = Objects.requireNonNull(organizationId, "Organization ID cannot be null");
+        this.organizationId =
+                Objects.requireNonNull(organizationId, "Organization ID cannot be null");
     }
 
-    public List<ScoringResult> runEvaluation(List<Example> examples, List<Object> scorers,
-            String projectName, String evalRunName, String model, boolean assertTest) {
+    public List<ScoringResult> runEvaluation(
+            List<Example> examples,
+            List<Object> scorers,
+            String projectName,
+            String evalRunName,
+            String model,
+            boolean assertTest) {
         validateInputs(examples, scorers, projectName, evalRunName);
 
         if (!examples.isEmpty()) {
@@ -33,8 +39,10 @@ public class JudgmentClient {
             for (Example example : examples) {
                 java.util.Set<String> currentKeys = example.getFields().keySet();
                 if (!currentKeys.equals(keys)) {
-                    throw new IllegalArgumentException(String.format(
-                            "All examples must have the same keys: %s != %s", currentKeys, keys));
+                    throw new IllegalArgumentException(
+                            String.format(
+                                    "All examples must have the same keys: %s != %s",
+                                    currentKeys, keys));
                 }
             }
         }
@@ -42,8 +50,14 @@ public class JudgmentClient {
         try {
             validateScorerTypes(scorers);
 
-            EvaluationRun eval = new EvaluationRun(projectName, evalRunName, examples, scorers,
-                    model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL, organizationId);
+            EvaluationRun eval =
+                    new EvaluationRun(
+                            projectName,
+                            evalRunName,
+                            examples,
+                            scorers,
+                            model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
+                            organizationId);
 
             List<ScoringResult> results = runEval(eval);
 
@@ -56,23 +70,26 @@ public class JudgmentClient {
         } catch (JudgmentTestError e) {
             throw e;
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(String.format(
-                    "Please check your EvaluationRun object, one or more fields are invalid: %s",
-                    e.getMessage()));
+            throw new IllegalArgumentException(
+                    String.format(
+                            "Please check your EvaluationRun object, one or more fields are invalid: %s",
+                            e.getMessage()));
         } catch (Exception e) {
-            throw new JudgmentRuntimeError(String.format(
-                    "An unexpected error occurred during evaluation: %s", e.getMessage()), e);
+            throw new JudgmentRuntimeError(
+                    String.format(
+                            "An unexpected error occurred during evaluation: %s", e.getMessage()),
+                    e);
         }
     }
 
-    public List<ScoringResult> runEvaluation(List<Example> examples, List<Object> scorers,
-            String projectName, String evalRunName) {
-        return runEvaluation(examples, scorers, projectName, evalRunName,
-                Env.JUDGMENT_DEFAULT_GPT_MODEL, false);
+    public List<ScoringResult> runEvaluation(
+            List<Example> examples, List<Object> scorers, String projectName, String evalRunName) {
+        return runEvaluation(
+                examples, scorers, projectName, evalRunName, Env.JUDGMENT_DEFAULT_GPT_MODEL, false);
     }
 
-    private void validateInputs(List<Example> examples, List<Object> scorers, String projectName,
-            String evalRunName) {
+    private void validateInputs(
+            List<Example> examples, List<Object> scorers, String projectName, String evalRunName) {
         if (examples == null || examples.isEmpty()) {
             throw new IllegalArgumentException("Examples cannot be null or empty");
         }
@@ -108,8 +125,8 @@ public class JudgmentClient {
                         System.out.println(
                                 "⚠️  WARNING: Example is missing required parameters for scorer "
                                         + scorerConfig.getScoreType());
-                        System.out
-                                .println("Missing parameters: " + String.join(", ", missingParams));
+                        System.out.println(
+                                "Missing parameters: " + String.join(", ", missingParams));
                         System.out.println("Example: " + example.getAdditionalProperties());
                         System.out.println("-".repeat(40));
                         promptUser = true;
@@ -120,8 +137,8 @@ public class JudgmentClient {
 
         if (promptUser) {
             System.out.print("Do you want to continue? (y/n): ");
+            java.util.Scanner scanner = new java.util.Scanner(System.in);
             try {
-                java.util.Scanner scanner = new java.util.Scanner(System.in);
                 String userInput = scanner.nextLine();
                 if (!"y".equalsIgnoreCase(userInput)) {
                     System.exit(0);
@@ -179,13 +196,16 @@ public class JudgmentClient {
         }
     }
 
-    private List<ScoringResult> pollEvaluationUntilComplete(EvaluationRun eval,
-            JudgmentSyncClient client) {
+    private List<ScoringResult> pollEvaluationUntilComplete(
+            EvaluationRun eval, JudgmentSyncClient client) {
         return pollEvaluationUntilComplete(eval, client, 2.0, 5, 60);
     }
 
-    private List<ScoringResult> pollEvaluationUntilComplete(EvaluationRun eval,
-            JudgmentSyncClient client, double pollIntervalSeconds, int maxFailures,
+    private List<ScoringResult> pollEvaluationUntilComplete(
+            EvaluationRun eval,
+            JudgmentSyncClient client,
+            double pollIntervalSeconds,
+            int maxFailures,
             int maxPollCount) {
         int pollCount = 0;
         int exceptionCount = 0;
@@ -197,8 +217,12 @@ public class JudgmentClient {
                 long elapsed = (System.currentTimeMillis() - startTime) / 1000;
                 System.out.println("Running evaluation... (" + elapsed + " sec)");
 
-                Object statusResponse = client.getEvaluationStatus(apiKey, organizationId,
-                        eval.getId().toString(), eval.getProjectName().toString());
+                Object statusResponse =
+                        client.getEvaluationStatus(
+                                apiKey,
+                                organizationId,
+                                eval.getId().toString(),
+                                eval.getProjectName().toString());
 
                 if (statusResponse instanceof Map) {
                     Map<String, Object> statusMap = (Map<String, Object>) statusResponse;
@@ -212,11 +236,13 @@ public class JudgmentClient {
                 fetchRequest.setExperimentRunId(eval.getId().toString());
                 fetchRequest.setProjectName(eval.getProjectName().toString());
 
-                Object resultsResponse = client.fetchExperimentRun(apiKey, organizationId, fetchRequest);
+                Object resultsResponse =
+                        client.fetchExperimentRun(apiKey, organizationId, fetchRequest);
 
                 if (resultsResponse instanceof Map) {
                     Map<String, Object> resultsMap = (Map<String, Object>) resultsResponse;
-                    List<Map<String, Object>> examplesData = (List<Map<String, Object>>) resultsMap.get("examples");
+                    List<Map<String, Object>> examplesData =
+                            (List<Map<String, Object>>) resultsMap.get("examples");
 
                     if (examplesData == null) {
                         Thread.sleep((long) (pollIntervalSeconds * 1000));
@@ -248,7 +274,8 @@ public class JudgmentClient {
         List<ScoringResult> results = new ArrayList<>();
 
         for (Map<String, Object> exampleData : examplesData) {
-            List<Map<String, Object>> scorerDataList = (List<Map<String, Object>>) exampleData.get("scorer_data");
+            List<Map<String, Object>> scorerDataList =
+                    (List<Map<String, Object>>) exampleData.get("scorer_data");
             List<ScorerData> scorersData = new ArrayList<>();
 
             boolean success = true;
@@ -263,7 +290,8 @@ public class JudgmentClient {
                     scorerData.setReason((String) rawScorerData.get("reason"));
                     Object thresholdObj = rawScorerData.get("threshold");
                     scorerData.setThreshold(
-                            thresholdObj instanceof Number ? ((Number) thresholdObj).doubleValue()
+                            thresholdObj instanceof Number
+                                    ? ((Number) thresholdObj).doubleValue()
                                     : null);
                     scorerData.setStrictMode((Boolean) rawScorerData.get("strict_mode"));
                     scorerData.setEvaluationModel((String) rawScorerData.get("evaluation_model"));
@@ -331,11 +359,21 @@ public class JudgmentClient {
             int passedTests = totalTests - failedTests;
 
             if (failedTests == 0) {
-                System.out.println("\u001B[1;32m🎉 ALL TESTS PASSED! " + passedTests + "/"
-                        + totalTests + " tests successful\u001B[0m");
+                System.out.println(
+                        "\u001B[1;32m🎉 ALL TESTS PASSED! "
+                                + passedTests
+                                + "/"
+                                + totalTests
+                                + " tests successful\u001B[0m");
             } else {
-                System.out.println("\u001B[1;31m⚠️  TEST RESULTS: " + passedTests + "/" + totalTests
-                        + " passed (" + failedTests + " failed)\u001B[0m");
+                System.out.println(
+                        "\u001B[1;31m⚠️  TEST RESULTS: "
+                                + passedTests
+                                + "/"
+                                + totalTests
+                                + " passed ("
+                                + failedTests
+                                + " failed)\u001B[0m");
             }
             System.out.println("=".repeat(80) + "\n");
 
@@ -350,15 +388,23 @@ public class JudgmentClient {
                         List<ScorerData> scorersData = (List<ScorerData>) result.getScorersData();
                         for (ScorerData scorerData : scorersData) {
                             if (!Boolean.TRUE.equals(scorerData.getSuccess())) {
-                                System.out.println("  \u001B[33mScorer: " + scorerData.getName()
-                                        + "\u001B[0m");
-                                System.out.println("  \u001B[31m  Score: " + scorerData.getScore()
-                                        + "\u001B[0m");
-                                System.out.println("  \u001B[31m  Reason: " + scorerData.getReason()
-                                        + "\u001B[0m");
+                                System.out.println(
+                                        "  \u001B[33mScorer: "
+                                                + scorerData.getName()
+                                                + "\u001B[0m");
+                                System.out.println(
+                                        "  \u001B[31m  Score: "
+                                                + scorerData.getScore()
+                                                + "\u001B[0m");
+                                System.out.println(
+                                        "  \u001B[31m  Reason: "
+                                                + scorerData.getReason()
+                                                + "\u001B[0m");
                                 if (scorerData.getError() != null) {
-                                    System.out.println("  \u001B[31m  Error: "
-                                            + scorerData.getError() + "\u001B[0m");
+                                    System.out.println(
+                                            "  \u001B[31m  Error: "
+                                                    + scorerData.getError()
+                                                    + "\u001B[0m");
                                 }
                             }
                         }
@@ -380,17 +426,22 @@ public class JudgmentClient {
                     errorMsg.append(String.format("Score: %s\n", failScorer.getScore()));
                     errorMsg.append(String.format("Reason: %s\n", failScorer.getReason()));
                     errorMsg.append(String.format("Strict Mode: %s\n", failScorer.getStrictMode()));
-                    errorMsg.append(String.format("Evaluation Model: %s\n",
-                            failScorer.getEvaluationModel()));
+                    errorMsg.append(
+                            String.format(
+                                    "Evaluation Model: %s\n", failScorer.getEvaluationModel()));
                     errorMsg.append(String.format("Error: %s\n", failScorer.getError()));
-                    errorMsg.append(String.format("Additional Metadata: %s\n",
-                            failScorer.getAdditionalMetadata()));
+                    errorMsg.append(
+                            String.format(
+                                    "Additional Metadata: %s\n",
+                                    failScorer.getAdditionalMetadata()));
                 }
                 errorMsg.append("-".repeat(100));
             }
 
-            errorMsg.append(String.format("\nTEST RESULTS: %d/%d passed (%d failed)", passedTests,
-                    totalTests, failedTests));
+            errorMsg.append(
+                    String.format(
+                            "\nTEST RESULTS: %d/%d passed (%d failed)",
+                            passedTests, totalTests, failedTests));
 
             throw new JudgmentTestError(errorMsg.toString());
         }
