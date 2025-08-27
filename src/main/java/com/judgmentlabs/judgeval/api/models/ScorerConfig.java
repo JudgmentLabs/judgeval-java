@@ -1,8 +1,12 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerConfig {
@@ -23,6 +27,18 @@ public class ScorerConfig {
 
     @JsonProperty("kwargs")
     private Object kwargs;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public String getScoreType() {
         return scoreType;
@@ -82,16 +98,19 @@ public class ScorerConfig {
                 && Objects.equals(threshold, other.threshold)
                 && Objects.equals(strictMode, other.strictMode)
                 && Objects.equals(requiredParams, other.requiredParams)
-                && Objects.equals(kwargs, other.kwargs);
+                && Objects.equals(kwargs, other.kwargs)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(scoreType)
-                + Objects.hashCode(name)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(strictMode)
-                + Objects.hashCode(requiredParams)
-                + Objects.hashCode(kwargs);
+        return Objects.hash(
+                scoreType,
+                name,
+                threshold,
+                strictMode,
+                requiredParams,
+                kwargs,
+                Objects.hashCode(additionalProperties));
     }
 }

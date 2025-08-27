@@ -1,7 +1,11 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScoringResult {
@@ -25,6 +29,18 @@ public class ScoringResult {
 
     @JsonProperty("evaluation_cost")
     private Object evaluationCost;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public Boolean getSuccess() {
         return success;
@@ -93,17 +109,20 @@ public class ScoringResult {
                 && Objects.equals(dataObject, other.dataObject)
                 && Objects.equals(traceId, other.traceId)
                 && Objects.equals(runDuration, other.runDuration)
-                && Objects.equals(evaluationCost, other.evaluationCost);
+                && Objects.equals(evaluationCost, other.evaluationCost)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(success)
-                + Objects.hashCode(scorersData)
-                + Objects.hashCode(name)
-                + Objects.hashCode(dataObject)
-                + Objects.hashCode(traceId)
-                + Objects.hashCode(runDuration)
-                + Objects.hashCode(evaluationCost);
+        return Objects.hash(
+                success,
+                scorersData,
+                name,
+                dataObject,
+                traceId,
+                runDuration,
+                evaluationCost,
+                Objects.hashCode(additionalProperties));
     }
 }

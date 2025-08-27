@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.judgmentlabs</groupId>
     <artifactId>judgeval-java</artifactId>
-    <version>0.0.1</version>
+    <version>0.1.1</version>
     <packaging>jar</packaging>
     <name>Judgeval Java</name>
     <description>Java SDK for Judgeval evaluation framework</description>
@@ -60,6 +60,21 @@
             <artifactId>junit-jupiter</artifactId>
             <version>5.10.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-exporter-otlp</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk-trace</artifactId>
+            <version>1.39.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.opentelemetry</groupId>
+            <artifactId>opentelemetry-sdk</artifactId>
+            <version>1.39.0</version>
         </dependency>
     </dependencies>
     

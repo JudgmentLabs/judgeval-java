@@ -1,8 +1,12 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TraceRun {
@@ -26,6 +30,18 @@ public class TraceRun {
 
     @JsonProperty("tools")
     private Object tools;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public Object getProjectName() {
         return projectName;
@@ -94,17 +110,20 @@ public class TraceRun {
                 && Objects.equals(scorers, other.scorers)
                 && Objects.equals(model, other.model)
                 && Objects.equals(traceSpanId, other.traceSpanId)
-                && Objects.equals(tools, other.tools);
+                && Objects.equals(tools, other.tools)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(projectName)
-                + Objects.hashCode(evalName)
-                + Objects.hashCode(traces)
-                + Objects.hashCode(scorers)
-                + Objects.hashCode(model)
-                + Objects.hashCode(traceSpanId)
-                + Objects.hashCode(tools);
+        return Objects.hash(
+                projectName,
+                evalName,
+                traces,
+                scorers,
+                model,
+                traceSpanId,
+                tools,
+                Objects.hashCode(additionalProperties));
     }
 }

@@ -1,7 +1,11 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerData {
@@ -31,6 +35,18 @@ public class ScorerData {
 
     @JsonProperty("additional_metadata")
     private Object additionalMetadata;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public String getName() {
         return name;
@@ -117,19 +133,22 @@ public class ScorerData {
                 && Objects.equals(strictMode, other.strictMode)
                 && Objects.equals(evaluationModel, other.evaluationModel)
                 && Objects.equals(error, other.error)
-                && Objects.equals(additionalMetadata, other.additionalMetadata);
+                && Objects.equals(additionalMetadata, other.additionalMetadata)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(success)
-                + Objects.hashCode(score)
-                + Objects.hashCode(reason)
-                + Objects.hashCode(strictMode)
-                + Objects.hashCode(evaluationModel)
-                + Objects.hashCode(error)
-                + Objects.hashCode(additionalMetadata);
+        return Objects.hash(
+                name,
+                threshold,
+                success,
+                score,
+                reason,
+                strictMode,
+                evaluationModel,
+                error,
+                additionalMetadata,
+                Objects.hashCode(additionalProperties));
     }
 }

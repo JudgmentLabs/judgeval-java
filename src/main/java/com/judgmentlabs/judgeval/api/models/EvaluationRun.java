@@ -1,8 +1,12 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EvaluationRun {
@@ -35,6 +39,18 @@ public class EvaluationRun {
 
     @JsonProperty("created_at")
     private Object createdAt;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public Object getId() {
         return id;
@@ -130,20 +146,23 @@ public class EvaluationRun {
                 && Objects.equals(model, other.model)
                 && Objects.equals(traceSpanId, other.traceSpanId)
                 && Objects.equals(traceId, other.traceId)
-                && Objects.equals(createdAt, other.createdAt);
+                && Objects.equals(createdAt, other.createdAt)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id)
-                + Objects.hashCode(projectName)
-                + Objects.hashCode(evalName)
-                + Objects.hashCode(examples)
-                + Objects.hashCode(customScorers)
-                + Objects.hashCode(judgmentScorers)
-                + Objects.hashCode(model)
-                + Objects.hashCode(traceSpanId)
-                + Objects.hashCode(traceId)
-                + Objects.hashCode(createdAt);
+        return Objects.hash(
+                id,
+                projectName,
+                evalName,
+                examples,
+                customScorers,
+                judgmentScorers,
+                model,
+                traceSpanId,
+                traceId,
+                createdAt,
+                Objects.hashCode(additionalProperties));
     }
 }

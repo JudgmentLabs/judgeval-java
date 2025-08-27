@@ -1,7 +1,11 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Tool {
@@ -22,6 +26,18 @@ public class Tool {
 
     @JsonProperty("require_all")
     private Object requireAll;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public String getToolName() {
         return toolName;
@@ -81,16 +97,19 @@ public class Tool {
                 && Objects.equals(agentName, other.agentName)
                 && Objects.equals(resultDependencies, other.resultDependencies)
                 && Objects.equals(actionDependencies, other.actionDependencies)
-                && Objects.equals(requireAll, other.requireAll);
+                && Objects.equals(requireAll, other.requireAll)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(toolName)
-                + Objects.hashCode(parameters)
-                + Objects.hashCode(agentName)
-                + Objects.hashCode(resultDependencies)
-                + Objects.hashCode(actionDependencies)
-                + Objects.hashCode(requireAll);
+        return Objects.hash(
+                toolName,
+                parameters,
+                agentName,
+                resultDependencies,
+                actionDependencies,
+                requireAll,
+                Objects.hashCode(additionalProperties));
     }
 }

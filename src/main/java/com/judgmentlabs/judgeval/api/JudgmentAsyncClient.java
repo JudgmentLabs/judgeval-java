@@ -16,10 +16,14 @@ public class JudgmentAsyncClient {
     private final HttpClient client;
     private final ObjectMapper mapper;
     private final String baseUrl;
+    private final String apiKey;
+    private final String organizationId;
 
-    public JudgmentAsyncClient(String baseUrl) {
+    public JudgmentAsyncClient(String baseUrl, String apiKey, String organizationId) {
         this.baseUrl = baseUrl;
-        this.client = HttpClient.newHttpClient();
+        this.apiKey = apiKey;
+        this.organizationId = organizationId;
+        this.client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
         this.mapper = new ObjectMapper();
     }
 
@@ -40,7 +44,10 @@ public class JudgmentAsyncClient {
         return buildUrl(path, new HashMap<>());
     }
 
-    private String[] buildHeaders(String apiKey, String organizationId) {
+    private String[] buildHeaders() {
+        if (apiKey == null || organizationId == null) {
+            throw new IllegalArgumentException("API key and organization ID cannot be null");
+        }
         return new String[] {
             "Content-Type",
             "application/json",
@@ -63,8 +70,7 @@ public class JudgmentAsyncClient {
         }
     }
 
-    public CompletableFuture<Object> addToRunEvalQueue(
-            String apiKey, String organizationId, EvaluationRun payload) {
+    public CompletableFuture<Object> addToRunEvalQueue(EvaluationRun payload) {
         String url = buildUrl("/add_to_run_eval_queue/");
         String jsonPayload;
         try {
@@ -76,14 +82,13 @@ public class JudgmentAsyncClient {
                 HttpRequest.newBuilder()
                         .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                         .uri(URI.create(url))
-                        .headers(buildHeaders(apiKey, organizationId))
+                        .headers(buildHeaders())
                         .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<Object> logEvalResults(
-            String apiKey, String organizationId, EvalResults payload) {
+    public CompletableFuture<Object> logEvalResults(EvalResults payload) {
         String url = buildUrl("/log_eval_results/");
         String jsonPayload;
         try {
@@ -95,14 +100,13 @@ public class JudgmentAsyncClient {
                 HttpRequest.newBuilder()
                         .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                         .uri(URI.create(url))
-                        .headers(buildHeaders(apiKey, organizationId))
+                        .headers(buildHeaders())
                         .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<Object> fetchExperimentRun(
-            String apiKey, String organizationId, EvalResultsFetch payload) {
+    public CompletableFuture<Object> fetchExperimentRun(EvalResultsFetch payload) {
         String url = buildUrl("/fetch_experiment_run/");
         String jsonPayload;
         try {
@@ -114,30 +118,25 @@ public class JudgmentAsyncClient {
                 HttpRequest.newBuilder()
                         .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                         .uri(URI.create(url))
-                        .headers(buildHeaders(apiKey, organizationId))
+                        .headers(buildHeaders())
                         .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
     public CompletableFuture<Object> getEvaluationStatus(
-            String apiKey, String organizationId, String experiment_run_id, String project_name) {
+            String experiment_run_id, String project_name) {
         Map<String, String> queryParams = new HashMap<>();
         queryParams.put("experiment_run_id", experiment_run_id);
         queryParams.put("project_name", project_name);
         String url = buildUrl("/get_evaluation_status/", queryParams);
         HttpRequest request =
-                HttpRequest.newBuilder()
-                        .GET()
-                        .uri(URI.create(url))
-                        .headers(buildHeaders(apiKey, organizationId))
-                        .build();
+                HttpRequest.newBuilder().GET().uri(URI.create(url)).headers(buildHeaders()).build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<ScorerExistsResponse> scorerExists(
-            String apiKey, String organizationId, ScorerExistsRequest payload) {
+    public CompletableFuture<ScorerExistsResponse> scorerExists(ScorerExistsRequest payload) {
         String url = buildUrl("/scorer_exists/");
         String jsonPayload;
         try {
@@ -149,14 +148,13 @@ public class JudgmentAsyncClient {
                 HttpRequest.newBuilder()
                         .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                         .uri(URI.create(url))
-                        .headers(buildHeaders(apiKey, organizationId))
+                        .headers(buildHeaders())
                         .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<SavePromptScorerResponse> saveScorer(
-            String apiKey, String organizationId, SavePromptScorerRequest payload) {
+    public CompletableFuture<SavePromptScorerResponse> saveScorer(SavePromptScorerRequest payload) {
         String url = buildUrl("/save_scorer/");
         String jsonPayload;
         try {
@@ -168,14 +166,14 @@ public class JudgmentAsyncClient {
                 HttpRequest.newBuilder()
                         .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                         .uri(URI.create(url))
-                        .headers(buildHeaders(apiKey, organizationId))
+                        .headers(buildHeaders())
                         .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
     public CompletableFuture<FetchPromptScorerResponse> fetchScorer(
-            String apiKey, String organizationId, FetchPromptScorerRequest payload) {
+            FetchPromptScorerRequest payload) {
         String url = buildUrl("/fetch_scorer/");
         String jsonPayload;
         try {
@@ -187,7 +185,26 @@ public class JudgmentAsyncClient {
                 HttpRequest.newBuilder()
                         .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                         .uri(URI.create(url))
-                        .headers(buildHeaders(apiKey, organizationId))
+                        .headers(buildHeaders())
+                        .build();
+        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+                .thenApply(this::handleResponse);
+    }
+
+    public CompletableFuture<ResolveProjectNameResponse> projectsResolve(
+            ResolveProjectNameRequest payload) {
+        String url = buildUrl("/projects/resolve/");
+        String jsonPayload;
+        try {
+            jsonPayload = mapper.writeValueAsString(payload);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize payload", e);
+        }
+        HttpRequest request =
+                HttpRequest.newBuilder()
+                        .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                        .uri(URI.create(url))
+                        .headers(buildHeaders())
                         .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);

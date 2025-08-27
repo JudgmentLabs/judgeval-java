@@ -14,6 +14,7 @@ JUDGEVAL_PATHS = [
     "/save_scorer/",
     "/fetch_scorer/",
     "/scorer_exists/",
+    "/projects/resolve/",
 ]
 
 
@@ -239,34 +240,31 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
             equals_parts.append(
                 f"Objects.equals({camel_case_name}, other.{camel_case_name})"
             )
-            hashCode_parts.append(f"Objects.hashCode({camel_case_name})")
+            hashCode_parts.append(f"{camel_case_name}")
 
     if fields:
         lines.extend(fields)
         lines.append("")
 
-    # Add additional properties support if additionalProperties is true
-    if schema.get("additionalProperties") is True:
-        lines.append(
-            "    private Map<String, Object> additionalProperties = new HashMap<>();"
-        )
-        lines.append("")
-        lines.append("    @JsonAnyGetter")
-        lines.append("    public Map<String, Object> getAdditionalProperties() {")
-        lines.append("        return additionalProperties;")
-        lines.append("    }")
-        lines.append("")
-        lines.append("    @JsonAnySetter")
-        lines.append(
-            "    public void setAdditionalProperty(String name, Object value) {"
-        )
-        lines.append("        additionalProperties.put(name, value);")
-        lines.append("    }")
-        lines.append("")
-        equals_parts.append(
-            "Objects.equals(additionalProperties, other.additionalProperties)"
-        )
-        hashCode_parts.append("Objects.hashCode(additionalProperties)")
+    # Always add additional properties support to handle extra fields from server
+    lines.append(
+        "    private Map<String, Object> additionalProperties = new HashMap<>();"
+    )
+    lines.append("")
+    lines.append("    @JsonAnyGetter")
+    lines.append("    public Map<String, Object> getAdditionalProperties() {")
+    lines.append("        return additionalProperties;")
+    lines.append("    }")
+    lines.append("")
+    lines.append("    @JsonAnySetter")
+    lines.append("    public void setAdditionalProperty(String name, Object value) {")
+    lines.append("        additionalProperties.put(name, value);")
+    lines.append("    }")
+    lines.append("")
+    equals_parts.append(
+        "Objects.equals(additionalProperties, other.additionalProperties)"
+    )
+    hashCode_parts.append("Objects.hashCode(additionalProperties)")
 
     lines.extend(getters)
     lines.append("")
@@ -289,7 +287,7 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
     lines.append("    @Override")
     lines.append("    public int hashCode() {")
     if hashCode_parts:
-        lines.append(f"        return {' + '.join(hashCode_parts)};")
+        lines.append(f"        return Objects.hash({', '.join(hashCode_parts)});")
     else:
         lines.append("        return 0;")
     lines.append("    }")
@@ -312,7 +310,7 @@ def generate_method_signature(
 
     signature += f"{method_name}("
 
-    params = ["String apiKey", "String organizationId"]
+    params = []
 
     for param in query_params:
         if param["required"]:
@@ -342,6 +340,7 @@ def generate_method_body(
     method: str,
     request_type: Optional[str],
     query_params: List[Dict[str, Any]],
+    response_type: str,
     is_async: bool,
 ) -> str:
     lines = []
@@ -368,13 +367,13 @@ def generate_method_body(
         lines.append("        HttpRequest request = HttpRequest.newBuilder()")
         lines.append("                .GET()")
         lines.append("                .uri(URI.create(url))")
-        lines.append("                .headers(buildHeaders(apiKey, organizationId))")
+        lines.append("                .headers(buildHeaders())")
         lines.append("                .build();")
     elif method == "DELETE":
         lines.append("        HttpRequest request = HttpRequest.newBuilder()")
         lines.append("                .DELETE()")
         lines.append("                .uri(URI.create(url))")
-        lines.append("                .headers(buildHeaders(apiKey, organizationId))")
+        lines.append("                .headers(buildHeaders())")
         lines.append("                .build();")
     else:
         if is_async:
@@ -400,7 +399,7 @@ def generate_method_body(
             f"                .{method}(HttpRequest.BodyPublishers.ofString(jsonPayload))"
         )
         lines.append("                .uri(URI.create(url))")
-        lines.append("                .headers(buildHeaders(apiKey, organizationId))")
+        lines.append("                .headers(buildHeaders())")
         lines.append("                .build();")
 
     if is_async:
@@ -412,7 +411,12 @@ def generate_method_body(
         lines.append(
             "        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());"
         )
-        lines.append("        return handleResponse(response);")
+        if response_type == "Object":
+            lines.append("        return handleResponse(response);")
+        else:
+            lines.append(
+                f"        return mapper.readValue(response.body(), {response_type}.class);"
+            )
 
     return "\n".join(lines)
 
@@ -445,10 +449,16 @@ def generate_client_class(
             "    private final HttpClient client;",
             "    private final ObjectMapper mapper;",
             "    private final String baseUrl;",
+            "    private final String apiKey;",
+            "    private final String organizationId;",
             "",
-            f"    public {className}(String baseUrl) {{",
+            f"    public {className}(String baseUrl, String apiKey, String organizationId) {{",
             "        this.baseUrl = baseUrl;",
-            "        this.client = HttpClient.newHttpClient();",
+            "        this.apiKey = apiKey;",
+            "        this.organizationId = organizationId;",
+            "        this.client = HttpClient.newBuilder()",
+            "                .version(HttpClient.Version.HTTP_1_1)",
+            "                .build();",
             "        this.mapper = new ObjectMapper();",
             "    }",
             "",
@@ -468,11 +478,17 @@ def generate_client_class(
             "        return buildUrl(path, new HashMap<>());",
             "    }",
             "",
-            "    private String[] buildHeaders(String apiKey, String organizationId) {",
-            "        return new String[]{",
-            '                "Content-Type", "application/json",',
-            '                "Authorization", "Bearer " + apiKey,',
-            '                "X-Organization-Id", organizationId',
+            "    private String[] buildHeaders() {",
+            "        if (apiKey == null || organizationId == null) {",
+            '            throw new IllegalArgumentException("API key and organization ID cannot be null");',
+            "        }",
+            "        return new String[] {",
+            '            "Content-Type",',
+            '            "application/json",',
+            '            "Authorization",',
+            '            "Bearer " + apiKey,',
+            '            "X-Organization-Id",',
+            "            organizationId",
             "        };",
             "    }",
             "",
@@ -517,7 +533,13 @@ def generate_client_class(
         lines.append(signature)
 
         body = generate_method_body(
-            method_name, path, http_method, request_type, query_params, is_async
+            method_name,
+            path,
+            http_method,
+            request_type,
+            query_params,
+            response_type,
+            is_async,
         )
         lines.append(body)
         lines.append("    }")

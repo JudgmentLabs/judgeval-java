@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ScorerExistsResponse {
-    @JsonProperty("exists")
-    private Boolean exists;
+public class ResolveProjectNameResponse {
+    @JsonProperty("project_id")
+    private String projectId;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -24,25 +24,25 @@ public class ScorerExistsResponse {
         additionalProperties.put(name, value);
     }
 
-    public Boolean getExists() {
-        return exists;
+    public String getProjectId() {
+        return projectId;
     }
 
-    public void setExists(Boolean exists) {
-        this.exists = exists;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        ScorerExistsResponse other = (ScorerExistsResponse) obj;
-        return Objects.equals(exists, other.exists)
+        ResolveProjectNameResponse other = (ResolveProjectNameResponse) obj;
+        return Objects.equals(projectId, other.projectId)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(exists, Objects.hashCode(additionalProperties));
+        return Objects.hash(projectId, Objects.hashCode(additionalProperties));
     }
 }

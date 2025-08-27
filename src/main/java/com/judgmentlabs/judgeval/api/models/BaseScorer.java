@@ -1,7 +1,11 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BaseScorer {
@@ -52,6 +56,18 @@ public class BaseScorer {
 
     @JsonProperty("server_hosted")
     private Boolean serverHosted;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public String getScoreType() {
         return scoreType;
@@ -201,26 +217,29 @@ public class BaseScorer {
                 && Objects.equals(error, other.error)
                 && Objects.equals(additionalMetadata, other.additionalMetadata)
                 && Objects.equals(user, other.user)
-                && Objects.equals(serverHosted, other.serverHosted);
+                && Objects.equals(serverHosted, other.serverHosted)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(scoreType)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(name)
-                + Objects.hashCode(className)
-                + Objects.hashCode(score)
-                + Objects.hashCode(scoreBreakdown)
-                + Objects.hashCode(reason)
-                + Objects.hashCode(usingNativeModel)
-                + Objects.hashCode(success)
-                + Objects.hashCode(model)
-                + Objects.hashCode(modelClient)
-                + Objects.hashCode(strictMode)
-                + Objects.hashCode(error)
-                + Objects.hashCode(additionalMetadata)
-                + Objects.hashCode(user)
-                + Objects.hashCode(serverHosted);
+        return Objects.hash(
+                scoreType,
+                threshold,
+                name,
+                className,
+                score,
+                scoreBreakdown,
+                reason,
+                usingNativeModel,
+                success,
+                model,
+                modelClient,
+                strictMode,
+                error,
+                additionalMetadata,
+                user,
+                serverHosted,
+                Objects.hashCode(additionalProperties));
     }
 }

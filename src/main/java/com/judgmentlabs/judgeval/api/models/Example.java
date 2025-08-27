@@ -67,9 +67,6 @@ public class Example {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(exampleId)
-                + Objects.hashCode(createdAt)
-                + Objects.hashCode(name)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(exampleId, createdAt, name, Objects.hashCode(additionalProperties));
     }
 }

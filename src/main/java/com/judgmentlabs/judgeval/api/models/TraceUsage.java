@@ -1,7 +1,11 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TraceUsage {
@@ -31,6 +35,18 @@ public class TraceUsage {
 
     @JsonProperty("model_name")
     private Object modelName;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public Object getPromptTokens() {
         return promptTokens;
@@ -117,19 +133,22 @@ public class TraceUsage {
                 && Objects.equals(promptTokensCostUsd, other.promptTokensCostUsd)
                 && Objects.equals(completionTokensCostUsd, other.completionTokensCostUsd)
                 && Objects.equals(totalCostUsd, other.totalCostUsd)
-                && Objects.equals(modelName, other.modelName);
+                && Objects.equals(modelName, other.modelName)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(promptTokens)
-                + Objects.hashCode(completionTokens)
-                + Objects.hashCode(cacheCreationInputTokens)
-                + Objects.hashCode(cacheReadInputTokens)
-                + Objects.hashCode(totalTokens)
-                + Objects.hashCode(promptTokensCostUsd)
-                + Objects.hashCode(completionTokensCostUsd)
-                + Objects.hashCode(totalCostUsd)
-                + Objects.hashCode(modelName);
+        return Objects.hash(
+                promptTokens,
+                completionTokens,
+                cacheCreationInputTokens,
+                cacheReadInputTokens,
+                totalTokens,
+                promptTokensCostUsd,
+                completionTokensCostUsd,
+                totalCostUsd,
+                modelName,
+                Objects.hashCode(additionalProperties));
     }
 }

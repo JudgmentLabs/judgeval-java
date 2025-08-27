@@ -1,33 +1,43 @@
 package com.judgmentlabs.judgeval;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Scanner;
+import java.util.Set;
 
 import com.judgmentlabs.judgeval.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.api.models.EvalResultsFetch;
-import com.judgmentlabs.judgeval.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.data.EvaluationRun;
 import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.data.ScorerData;
 import com.judgmentlabs.judgeval.data.ScoringResult;
 import com.judgmentlabs.judgeval.exceptions.JudgmentRuntimeError;
 import com.judgmentlabs.judgeval.exceptions.JudgmentTestError;
+import com.judgmentlabs.judgeval.scorers.APIScorer;
+import com.judgmentlabs.judgeval.scorers.BaseScorer;
+import com.judgmentlabs.judgeval.scorers.ExampleScorer;
+import com.judgmentlabs.judgeval.scorers.api_scorers.PromptScorer;
 import com.judgmentlabs.judgeval.utils.Logger;
 
 public class JudgmentClient {
     private final String apiKey;
     private final String organizationId;
+    private final JudgmentSyncClient client;
 
     public JudgmentClient(String apiKey, String organizationId) {
         this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");
-        this.organizationId = Objects.requireNonNull(organizationId, "Organization ID cannot be null");
+        this.organizationId =
+                Objects.requireNonNull(organizationId, "Organization ID cannot be null");
+        this.client =
+                new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
     }
 
     public List<ScoringResult> runEvaluation(
             List<Example> examples,
-            List<Object> scorers,
+            List<BaseScorer> scorers,
             String projectName,
             String evalRunName,
             String model,
@@ -35,9 +45,9 @@ public class JudgmentClient {
         validateInputs(examples, scorers, projectName, evalRunName);
 
         if (!examples.isEmpty()) {
-            java.util.Set<String> keys = examples.get(0).getFields().keySet();
+            Set<String> keys = examples.get(0).getFields().keySet();
             for (Example example : examples) {
-                java.util.Set<String> currentKeys = example.getFields().keySet();
+                Set<String> currentKeys = example.getFields().keySet();
                 if (!currentKeys.equals(keys)) {
                     throw new IllegalArgumentException(
                             String.format(
@@ -50,13 +60,20 @@ public class JudgmentClient {
         try {
             validateScorerTypes(scorers);
 
-            EvaluationRun eval = new EvaluationRun(
-                    projectName,
-                    evalRunName,
-                    examples,
-                    scorers,
-                    model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
-                    organizationId);
+            List<Object> convertedScorers = new ArrayList<>();
+            for (BaseScorer scorer : scorers) {
+                convertedScorers.add(scorer.toTransport());
+            }
+            Logger.info("Submitting scorers payload count=" + convertedScorers.size());
+
+            EvaluationRun eval =
+                    new EvaluationRun(
+                            projectName,
+                            evalRunName,
+                            examples,
+                            convertedScorers,
+                            model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
+                            organizationId);
 
             List<ScoringResult> results = runEval(eval);
 
@@ -81,14 +98,11 @@ public class JudgmentClient {
         }
     }
 
-    public List<ScoringResult> runEvaluation(
-            List<Example> examples, List<Object> scorers, String projectName, String evalRunName) {
-        return runEvaluation(
-                examples, scorers, projectName, evalRunName, Env.JUDGMENT_DEFAULT_GPT_MODEL, false);
-    }
-
     private void validateInputs(
-            List<Example> examples, List<Object> scorers, String projectName, String evalRunName) {
+            List<Example> examples,
+            List<BaseScorer> scorers,
+            String projectName,
+            String evalRunName) {
         if (examples == null || examples.isEmpty()) {
             throw new IllegalArgumentException("Examples cannot be null or empty");
         }
@@ -105,16 +119,18 @@ public class JudgmentClient {
         checkExamples(examples, scorers);
     }
 
-    private void checkExamples(List<Example> examples, List<Object> scorers) {
+    private void checkExamples(List<Example> examples, List<BaseScorer> scorers) {
         boolean promptUser = false;
 
-        for (Object scorer : scorers) {
-            if (scorer instanceof ScorerConfig) {
-                ScorerConfig scorerConfig = (ScorerConfig) scorer;
+        for (BaseScorer scorer : scorers) {
+            if (scorer instanceof ExampleScorer) {
+                ExampleScorer exampleScorer = (ExampleScorer) scorer;
+                List<String> requiredParams = exampleScorer.getRequiredParams();
+
                 for (Example example : examples) {
                     List<String> missingParams = new ArrayList<>();
-                    if (scorerConfig.getRequiredParams() != null) {
-                        for (String param : scorerConfig.getRequiredParams()) {
+                    if (requiredParams != null) {
+                        for (String param : requiredParams) {
                             if (example.getAdditionalProperties().get(param) == null) {
                                 missingParams.add(param);
                             }
@@ -123,7 +139,7 @@ public class JudgmentClient {
                     if (!missingParams.isEmpty()) {
                         Logger.warning(
                                 "Example is missing required parameters for scorer "
-                                        + scorerConfig.getScoreType());
+                                        + exampleScorer.getScoreType());
                         Logger.warning("Missing parameters: " + String.join(", ", missingParams));
                         Logger.warning("Example: " + example.getAdditionalProperties());
                         Logger.warning("-".repeat(40));
@@ -135,7 +151,7 @@ public class JudgmentClient {
 
         if (promptUser) {
             System.out.print("Do you want to continue? (y/n): ");
-            java.util.Scanner scanner = new java.util.Scanner(System.in);
+            Scanner scanner = new Scanner(System.in);
             try {
                 String userInput = scanner.nextLine();
                 if (!"y".equalsIgnoreCase(userInput)) {
@@ -149,14 +165,14 @@ public class JudgmentClient {
         }
     }
 
-    private void validateScorerTypes(List<Object> scorers) {
+    private void validateScorerTypes(List<BaseScorer> scorers) {
         int customScorers = 0;
         int judgmentScorers = 0;
 
-        for (Object scorer : scorers) {
-            if (scorer instanceof com.judgmentlabs.judgeval.api.models.BaseScorer) {
+        for (BaseScorer scorer : scorers) {
+            if (scorer instanceof ExampleScorer) {
                 customScorers++;
-            } else if (scorer instanceof ScorerConfig) {
+            } else if (scorer instanceof APIScorer || scorer instanceof PromptScorer) {
                 judgmentScorers++;
             }
         }
@@ -169,10 +185,9 @@ public class JudgmentClient {
     }
 
     private List<ScoringResult> runEval(EvaluationRun eval) {
-        JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL);
         try {
             Logger.info("Submitting evaluation to API...");
-            Object response = client.addToRunEvalQueue(apiKey, organizationId, eval);
+            Object response = client.addToRunEvalQueue(eval);
             Logger.debug("API Response: " + response);
 
             if (response instanceof Map) {
@@ -212,11 +227,9 @@ public class JudgmentClient {
                 long elapsed = (System.currentTimeMillis() - startTime) / 1000;
                 Logger.info("Running evaluation... (" + elapsed + " sec)");
 
-                Object statusResponse = client.getEvaluationStatus(
-                        apiKey,
-                        organizationId,
-                        eval.getId().toString(),
-                        eval.getProjectName().toString());
+                Object statusResponse =
+                        client.getEvaluationStatus(
+                                eval.getId().toString(), eval.getProjectName().toString());
 
                 if (statusResponse instanceof Map) {
                     Map<String, Object> statusMap = (Map<String, Object>) statusResponse;
@@ -230,11 +243,12 @@ public class JudgmentClient {
                 fetchRequest.setExperimentRunId(eval.getId().toString());
                 fetchRequest.setProjectName(eval.getProjectName().toString());
 
-                Object resultsResponse = client.fetchExperimentRun(apiKey, organizationId, fetchRequest);
+                Object resultsResponse = client.fetchExperimentRun(fetchRequest);
 
                 if (resultsResponse instanceof Map) {
                     Map<String, Object> resultsMap = (Map<String, Object>) resultsResponse;
-                    List<Map<String, Object>> examplesData = (List<Map<String, Object>>) resultsMap.get("examples");
+                    List<Map<String, Object>> examplesData =
+                            (List<Map<String, Object>>) resultsMap.get("examples");
 
                     if (examplesData == null) {
                         Thread.sleep((long) (pollIntervalSeconds * 1000));
@@ -266,7 +280,8 @@ public class JudgmentClient {
         List<ScoringResult> results = new ArrayList<>();
 
         for (Map<String, Object> exampleData : examplesData) {
-            List<Map<String, Object>> scorerDataList = (List<Map<String, Object>>) exampleData.get("scorer_data");
+            List<Map<String, Object>> scorerDataList =
+                    (List<Map<String, Object>>) exampleData.get("scorer_data");
             List<ScorerData> scorersData = new ArrayList<>();
 
             boolean success = true;
@@ -318,12 +333,12 @@ public class JudgmentClient {
             throw new JudgmentTestError("No results to assert");
         }
 
-        List<java.util.Map<String, Object>> failedCases = new ArrayList<>();
+        List<Map<String, Object>> failedCases = new ArrayList<>();
 
         for (ScoringResult result : results) {
             if (result.getSuccess() == null || !result.getSuccess()) {
-                java.util.Map<String, Object> testCase = new java.util.HashMap<>();
-                java.util.List<ScorerData> failedScorers = new ArrayList<>();
+                Map<String, Object> testCase = new HashMap<>();
+                List<ScorerData> failedScorers = new ArrayList<>();
 
                 if (result.getScorersData() != null) {
                     List<ScorerData> scorersData = (List<ScorerData>) result.getScorersData();
@@ -395,7 +410,7 @@ public class JudgmentClient {
             Logger.info("=".repeat(80));
 
             StringBuilder errorMsg = new StringBuilder("The following test cases failed: \n");
-            for (java.util.Map<String, Object> failCase : failedCases) {
+            for (Map<String, Object> failCase : failedCases) {
                 @SuppressWarnings("unchecked")
                 List<ScorerData> failedScorers = (List<ScorerData>) failCase.get("failed_scorers");
                 for (ScorerData failScorer : failedScorers) {

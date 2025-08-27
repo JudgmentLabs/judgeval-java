@@ -1,7 +1,11 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PromptScorer {
@@ -22,6 +26,21 @@ public class PromptScorer {
 
     @JsonProperty("updated_at")
     private Object updatedAt;
+
+    @JsonProperty("is_trace")
+    private Object isTrace;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public String getName() {
         return name;
@@ -45,6 +64,10 @@ public class PromptScorer {
 
     public Object getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Object getIsTrace() {
+        return isTrace;
     }
 
     public void setName(String name) {
@@ -71,6 +94,10 @@ public class PromptScorer {
         this.updatedAt = updatedAt;
     }
 
+    public void setIsTrace(Object isTrace) {
+        this.isTrace = isTrace;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -81,16 +108,21 @@ public class PromptScorer {
                 && Objects.equals(threshold, other.threshold)
                 && Objects.equals(options, other.options)
                 && Objects.equals(createdAt, other.createdAt)
-                && Objects.equals(updatedAt, other.updatedAt);
+                && Objects.equals(updatedAt, other.updatedAt)
+                && Objects.equals(isTrace, other.isTrace)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name)
-                + Objects.hashCode(prompt)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(options)
-                + Objects.hashCode(createdAt)
-                + Objects.hashCode(updatedAt);
+        return Objects.hash(
+                name,
+                prompt,
+                threshold,
+                options,
+                createdAt,
+                updatedAt,
+                isTrace,
+                Objects.hashCode(additionalProperties));
     }
 }

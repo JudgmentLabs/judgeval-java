@@ -1,8 +1,12 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Trace {
@@ -41,6 +45,18 @@ public class Trace {
 
     @JsonProperty("update_id")
     private Integer updateId;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public String getTraceId() {
         return traceId;
@@ -154,22 +170,25 @@ public class Trace {
                 && Objects.equals(customerId, other.customerId)
                 && Objects.equals(tags, other.tags)
                 && Objects.equals(metadata, other.metadata)
-                && Objects.equals(updateId, other.updateId);
+                && Objects.equals(updateId, other.updateId)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(traceId)
-                + Objects.hashCode(name)
-                + Objects.hashCode(createdAt)
-                + Objects.hashCode(duration)
-                + Objects.hashCode(traceSpans)
-                + Objects.hashCode(offlineMode)
-                + Objects.hashCode(rules)
-                + Objects.hashCode(hasNotification)
-                + Objects.hashCode(customerId)
-                + Objects.hashCode(tags)
-                + Objects.hashCode(metadata)
-                + Objects.hashCode(updateId);
+        return Objects.hash(
+                traceId,
+                name,
+                createdAt,
+                duration,
+                traceSpans,
+                offlineMode,
+                rules,
+                hasNotification,
+                customerId,
+                tags,
+                metadata,
+                updateId,
+                Objects.hashCode(additionalProperties));
     }
 }

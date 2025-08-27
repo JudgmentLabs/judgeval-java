@@ -1,7 +1,11 @@
 package com.judgmentlabs.judgeval.api.models;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SavePromptScorerRequest {
@@ -17,6 +21,21 @@ public class SavePromptScorerRequest {
     @JsonProperty("options")
     private Object options;
 
+    @JsonProperty("is_trace")
+    private Object isTrace;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
+
     public String getName() {
         return name;
     }
@@ -31,6 +50,10 @@ public class SavePromptScorerRequest {
 
     public Object getOptions() {
         return options;
+    }
+
+    public Object getIsTrace() {
+        return isTrace;
     }
 
     public void setName(String name) {
@@ -49,6 +72,10 @@ public class SavePromptScorerRequest {
         this.options = options;
     }
 
+    public void setIsTrace(Object isTrace) {
+        this.isTrace = isTrace;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -57,14 +84,14 @@ public class SavePromptScorerRequest {
         return Objects.equals(name, other.name)
                 && Objects.equals(prompt, other.prompt)
                 && Objects.equals(threshold, other.threshold)
-                && Objects.equals(options, other.options);
+                && Objects.equals(options, other.options)
+                && Objects.equals(isTrace, other.isTrace)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name)
-                + Objects.hashCode(prompt)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(options);
+        return Objects.hash(
+                name, prompt, threshold, options, isTrace, Objects.hashCode(additionalProperties));
     }
 }
