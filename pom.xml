@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.judgmentlabs</groupId>
     <artifactId>judgeval-java</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
     <packaging>jar</packaging>
     <name>Judgeval Java</name>
-    <description>Java SDK for Judgeval evaluation framework</description>
+    <description>Java SDK for Judgeval</description>
     <url>https://github.com/judgmentlabs/judgeval-java</url>
     
     <licenses>
@@ -18,16 +18,6 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
-    <developers>
-        <developer>
-            <id>judgmentlabs</id>
-            <name>Judgment Labs</name>
-            <email>contact@judgmentlabs.com</email>
-            <organization>Judgment Labs</organization>
-            <organizationUrl>https://judgmentlabs.com</organizationUrl>
-        </developer>
-    </developers>
     
     <scm>
         <connection>scm:git:git://github.com/judgmentlabs/judgeval-java.git</connection>
