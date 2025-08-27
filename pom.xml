@@ -90,6 +90,8 @@
                     <publishingServerId>central</publishingServerId>
                     <autoPublish>true</autoPublish>
                     <waitUntil>published</waitUntil>
+                  <waitMaxTime>3600</waitMaxTime>
+                    <waitPollingInterval>5</waitPollingInterval>
                 </configuration>
             </plugin>
             
