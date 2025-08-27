@@ -20,6 +20,61 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.Evaluati
         setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
     }
 
+    // Factory method for local scorers (BaseScorer)
+    public static EvaluationRun createWithLocalScorers(
+            String projectName,
+            String evalName,
+            List<Example> examples,
+            List<com.judgmentlabs.judgeval.scorers.BaseScorer> localScorers,
+            String model,
+            String organizationId) {
+        EvaluationRun eval = new EvaluationRun();
+        eval.setProjectName(projectName);
+        eval.setEvalName(evalName);
+        eval.setExamples((List<com.judgmentlabs.judgeval.api.models.Example>) (List<?>) examples);
+        eval.setModel(model);
+        eval.setOrganizationId(organizationId);
+
+        if (localScorers != null) {
+            List<BaseScorer> customScorers = new java.util.ArrayList<>();
+
+            for (com.judgmentlabs.judgeval.scorers.BaseScorer scorer : localScorers) {
+                customScorers.add((BaseScorer) scorer);
+            }
+
+            eval.setCustomScorers(customScorers);
+            eval.setJudgmentScorers(new java.util.ArrayList<>());
+        }
+
+        eval.validateScorerLists();
+        return eval;
+    }
+
+    // Factory method for API scorers (ScorerConfig)
+    public static EvaluationRun createWithApiScorers(
+            String projectName,
+            String evalName,
+            List<Example> examples,
+            List<ScorerConfig> apiScorers,
+            String model,
+            String organizationId) {
+        EvaluationRun eval = new EvaluationRun();
+        eval.setProjectName(projectName);
+        eval.setEvalName(evalName);
+        eval.setExamples((List<com.judgmentlabs.judgeval.api.models.Example>) (List<?>) examples);
+        eval.setModel(model);
+        eval.setOrganizationId(organizationId);
+
+        if (apiScorers != null) {
+            eval.setCustomScorers(new java.util.ArrayList<>());
+            eval.setJudgmentScorers(apiScorers);
+        }
+
+        eval.validateScorerLists();
+        return eval;
+    }
+
+    // Generic constructor for mixed types (Object)
     public EvaluationRun(
             String projectName,
             String evalName,
@@ -39,7 +94,7 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.Evaluati
             List<ScorerConfig> judgmentScorers = new java.util.ArrayList<>();
 
             for (Object scorer : scorers) {
-                if (scorer instanceof BaseScorer) {
+                if (scorer instanceof com.judgmentlabs.judgeval.scorers.BaseScorer) {
                     customScorers.add((BaseScorer) scorer);
                 } else if (scorer instanceof ScorerConfig) {
                     judgmentScorers.add((ScorerConfig) scorer);

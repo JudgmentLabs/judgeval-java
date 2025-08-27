@@ -1,52 +1,36 @@
 package com.judgmentlabs.judgeval.scorers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.judgmentlabs.judgeval.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 
 public class APIScorer extends BaseScorer {
     private APIScorerType scoreType;
-    private String name;
-    private double threshold = 0.5;
-    private boolean strictMode = false;
+
+    @JsonIgnore
     private List<String> requiredParams;
 
     public APIScorer(APIScorerType scoreType) {
+        super();
         this.scoreType = scoreType;
-        this.name = scoreType.toString();
+        setName(scoreType.toString());
+        setScoreType(scoreType.toString());
         this.requiredParams = new java.util.ArrayList<>();
     }
 
     public void setThreshold(double threshold) {
         if (threshold < 0 || threshold > 1) {
-            throw new IllegalArgumentException(
-                    "Threshold must be between 0 and 1, got: " + threshold);
+            throw new IllegalArgumentException("Threshold must be between 0 and 1, got: " + threshold);
         }
-        this.threshold = threshold;
+        super.setThreshold(threshold);
     }
 
     public String getScoreType() {
         return scoreType.toString();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getThreshold() {
-        return threshold;
-    }
-
-    public boolean isStrictMode() {
-        return strictMode;
-    }
-
-    public void setStrictMode(boolean strictMode) {
-        this.strictMode = strictMode;
     }
 
     public List<String> getRequiredParams() {
@@ -55,5 +39,20 @@ public class APIScorer extends BaseScorer {
 
     public void setRequiredParams(List<String> requiredParams) {
         this.requiredParams = requiredParams;
+    }
+
+    @Override
+    public Object toTransport() {
+        ScorerConfig cfg = new ScorerConfig();
+        cfg.setScoreType(getScoreType());
+        cfg.setThreshold(getThreshold());
+        cfg.setName(getName());
+        cfg.setStrictMode(isStrictMode());
+        cfg.setRequiredParams(getRequiredParams());
+        Map<String, Object> kwargs = new HashMap<>();
+        if (getAdditionalProperties() != null)
+            kwargs.putAll(getAdditionalProperties());
+        cfg.setKwargs(kwargs);
+        return cfg;
     }
 }

@@ -14,6 +14,7 @@ JUDGEVAL_PATHS = [
     "/save_scorer/",
     "/fetch_scorer/",
     "/scorer_exists/",
+    "/projects/resolve/",
 ]
 
 

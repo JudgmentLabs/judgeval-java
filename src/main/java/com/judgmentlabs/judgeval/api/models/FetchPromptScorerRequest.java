@@ -1,12 +1,12 @@
 package com.judgmentlabs.judgeval.api.models;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class FetchPromptScorerRequest {
     @JsonProperty("name")
@@ -37,8 +37,7 @@ public class FetchPromptScorerRequest {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         FetchPromptScorerRequest other = (FetchPromptScorerRequest) obj;
-        return Objects.equals(name, other.name)
-                && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(name, other.name) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override

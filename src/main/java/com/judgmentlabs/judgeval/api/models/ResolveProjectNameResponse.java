@@ -8,11 +8,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Objects;
 
-public class EvalResults {
-    @JsonProperty("results")
-    private List<ScoringResult> results;
-    @JsonProperty("run")
-    private Object run;
+public class ResolveProjectNameResponse {
+    @JsonProperty("project_id")
+    private String projectId;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -26,30 +24,24 @@ public class EvalResults {
         additionalProperties.put(name, value);
     }
 
-    public List<ScoringResult> getResults() {
-        return results;
-    }
-    public Object getRun() {
-        return run;
+    public String getProjectId() {
+        return projectId;
     }
 
-    public void setResults(List<ScoringResult> results) {
-        this.results = results;
-    }
-    public void setRun(Object run) {
-        this.run = run;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        EvalResults other = (EvalResults) obj;
-        return Objects.equals(results, other.results) && Objects.equals(run, other.run) && Objects.equals(additionalProperties, other.additionalProperties);
+        ResolveProjectNameResponse other = (ResolveProjectNameResponse) obj;
+        return Objects.equals(projectId, other.projectId) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(results) + Objects.hashCode(run) + Objects.hashCode(additionalProperties);
+        return Objects.hashCode(projectId) + Objects.hashCode(additionalProperties);
     }
 }

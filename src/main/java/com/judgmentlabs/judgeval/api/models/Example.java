@@ -1,20 +1,18 @@
 package com.judgmentlabs.judgeval.api.models;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class Example {
     @JsonProperty("example_id")
     private String exampleId;
-
     @JsonProperty("created_at")
     private String createdAt;
-
     @JsonProperty("name")
     private Object name;
 
@@ -33,11 +31,9 @@ public class Example {
     public String getExampleId() {
         return exampleId;
     }
-
     public String getCreatedAt() {
         return createdAt;
     }
-
     public Object getName() {
         return name;
     }
@@ -45,11 +41,9 @@ public class Example {
     public void setExampleId(String exampleId) {
         this.exampleId = exampleId;
     }
-
     public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
-
     public void setName(Object name) {
         this.name = name;
     }
@@ -59,17 +53,11 @@ public class Example {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Example other = (Example) obj;
-        return Objects.equals(exampleId, other.exampleId)
-                && Objects.equals(createdAt, other.createdAt)
-                && Objects.equals(name, other.name)
-                && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(exampleId, other.exampleId) && Objects.equals(createdAt, other.createdAt) && Objects.equals(name, other.name) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(exampleId)
-                + Objects.hashCode(createdAt)
-                + Objects.hashCode(name)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hashCode(exampleId) + Objects.hashCode(createdAt) + Objects.hashCode(name) + Objects.hashCode(additionalProperties);
     }
 }

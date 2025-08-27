@@ -1,17 +1,16 @@
 package com.judgmentlabs.judgeval.api.models;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class EvalResultsFetch {
     @JsonProperty("experiment_run_id")
     private String experimentRunId;
-
     @JsonProperty("project_name")
     private String projectName;
 
@@ -30,7 +29,6 @@ public class EvalResultsFetch {
     public String getExperimentRunId() {
         return experimentRunId;
     }
-
     public String getProjectName() {
         return projectName;
     }
@@ -38,7 +36,6 @@ public class EvalResultsFetch {
     public void setExperimentRunId(String experimentRunId) {
         this.experimentRunId = experimentRunId;
     }
-
     public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
@@ -48,15 +45,11 @@ public class EvalResultsFetch {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         EvalResultsFetch other = (EvalResultsFetch) obj;
-        return Objects.equals(experimentRunId, other.experimentRunId)
-                && Objects.equals(projectName, other.projectName)
-                && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(experimentRunId, other.experimentRunId) && Objects.equals(projectName, other.projectName) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(experimentRunId)
-                + Objects.hashCode(projectName)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hashCode(experimentRunId) + Objects.hashCode(projectName) + Objects.hashCode(additionalProperties);
     }
 }

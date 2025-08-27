@@ -1,175 +1,203 @@
 package com.judgmentlabs.judgeval.scorers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-public class BaseScorer {
-    private String scoreType;
-    private double threshold = 0.5;
-    private String name;
-    private String className;
-    private Double score;
-    private Map<String, Object> scoreBreakdown;
-    private String reason = "";
-    private Boolean usingNativeModel;
-    private Boolean success;
-    private String model;
-    private Object modelClient;
-    private boolean strictMode = false;
-    private String error;
-    private Map<String, Object> additionalMetadata;
-    private String user;
-    private boolean serverHosted = false;
+public abstract class BaseScorer extends com.judgmentlabs.judgeval.api.models.BaseScorer {
 
     public BaseScorer() {
-        this.className = this.getClass().getSimpleName();
-        if (this.name == null) {
-            this.name = this.className;
+        super();
+        setClassName(this.getClass().getSimpleName());
+        if (getName() == null) {
+            setName(getClassName());
         }
-        if (this.strictMode) {
-            this.threshold = 1.0;
+        if (Boolean.TRUE.equals(getStrictMode())) {
+            setThreshold(1.0);
         }
     }
 
+    public abstract Object toTransport();
+
     public void addModel(String model) {
-        // TODO: Implement model client creation
-        this.model = model;
+        setModel(model);
     }
 
     public boolean successCheck() {
-        if (this.error != null) {
+        if (getError() != null) {
             return false;
         }
-        if (this.score == null) {
+        if (getScore() == null) {
             return false;
         }
-        return this.score >= this.threshold;
+        Double threshold = getThreshold();
+        Double score = getScore();
+        return threshold != null && score != null && score >= threshold;
+    }
+
+    public List<String> getRequiredParams() {
+        return new ArrayList<>();
     }
 
     public String getScoreType() {
-        return scoreType;
+        Object scoreType = super.getScoreType();
+        return scoreType != null ? scoreType.toString() : null;
     }
 
     public void setScoreType(String scoreType) {
-        this.scoreType = scoreType;
+        super.setScoreType(scoreType);
     }
 
-    public double getThreshold() {
-        return threshold;
+    public Double getThreshold() {
+        Double threshold = super.getThreshold();
+        return threshold != null ? threshold : 0.5;
     }
 
     public void setThreshold(double threshold) {
-        this.threshold = threshold;
+        super.setThreshold(threshold);
     }
 
     public String getName() {
-        return name;
+        Object name = super.getName();
+        return name != null ? name.toString() : null;
     }
 
     public void setName(String name) {
-        this.name = name;
+        super.setName(name);
     }
 
     public String getClassName() {
-        return className;
+        Object className = super.getClassName();
+        return className != null ? className.toString() : null;
     }
 
     public void setClassName(String className) {
-        this.className = className;
+        super.setClassName(className);
     }
 
     public Double getScore() {
-        return score;
+        Object score = super.getScore();
+        if (score instanceof Number) {
+            return ((Number) score).doubleValue();
+        }
+        return null;
     }
 
     public void setScore(Double score) {
-        this.score = score;
+        super.setScore(score);
     }
 
     public Map<String, Object> getScoreBreakdown() {
-        return scoreBreakdown;
+        Object breakdown = super.getScoreBreakdown();
+        if (breakdown instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) breakdown;
+            return map;
+        }
+        return null;
     }
 
     public void setScoreBreakdown(Map<String, Object> scoreBreakdown) {
-        this.scoreBreakdown = scoreBreakdown;
+        super.setScoreBreakdown(scoreBreakdown);
     }
 
     public String getReason() {
-        return reason;
+        Object reason = super.getReason();
+        return reason != null ? reason.toString() : "";
     }
 
     public void setReason(String reason) {
-        this.reason = reason;
+        super.setReason(reason);
     }
 
     public Boolean getUsingNativeModel() {
-        return usingNativeModel;
+        Object usingNativeModel = super.getUsingNativeModel();
+        if (usingNativeModel instanceof Boolean) {
+            return (Boolean) usingNativeModel;
+        }
+        return null;
     }
 
     public void setUsingNativeModel(Boolean usingNativeModel) {
-        this.usingNativeModel = usingNativeModel;
+        super.setUsingNativeModel(usingNativeModel);
     }
 
     public Boolean getSuccess() {
-        return success;
+        Object success = super.getSuccess();
+        if (success instanceof Boolean) {
+            return (Boolean) success;
+        }
+        return null;
     }
 
     public void setSuccess(Boolean success) {
-        this.success = success;
+        super.setSuccess(success);
     }
 
     public String getModel() {
-        return model;
+        Object model = super.getModel();
+        return model != null ? model.toString() : null;
     }
 
     public void setModel(String model) {
-        this.model = model;
+        super.setModel(model);
     }
 
     public Object getModelClient() {
-        return modelClient;
+        return super.getModelClient();
     }
 
     public void setModelClient(Object modelClient) {
-        this.modelClient = modelClient;
+        super.setModelClient(modelClient);
     }
 
     public boolean isStrictMode() {
-        return strictMode;
+        Boolean strictMode = super.getStrictMode();
+        return strictMode != null ? strictMode : false;
     }
 
     public void setStrictMode(boolean strictMode) {
-        this.strictMode = strictMode;
+        super.setStrictMode(strictMode);
     }
 
     public String getError() {
-        return error;
+        Object error = super.getError();
+        return error != null ? error.toString() : null;
     }
 
     public void setError(String error) {
-        this.error = error;
+        super.setError(error);
     }
 
     public Map<String, Object> getAdditionalMetadata() {
-        return additionalMetadata;
+        Object metadata = super.getAdditionalMetadata();
+        if (metadata instanceof Map) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> map = (Map<String, Object>) metadata;
+            return map;
+        }
+        return null;
     }
 
     public void setAdditionalMetadata(Map<String, Object> additionalMetadata) {
-        this.additionalMetadata = additionalMetadata;
+        super.setAdditionalMetadata(additionalMetadata);
     }
 
     public String getUser() {
-        return user;
+        Object user = super.getUser();
+        return user != null ? user.toString() : null;
     }
 
     public void setUser(String user) {
-        this.user = user;
+        super.setUser(user);
     }
 
     public boolean isServerHosted() {
-        return serverHosted;
+        Boolean serverHosted = super.getServerHosted();
+        return serverHosted != null ? serverHosted : false;
     }
 
     public void setServerHosted(boolean serverHosted) {
-        this.serverHosted = serverHosted;
+        super.setServerHosted(serverHosted);
     }
 }

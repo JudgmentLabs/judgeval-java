@@ -1,29 +1,24 @@
 package com.judgmentlabs.judgeval.api.models;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class Tool {
     @JsonProperty("tool_name")
     private String toolName;
-
     @JsonProperty("parameters")
     private Object parameters;
-
     @JsonProperty("agent_name")
     private Object agentName;
-
     @JsonProperty("result_dependencies")
     private Object resultDependencies;
-
     @JsonProperty("action_dependencies")
     private Object actionDependencies;
-
     @JsonProperty("require_all")
     private Object requireAll;
 
@@ -42,23 +37,18 @@ public class Tool {
     public String getToolName() {
         return toolName;
     }
-
     public Object getParameters() {
         return parameters;
     }
-
     public Object getAgentName() {
         return agentName;
     }
-
     public Object getResultDependencies() {
         return resultDependencies;
     }
-
     public Object getActionDependencies() {
         return actionDependencies;
     }
-
     public Object getRequireAll() {
         return requireAll;
     }
@@ -66,23 +56,18 @@ public class Tool {
     public void setToolName(String toolName) {
         this.toolName = toolName;
     }
-
     public void setParameters(Object parameters) {
         this.parameters = parameters;
     }
-
     public void setAgentName(Object agentName) {
         this.agentName = agentName;
     }
-
     public void setResultDependencies(Object resultDependencies) {
         this.resultDependencies = resultDependencies;
     }
-
     public void setActionDependencies(Object actionDependencies) {
         this.actionDependencies = actionDependencies;
     }
-
     public void setRequireAll(Object requireAll) {
         this.requireAll = requireAll;
     }
@@ -92,23 +77,11 @@ public class Tool {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Tool other = (Tool) obj;
-        return Objects.equals(toolName, other.toolName)
-                && Objects.equals(parameters, other.parameters)
-                && Objects.equals(agentName, other.agentName)
-                && Objects.equals(resultDependencies, other.resultDependencies)
-                && Objects.equals(actionDependencies, other.actionDependencies)
-                && Objects.equals(requireAll, other.requireAll)
-                && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(toolName, other.toolName) && Objects.equals(parameters, other.parameters) && Objects.equals(agentName, other.agentName) && Objects.equals(resultDependencies, other.resultDependencies) && Objects.equals(actionDependencies, other.actionDependencies) && Objects.equals(requireAll, other.requireAll) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(toolName)
-                + Objects.hashCode(parameters)
-                + Objects.hashCode(agentName)
-                + Objects.hashCode(resultDependencies)
-                + Objects.hashCode(actionDependencies)
-                + Objects.hashCode(requireAll)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hashCode(toolName) + Objects.hashCode(parameters) + Objects.hashCode(agentName) + Objects.hashCode(resultDependencies) + Objects.hashCode(actionDependencies) + Objects.hashCode(requireAll) + Objects.hashCode(additionalProperties);
     }
 }

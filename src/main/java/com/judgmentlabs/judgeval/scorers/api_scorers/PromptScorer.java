@@ -4,33 +4,62 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.api.models.FetchPromptScorerRequest;
 import com.judgmentlabs.judgeval.api.models.FetchPromptScorerResponse;
 import com.judgmentlabs.judgeval.api.models.SavePromptScorerRequest;
 import com.judgmentlabs.judgeval.api.models.SavePromptScorerResponse;
+import com.judgmentlabs.judgeval.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.api.models.ScorerExistsRequest;
 import com.judgmentlabs.judgeval.api.models.ScorerExistsResponse;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.exceptions.JudgmentAPIError;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
-import com.judgmentlabs.judgeval.utils.Logger;
 
 public class PromptScorer extends APIScorer {
+    @JsonProperty("prompt")
     private String prompt;
+
+    @JsonProperty("options")
     private Map<String, Double> options;
-    private String judgmentApiKey;
-    private String organizationId;
+
+    @JsonIgnore
+    private JudgmentSyncClient client;
 
     public PromptScorer(String name, String prompt, double threshold, Map<String, Double> options) {
+        this(new JudgmentSyncClient(Env.JUDGMENT_API_URL, Env.JUDGMENT_API_KEY, Env.JUDGMENT_ORG_ID), name, prompt,
+                threshold, options);
+    }
+
+    public PromptScorer(JudgmentSyncClient client, String name, String prompt, double threshold,
+            Map<String, Double> options) {
         super(APIScorerType.PROMPT_SCORER);
-        this.judgmentApiKey = Env.JUDGMENT_API_KEY;
-        this.organizationId = Env.JUDGMENT_ORG_ID;
+        this.client = client;
         setName(name);
         this.prompt = prompt;
         this.options = options;
         setThreshold(threshold);
+    }
+
+    @Override
+    public Object toTransport() {
+        ScorerConfig cfg = new ScorerConfig();
+        cfg.setScoreType(getScoreType());
+        cfg.setThreshold(getThreshold());
+        cfg.setName(getName());
+        cfg.setStrictMode(isStrictMode());
+        cfg.setRequiredParams(getRequiredParams());
+        Map<String, Object> kwargs = new HashMap<>();
+        kwargs.put("prompt", prompt);
+        if (options != null)
+            kwargs.put("options", options);
+        if (getAdditionalProperties() != null)
+            kwargs.putAll(getAdditionalProperties());
+        cfg.setKwargs(kwargs);
+        return cfg;
     }
 
     public static PromptScorer get(String name) {
@@ -39,16 +68,15 @@ public class PromptScorer extends APIScorer {
 
     public static PromptScorer get(String name, String judgmentApiKey, String organizationId) {
         try {
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             FetchPromptScorerRequest request = new FetchPromptScorerRequest();
             request.setName(name);
 
-            Logger.info("Fetching scorer with name: " + name);
             FetchPromptScorerResponse response = client.fetchScorer(request);
             com.judgmentlabs.judgeval.api.models.PromptScorer scorerConfig = response.getScorer();
 
             return new PromptScorer(
+                    client,
                     name,
                     scorerConfig.getPrompt(),
                     scorerConfig.getThreshold(),
@@ -79,28 +107,15 @@ public class PromptScorer extends APIScorer {
             String judgmentApiKey,
             String organizationId) {
         try {
-            Logger.info("Creating PromptScorer with name: " + name);
-            Logger.info(
-                    "API Key: "
-                            + (judgmentApiKey != null
-                                    ? judgmentApiKey.substring(
-                                                    0, Math.min(10, judgmentApiKey.length()))
-                                            + "..."
-                                    : "null"));
-            Logger.info("Org ID: " + organizationId);
-            Logger.info("API URL: " + Env.JUDGMENT_API_URL);
-
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
 
             ScorerExistsRequest existsRequest = new ScorerExistsRequest();
             existsRequest.setName(name);
-            Logger.info("Checking if scorer exists with name: " + name);
 
             ScorerExistsResponse existsResponse = client.scorerExists(existsRequest);
-            Logger.info("Scorer exists response: " + existsResponse.getExists());
+            boolean exists = Boolean.TRUE.equals(existsResponse.getExists());
 
-            if (existsResponse.getExists()) {
+            if (exists) {
                 throw new JudgmentAPIError(
                         400,
                         "Scorer with name "
@@ -108,14 +123,9 @@ public class PromptScorer extends APIScorer {
                                 + " already exists. Either use the existing scorer with the get() method or use a new name.");
             }
 
-            Logger.info("Scorer does not exist, creating new one...");
-            pushPromptScorer(name, prompt, threshold, options, judgmentApiKey, organizationId);
-            Logger.info("Successfully created PromptScorer: " + name);
-
-            return new PromptScorer(name, prompt, threshold, options);
+            pushPromptScorer(client, name, prompt, threshold, options);
+            return new PromptScorer(client, name, prompt, threshold, options);
         } catch (IOException | InterruptedException e) {
-            Logger.error("Exception during scorer creation: " + e.getMessage());
-            e.printStackTrace();
             throw new JudgmentAPIError(500, "Failed to create prompt scorer: " + e.getMessage());
         }
     }
@@ -128,22 +138,19 @@ public class PromptScorer extends APIScorer {
     public void setPrompt(String prompt) {
         this.prompt = prompt;
         pushPromptScorer();
-        Logger.info("Successfully updated prompt for " + getName());
     }
 
     public void setOptions(Map<String, Double> options) {
         this.options = options;
         pushPromptScorer();
-        Logger.info("Successfully updated options for " + getName());
     }
 
     public void appendToPrompt(String promptAddition) {
         this.prompt += promptAddition;
         pushPromptScorer();
-        Logger.info("Successfully appended to prompt for " + getName());
     }
 
-    public double getThreshold() {
+    public Double getThreshold() {
         return super.getThreshold();
     }
 
@@ -169,41 +176,26 @@ public class PromptScorer extends APIScorer {
     }
 
     private void pushPromptScorer() {
-        pushPromptScorer(
-                getName(), prompt, getThreshold(), options, judgmentApiKey, organizationId);
+        pushPromptScorer(this.client, getName(), prompt, getThreshold(), options);
     }
 
     private static String pushPromptScorer(
+            JudgmentSyncClient client,
             String name,
             String prompt,
             double threshold,
-            Map<String, Double> options,
-            String judgmentApiKey,
-            String organizationId) {
+            Map<String, Double> options) {
         try {
-            Logger.info("Pushing prompt scorer to API...");
-            Logger.info("Name: " + name);
-            Logger.info("Prompt: " + prompt);
-            Logger.info("Threshold: " + threshold);
-            Logger.info("Options: " + options);
-
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             SavePromptScorerRequest request = new SavePromptScorerRequest();
             request.setName(name);
             request.setPrompt(prompt);
             request.setThreshold(threshold);
             request.setOptions(options);
-            request.setIsTrace(false); // Set is_trace to false for regular prompt scorers
+            request.setIsTrace(false);
 
-            Logger.info("Sending request to save scorer...");
             SavePromptScorerResponse response = client.saveScorer(request);
-            Logger.info(
-                    "Save scorer response: " + (response != null ? response.getName() : "null"));
             return response != null ? response.getName() : null;
         } catch (IOException | InterruptedException e) {
-            Logger.error("Exception during save scorer: " + e.getMessage());
-            e.printStackTrace();
             throw new JudgmentAPIError(500, "Failed to save prompt scorer: " + e.getMessage());
         }
     }

@@ -1,17 +1,16 @@
 package com.judgmentlabs.judgeval.api.models;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class SavePromptScorerResponse {
     @JsonProperty("message")
     private String message;
-
     @JsonProperty("name")
     private String name;
 
@@ -30,7 +29,6 @@ public class SavePromptScorerResponse {
     public String getMessage() {
         return message;
     }
-
     public String getName() {
         return name;
     }
@@ -38,7 +36,6 @@ public class SavePromptScorerResponse {
     public void setMessage(String message) {
         this.message = message;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -48,15 +45,11 @@ public class SavePromptScorerResponse {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         SavePromptScorerResponse other = (SavePromptScorerResponse) obj;
-        return Objects.equals(message, other.message)
-                && Objects.equals(name, other.name)
-                && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(message, other.message) && Objects.equals(name, other.name) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(message)
-                + Objects.hashCode(name)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hashCode(message) + Objects.hashCode(name) + Objects.hashCode(additionalProperties);
     }
 }
