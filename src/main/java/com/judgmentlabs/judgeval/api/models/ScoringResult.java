@@ -115,13 +115,14 @@ public class ScoringResult {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(success)
-                + Objects.hashCode(scorersData)
-                + Objects.hashCode(name)
-                + Objects.hashCode(dataObject)
-                + Objects.hashCode(traceId)
-                + Objects.hashCode(runDuration)
-                + Objects.hashCode(evaluationCost)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                success,
+                scorersData,
+                name,
+                dataObject,
+                traceId,
+                runDuration,
+                evaluationCost,
+                Objects.hashCode(additionalProperties));
     }
 }

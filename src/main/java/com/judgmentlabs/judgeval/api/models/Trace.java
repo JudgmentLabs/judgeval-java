@@ -176,18 +176,19 @@ public class Trace {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(traceId)
-                + Objects.hashCode(name)
-                + Objects.hashCode(createdAt)
-                + Objects.hashCode(duration)
-                + Objects.hashCode(traceSpans)
-                + Objects.hashCode(offlineMode)
-                + Objects.hashCode(rules)
-                + Objects.hashCode(hasNotification)
-                + Objects.hashCode(customerId)
-                + Objects.hashCode(tags)
-                + Objects.hashCode(metadata)
-                + Objects.hashCode(updateId)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                traceId,
+                name,
+                createdAt,
+                duration,
+                traceSpans,
+                offlineMode,
+                rules,
+                hasNotification,
+                customerId,
+                tags,
+                metadata,
+                updateId,
+                Objects.hashCode(additionalProperties));
     }
 }

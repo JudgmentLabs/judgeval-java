@@ -56,8 +56,6 @@ public class EvalResults {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(results)
-                + Objects.hashCode(run)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(results, run, Objects.hashCode(additionalProperties));
     }
 }

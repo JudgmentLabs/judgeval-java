@@ -240,7 +240,7 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
             equals_parts.append(
                 f"Objects.equals({camel_case_name}, other.{camel_case_name})"
             )
-            hashCode_parts.append(f"Objects.hashCode({camel_case_name})")
+            hashCode_parts.append(f"{camel_case_name}")
 
     if fields:
         lines.extend(fields)
@@ -287,7 +287,7 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
     lines.append("    @Override")
     lines.append("    public int hashCode() {")
     if hashCode_parts:
-        lines.append(f"        return {' + '.join(hashCode_parts)};")
+        lines.append(f"        return Objects.hash({', '.join(hashCode_parts)});")
     else:
         lines.append("        return 0;")
     lines.append("    }")

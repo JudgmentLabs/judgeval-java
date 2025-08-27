@@ -43,6 +43,6 @@ public class FetchPromptScorerResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(scorer) + Objects.hashCode(additionalProperties);
+        return Objects.hash(scorer, Objects.hashCode(additionalProperties));
     }
 }

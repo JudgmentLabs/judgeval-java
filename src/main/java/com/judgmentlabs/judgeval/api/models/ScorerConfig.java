@@ -104,12 +104,13 @@ public class ScorerConfig {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(scoreType)
-                + Objects.hashCode(name)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(strictMode)
-                + Objects.hashCode(requiredParams)
-                + Objects.hashCode(kwargs)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                scoreType,
+                name,
+                threshold,
+                strictMode,
+                requiredParams,
+                kwargs,
+                Objects.hashCode(additionalProperties));
     }
 }

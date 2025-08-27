@@ -91,11 +91,7 @@ public class SavePromptScorerRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name)
-                + Objects.hashCode(prompt)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(options)
-                + Objects.hashCode(isTrace)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                name, prompt, threshold, options, isTrace, Objects.hashCode(additionalProperties));
     }
 }

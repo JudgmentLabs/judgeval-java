@@ -115,13 +115,14 @@ public class PromptScorer {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name)
-                + Objects.hashCode(prompt)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(options)
-                + Objects.hashCode(createdAt)
-                + Objects.hashCode(updatedAt)
-                + Objects.hashCode(isTrace)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                name,
+                prompt,
+                threshold,
+                options,
+                createdAt,
+                updatedAt,
+                isTrace,
+                Objects.hashCode(additionalProperties));
     }
 }

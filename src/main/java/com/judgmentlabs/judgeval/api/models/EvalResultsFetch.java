@@ -55,8 +55,6 @@ public class EvalResultsFetch {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(experimentRunId)
-                + Objects.hashCode(projectName)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(experimentRunId, projectName, Objects.hashCode(additionalProperties));
     }
 }

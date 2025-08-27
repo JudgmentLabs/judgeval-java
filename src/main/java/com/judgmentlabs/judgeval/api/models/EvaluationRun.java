@@ -152,16 +152,17 @@ public class EvaluationRun {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id)
-                + Objects.hashCode(projectName)
-                + Objects.hashCode(evalName)
-                + Objects.hashCode(examples)
-                + Objects.hashCode(customScorers)
-                + Objects.hashCode(judgmentScorers)
-                + Objects.hashCode(model)
-                + Objects.hashCode(traceSpanId)
-                + Objects.hashCode(traceId)
-                + Objects.hashCode(createdAt)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                id,
+                projectName,
+                evalName,
+                examples,
+                customScorers,
+                judgmentScorers,
+                model,
+                traceSpanId,
+                traceId,
+                createdAt,
+                Objects.hashCode(additionalProperties));
     }
 }

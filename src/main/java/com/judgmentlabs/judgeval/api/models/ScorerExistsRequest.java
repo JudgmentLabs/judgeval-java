@@ -43,6 +43,6 @@ public class ScorerExistsRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name) + Objects.hashCode(additionalProperties);
+        return Objects.hash(name, Objects.hashCode(additionalProperties));
     }
 }

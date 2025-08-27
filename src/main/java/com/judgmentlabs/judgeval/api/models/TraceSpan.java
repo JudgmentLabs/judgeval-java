@@ -271,26 +271,27 @@ public class TraceSpan {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(spanId)
-                + Objects.hashCode(traceId)
-                + Objects.hashCode(function)
-                + Objects.hashCode(depth)
-                + Objects.hashCode(createdAt)
-                + Objects.hashCode(parentSpanId)
-                + Objects.hashCode(spanType)
-                + Objects.hashCode(inputs)
-                + Objects.hashCode(error)
-                + Objects.hashCode(output)
-                + Objects.hashCode(usage)
-                + Objects.hashCode(duration)
-                + Objects.hashCode(expectedTools)
-                + Objects.hashCode(additionalMetadata)
-                + Objects.hashCode(hasEvaluation)
-                + Objects.hashCode(agentName)
-                + Objects.hashCode(className)
-                + Objects.hashCode(stateBefore)
-                + Objects.hashCode(stateAfter)
-                + Objects.hashCode(updateId)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                spanId,
+                traceId,
+                function,
+                depth,
+                createdAt,
+                parentSpanId,
+                spanType,
+                inputs,
+                error,
+                output,
+                usage,
+                duration,
+                expectedTools,
+                additionalMetadata,
+                hasEvaluation,
+                agentName,
+                className,
+                stateBefore,
+                stateAfter,
+                updateId,
+                Objects.hashCode(additionalProperties));
     }
 }

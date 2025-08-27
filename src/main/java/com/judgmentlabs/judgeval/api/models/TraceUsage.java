@@ -139,15 +139,16 @@ public class TraceUsage {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(promptTokens)
-                + Objects.hashCode(completionTokens)
-                + Objects.hashCode(cacheCreationInputTokens)
-                + Objects.hashCode(cacheReadInputTokens)
-                + Objects.hashCode(totalTokens)
-                + Objects.hashCode(promptTokensCostUsd)
-                + Objects.hashCode(completionTokensCostUsd)
-                + Objects.hashCode(totalCostUsd)
-                + Objects.hashCode(modelName)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                promptTokens,
+                completionTokens,
+                cacheCreationInputTokens,
+                cacheReadInputTokens,
+                totalTokens,
+                promptTokensCostUsd,
+                completionTokensCostUsd,
+                totalCostUsd,
+                modelName,
+                Objects.hashCode(additionalProperties));
     }
 }

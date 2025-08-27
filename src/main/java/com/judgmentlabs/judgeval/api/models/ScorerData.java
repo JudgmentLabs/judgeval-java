@@ -139,15 +139,16 @@ public class ScorerData {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(name)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(success)
-                + Objects.hashCode(score)
-                + Objects.hashCode(reason)
-                + Objects.hashCode(strictMode)
-                + Objects.hashCode(evaluationModel)
-                + Objects.hashCode(error)
-                + Objects.hashCode(additionalMetadata)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                name,
+                threshold,
+                success,
+                score,
+                reason,
+                strictMode,
+                evaluationModel,
+                error,
+                additionalMetadata,
+                Objects.hashCode(additionalProperties));
     }
 }

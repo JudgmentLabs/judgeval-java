@@ -223,22 +223,23 @@ public class BaseScorer {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(scoreType)
-                + Objects.hashCode(threshold)
-                + Objects.hashCode(name)
-                + Objects.hashCode(className)
-                + Objects.hashCode(score)
-                + Objects.hashCode(scoreBreakdown)
-                + Objects.hashCode(reason)
-                + Objects.hashCode(usingNativeModel)
-                + Objects.hashCode(success)
-                + Objects.hashCode(model)
-                + Objects.hashCode(modelClient)
-                + Objects.hashCode(strictMode)
-                + Objects.hashCode(error)
-                + Objects.hashCode(additionalMetadata)
-                + Objects.hashCode(user)
-                + Objects.hashCode(serverHosted)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                scoreType,
+                threshold,
+                name,
+                className,
+                score,
+                scoreBreakdown,
+                reason,
+                usingNativeModel,
+                success,
+                model,
+                modelClient,
+                strictMode,
+                error,
+                additionalMetadata,
+                user,
+                serverHosted,
+                Objects.hashCode(additionalProperties));
     }
 }

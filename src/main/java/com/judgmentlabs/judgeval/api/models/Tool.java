@@ -103,12 +103,13 @@ public class Tool {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(toolName)
-                + Objects.hashCode(parameters)
-                + Objects.hashCode(agentName)
-                + Objects.hashCode(resultDependencies)
-                + Objects.hashCode(actionDependencies)
-                + Objects.hashCode(requireAll)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                toolName,
+                parameters,
+                agentName,
+                resultDependencies,
+                actionDependencies,
+                requireAll,
+                Objects.hashCode(additionalProperties));
     }
 }

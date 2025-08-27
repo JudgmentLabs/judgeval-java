@@ -55,8 +55,6 @@ public class SavePromptScorerResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(message)
-                + Objects.hashCode(name)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(message, name, Objects.hashCode(additionalProperties));
     }
 }

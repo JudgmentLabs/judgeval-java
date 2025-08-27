@@ -43,6 +43,6 @@ public class ResolveProjectNameResponse {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(projectId) + Objects.hashCode(additionalProperties);
+        return Objects.hash(projectId, Objects.hashCode(additionalProperties));
     }
 }

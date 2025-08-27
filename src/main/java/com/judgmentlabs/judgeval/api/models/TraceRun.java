@@ -116,13 +116,14 @@ public class TraceRun {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(projectName)
-                + Objects.hashCode(evalName)
-                + Objects.hashCode(traces)
-                + Objects.hashCode(scorers)
-                + Objects.hashCode(model)
-                + Objects.hashCode(traceSpanId)
-                + Objects.hashCode(tools)
-                + Objects.hashCode(additionalProperties);
+        return Objects.hash(
+                projectName,
+                evalName,
+                traces,
+                scorers,
+                model,
+                traceSpanId,
+                tools,
+                Objects.hashCode(additionalProperties));
     }
 }
