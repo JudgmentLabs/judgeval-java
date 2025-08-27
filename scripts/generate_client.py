@@ -245,28 +245,25 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
         lines.extend(fields)
         lines.append("")
 
-    # Add additional properties support if additionalProperties is true
-    if schema.get("additionalProperties") is True:
-        lines.append(
-            "    private Map<String, Object> additionalProperties = new HashMap<>();"
-        )
-        lines.append("")
-        lines.append("    @JsonAnyGetter")
-        lines.append("    public Map<String, Object> getAdditionalProperties() {")
-        lines.append("        return additionalProperties;")
-        lines.append("    }")
-        lines.append("")
-        lines.append("    @JsonAnySetter")
-        lines.append(
-            "    public void setAdditionalProperty(String name, Object value) {"
-        )
-        lines.append("        additionalProperties.put(name, value);")
-        lines.append("    }")
-        lines.append("")
-        equals_parts.append(
-            "Objects.equals(additionalProperties, other.additionalProperties)"
-        )
-        hashCode_parts.append("Objects.hashCode(additionalProperties)")
+    # Always add additional properties support to handle extra fields from server
+    lines.append(
+        "    private Map<String, Object> additionalProperties = new HashMap<>();"
+    )
+    lines.append("")
+    lines.append("    @JsonAnyGetter")
+    lines.append("    public Map<String, Object> getAdditionalProperties() {")
+    lines.append("        return additionalProperties;")
+    lines.append("    }")
+    lines.append("")
+    lines.append("    @JsonAnySetter")
+    lines.append("    public void setAdditionalProperty(String name, Object value) {")
+    lines.append("        additionalProperties.put(name, value);")
+    lines.append("    }")
+    lines.append("")
+    equals_parts.append(
+        "Objects.equals(additionalProperties, other.additionalProperties)"
+    )
+    hashCode_parts.append("Objects.hashCode(additionalProperties)")
 
     lines.extend(getters)
     lines.append("")
@@ -342,6 +339,7 @@ def generate_method_body(
     method: str,
     request_type: Optional[str],
     query_params: List[Dict[str, Any]],
+    response_type: str,
     is_async: bool,
 ) -> str:
     lines = []
@@ -412,7 +410,12 @@ def generate_method_body(
         lines.append(
             "        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());"
         )
-        lines.append("        return handleResponse(response);")
+        if response_type == "Object":
+            lines.append("        return handleResponse(response);")
+        else:
+            lines.append(
+                f"        return mapper.readValue(response.body(), {response_type}.class);"
+            )
 
     return "\n".join(lines)
 
@@ -448,7 +451,9 @@ def generate_client_class(
             "",
             f"    public {className}(String baseUrl) {{",
             "        this.baseUrl = baseUrl;",
-            "        this.client = HttpClient.newHttpClient();",
+            "        this.client = HttpClient.newBuilder()",
+            "                .version(HttpClient.Version.HTTP_1_1)",
+            "                .build();",
             "        this.mapper = new ObjectMapper();",
             "    }",
             "",
@@ -517,7 +522,13 @@ def generate_client_class(
         lines.append(signature)
 
         body = generate_method_body(
-            method_name, path, http_method, request_type, query_params, is_async
+            method_name,
+            path,
+            http_method,
+            request_type,
+            query_params,
+            response_type,
+            is_async,
         )
         lines.append(body)
         lines.append("    }")

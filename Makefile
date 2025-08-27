@@ -30,3 +30,10 @@ format-check: ## Check formatting without applying
 
 ci: ## Run CI checks (compile, test, checkstyle, spotless)
 	mvn clean compile test checkstyle:check spotless:check
+
+run: ## Run a specific Java class with environment variables (usage: make run CLASS=com.example.MyClass)
+	@if [ -f .env ]; then \
+		export $$(grep -v '^#' .env | grep -v '^$$' | xargs) && mvn exec:java -Dexec.mainClass="$(CLASS)"; \
+	else \
+		mvn exec:java -Dexec.mainClass="$(CLASS)"; \
+	fi

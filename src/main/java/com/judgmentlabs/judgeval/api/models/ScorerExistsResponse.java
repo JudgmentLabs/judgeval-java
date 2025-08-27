@@ -1,12 +1,28 @@
 package com.judgmentlabs.judgeval.api.models;
 
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Objects;
 
 public class ScorerExistsResponse {
     @JsonProperty("exists")
     private Boolean exists;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        additionalProperties.put(name, value);
+    }
 
     public Boolean getExists() {
         return exists;
@@ -21,11 +37,11 @@ public class ScorerExistsResponse {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         ScorerExistsResponse other = (ScorerExistsResponse) obj;
-        return Objects.equals(exists, other.exists);
+        return Objects.equals(exists, other.exists) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(exists);
+        return Objects.hashCode(exists) + Objects.hashCode(additionalProperties);
     }
 }
