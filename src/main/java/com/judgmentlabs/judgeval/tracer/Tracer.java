@@ -11,6 +11,7 @@ import com.judgmentlabs.judgeval.data.EvaluationRun;
 import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
+import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;
 import com.judgmentlabs.judgeval.utils.Logger;
 
 import io.opentelemetry.api.trace.Span;
@@ -35,8 +36,7 @@ public class Tracer {
         this.apiKey = apiKey;
         this.organizationId = organizationId;
         this.enableEvaluation = enableEvaluation;
-        this.apiClient =
-                new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
+        this.apiClient = new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
         this.projectId = resolveProjectId(projectName);
         if (this.projectId == null) {
             Logger.warning(
@@ -47,12 +47,13 @@ public class Tracer {
     }
 
     public SpanExporter getSpanExporter() {
-        if (projectId == null)
-            throw new IllegalStateException("Project not resolved; cannot create exporter");
-        String endpoint =
-                Env.JUDGMENT_API_URL.endsWith("/")
-                        ? Env.JUDGMENT_API_URL + "otel/v1/traces"
-                        : Env.JUDGMENT_API_URL + "/otel/v1/traces";
+        if (projectId == null) {
+            Logger.error("Project not resolved; cannot create exporter, returning NoOpSpanExporter");
+            return new NoOpSpanExporter();
+        }
+        String endpoint = Env.JUDGMENT_API_URL.endsWith("/")
+                ? Env.JUDGMENT_API_URL + "otel/v1/traces"
+                : Env.JUDGMENT_API_URL + "/otel/v1/traces";
         return new JudgmentSpanExporter(endpoint, apiKey, organizationId, projectId);
     }
 
@@ -64,13 +65,17 @@ public class Tracer {
             Object id = resp.getProjectId();
             return id != null ? id.toString() : null;
         } catch (Exception e) {
+            Logger.error("Failed to resolve project ID for project '" + name + "': " + e.getMessage());
             return null;
         }
     }
 
     public void asyncEvaluate(
             BaseScorer scorer, Example example, String model, double samplingRate) {
-        if (!enableEvaluation) return;
+        if (!enableEvaluation) {
+            Logger.info("Skipping evaluation because enableEvaluation is false");
+            return;
+        }
         Span span = Span.current();
         SpanContext ctx = span.getSpanContext();
         String traceId = ctx != null ? ctx.getTraceId() : null;
@@ -90,14 +95,13 @@ public class Tracer {
         List<Object> scorers = new ArrayList<>();
         scorers.add(transport);
 
-        EvaluationRun eval =
-                new EvaluationRun(
-                        projectName,
-                        "async_evaluate_" + (spanId != null ? spanId : System.currentTimeMillis()),
-                        List.of(example),
-                        scorers,
-                        model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
-                        organizationId);
+        EvaluationRun eval = new EvaluationRun(
+                projectName,
+                "async_evaluate_" + (spanId != null ? spanId : System.currentTimeMillis()),
+                List.of(example),
+                scorers,
+                model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
+                organizationId);
         eval.setTraceId(traceId);
         eval.setTraceSpanId(spanId);
         try {
