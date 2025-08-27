@@ -19,6 +19,16 @@
         </license>
     </licenses>
     
+    <developers>
+        <developer>
+            <id>judgmentlabs</id>
+            <name>Judgment Labs</name>
+            <email>contact@judgmentlabs.com</email>
+            <organization>Judgment Labs</organization>
+            <organizationUrl>https://judgmentlabs.ai</organizationUrl>
+        </developer>
+    </developers>
+    
     <scm>
         <connection>scm:git:git://github.com/judgmentlabs/judgeval-java.git</connection>
         <developerConnection>scm:git:ssh://github.com:judgmentlabs/judgeval-java.git</developerConnection>
