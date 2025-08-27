@@ -1,11 +1,6 @@
 name: Publish package to Maven Central via Central Portal
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to release (optional - will use pom.xml version if not specified)'
-        required: false
-        type: string
   release:
     types: [created]
 jobs:
@@ -13,28 +8,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Java and Maven Central Repository
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: "21"
+          distribution: "temurin"
           server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-      
+
       - name: Verify POM groupId
         run: |
           echo "Checking pom.xml for correct groupId..."
           grep -E "<groupId>.*</groupId>" pom.xml | head -1
           echo "Expected: <groupId>com.judgmentlabs</groupId>"
-          
+
       - name: Clean Maven cache
         run: |
-          # Clean any cached artifacts
           rm -rf ~/.m2/repository/com/judgment
           rm -rf ~/.m2/repository/com/judgmentlabs
-          
+
       - name: Import GPG key
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import --batch --yes
@@ -43,13 +37,10 @@ jobs:
           echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
           gpg-connect-agent reloadagent /bye
           gpg --list-secret-keys --keyid-format LONG
-          
+
       - name: Clean and Deploy to Central Portal
         run: |
-          # Clean everything first
           mvn clean
-          
-          # Build and deploy fresh
           mvn --batch-mode deploy \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
@@ -58,7 +49,7 @@ jobs:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-          
+
       - name: Deployment Status
         run: |
           echo "Deployment completed - check https://central.sonatype.com for status"
