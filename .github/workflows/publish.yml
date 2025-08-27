@@ -26,6 +26,13 @@ jobs:
           grep -E "<groupId>.*</groupId>" pom.xml | head -1
           echo "Expected: <groupId>com.judgmentlabs</groupId>"
 
+      - name: Show Maven coordinates
+        run: |
+          G=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.groupId)
+          A=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.artifactId)
+          V=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
+          echo "GAV: ${G}:${A}:${V}"
+
       - name: Clean Maven cache
         run: |
           rm -rf ~/.m2/repository/com/judgment
@@ -43,7 +50,7 @@ jobs:
       - name: Clean and Deploy to Central Portal
         run: |
           mvn clean
-          mvn --batch-mode deploy \
+          mvn -e -X --batch-mode deploy \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
             --update-snapshots
