@@ -1,16 +1,18 @@
 package com.judgmentlabs.judgeval.api.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EvalResults {
     @JsonProperty("results")
     private List<ScoringResult> results;
+
     @JsonProperty("run")
     private Object run;
 
@@ -29,6 +31,7 @@ public class EvalResults {
     public List<ScoringResult> getResults() {
         return results;
     }
+
     public Object getRun() {
         return run;
     }
@@ -36,6 +39,7 @@ public class EvalResults {
     public void setResults(List<ScoringResult> results) {
         this.results = results;
     }
+
     public void setRun(Object run) {
         this.run = run;
     }
@@ -45,11 +49,15 @@ public class EvalResults {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         EvalResults other = (EvalResults) obj;
-        return Objects.equals(results, other.results) && Objects.equals(run, other.run) && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(results, other.results)
+                && Objects.equals(run, other.run)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(results) + Objects.hashCode(run) + Objects.hashCode(additionalProperties);
+        return Objects.hashCode(results)
+                + Objects.hashCode(run)
+                + Objects.hashCode(additionalProperties);
     }
 }

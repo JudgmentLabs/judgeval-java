@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.judgmentlabs.judgeval.data.APIScorerType;
 
-public class APIScorer {
+public class APIScorer extends BaseScorer {
     private APIScorerType scoreType;
     private String name;
     private double threshold = 0.5;
@@ -19,13 +19,14 @@ public class APIScorer {
 
     public void setThreshold(double threshold) {
         if (threshold < 0 || threshold > 1) {
-            throw new IllegalArgumentException("Threshold must be between 0 and 1, got: " + threshold);
+            throw new IllegalArgumentException(
+                    "Threshold must be between 0 and 1, got: " + threshold);
         }
         this.threshold = threshold;
     }
 
-    public APIScorerType getScoreType() {
-        return scoreType;
+    public String getScoreType() {
+        return scoreType.toString();
     }
 
     public String getName() {

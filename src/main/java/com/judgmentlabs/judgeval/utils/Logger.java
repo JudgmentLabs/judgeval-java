@@ -11,7 +11,8 @@ public class Logger {
     private static final String YELLOW = "\033[33m";
     private static final String GRAY = "\033[90m";
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    private static final DateTimeFormatter DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public enum Level {
         DEBUG(0, GRAY),
@@ -69,7 +70,8 @@ public class Logger {
         }
 
         String timestamp = LocalDateTime.now().format(DATE_FORMATTER);
-        String formattedMessage = String.format("%s - judgeval - %s - %s", timestamp, level.name(), message);
+        String formattedMessage =
+                String.format("%s - judgeval - %s - %s", timestamp, level.name(), message);
 
         if (useColor) {
             formattedMessage = level.getColor() + formattedMessage + RESET;

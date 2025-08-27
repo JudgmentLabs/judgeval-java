@@ -9,8 +9,8 @@ import com.judgmentlabs.judgeval.scorers.APIScorer;
 public class AnswerRelevancyScorer extends APIScorer {
     public AnswerRelevancyScorer() {
         super(APIScorerType.ANSWER_RELEVANCY);
-        setRequiredParams(Arrays.asList(
-                ExampleParams.INPUT.getValue(),
-                ExampleParams.ACTUAL_OUTPUT.getValue()));
+        setRequiredParams(
+                Arrays.asList(
+                        ExampleParams.INPUT.getValue(), ExampleParams.ACTUAL_OUTPUT.getValue()));
     }
 }

@@ -39,12 +39,13 @@ public class PromptScorer extends APIScorer {
 
     public static PromptScorer get(String name, String judgmentApiKey, String organizationId) {
         try {
-            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL);
+            JudgmentSyncClient client =
+                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             FetchPromptScorerRequest request = new FetchPromptScorerRequest();
             request.setName(name);
 
             Logger.info("Fetching scorer with name: " + name);
-            FetchPromptScorerResponse response = client.fetchScorer(judgmentApiKey, organizationId, request);
+            FetchPromptScorerResponse response = client.fetchScorer(request);
             com.judgmentlabs.judgeval.api.models.PromptScorer scorerConfig = response.getScorer();
 
             return new PromptScorer(
@@ -65,32 +66,45 @@ public class PromptScorer extends APIScorer {
         return create(name, prompt, threshold, null);
     }
 
-    public static PromptScorer create(String name, String prompt, double threshold, Map<String, Double> options) {
+    public static PromptScorer create(
+            String name, String prompt, double threshold, Map<String, Double> options) {
         return create(name, prompt, threshold, options, Env.JUDGMENT_API_KEY, Env.JUDGMENT_ORG_ID);
     }
 
-    public static PromptScorer create(String name, String prompt, double threshold, Map<String, Double> options,
-            String judgmentApiKey, String organizationId) {
+    public static PromptScorer create(
+            String name,
+            String prompt,
+            double threshold,
+            Map<String, Double> options,
+            String judgmentApiKey,
+            String organizationId) {
         try {
             Logger.info("Creating PromptScorer with name: " + name);
-            Logger.info("API Key: " + (judgmentApiKey != null
-                    ? judgmentApiKey.substring(0, Math.min(10, judgmentApiKey.length())) + "..."
-                    : "null"));
+            Logger.info(
+                    "API Key: "
+                            + (judgmentApiKey != null
+                                    ? judgmentApiKey.substring(
+                                                    0, Math.min(10, judgmentApiKey.length()))
+                                            + "..."
+                                    : "null"));
             Logger.info("Org ID: " + organizationId);
             Logger.info("API URL: " + Env.JUDGMENT_API_URL);
 
-            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL);
+            JudgmentSyncClient client =
+                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
 
             ScorerExistsRequest existsRequest = new ScorerExistsRequest();
             existsRequest.setName(name);
             Logger.info("Checking if scorer exists with name: " + name);
 
-            ScorerExistsResponse existsResponse = client.scorerExists(judgmentApiKey, organizationId, existsRequest);
+            ScorerExistsResponse existsResponse = client.scorerExists(existsRequest);
             Logger.info("Scorer exists response: " + existsResponse.getExists());
 
             if (existsResponse.getExists()) {
-                throw new JudgmentAPIError(400,
-                        "Scorer with name " + name
+                throw new JudgmentAPIError(
+                        400,
+                        "Scorer with name "
+                                + name
                                 + " already exists. Either use the existing scorer with the get() method or use a new name.");
             }
 
@@ -155,11 +169,17 @@ public class PromptScorer extends APIScorer {
     }
 
     private void pushPromptScorer() {
-        pushPromptScorer(getName(), prompt, getThreshold(), options, judgmentApiKey, organizationId);
+        pushPromptScorer(
+                getName(), prompt, getThreshold(), options, judgmentApiKey, organizationId);
     }
 
-    private static String pushPromptScorer(String name, String prompt, double threshold,
-            Map<String, Double> options, String judgmentApiKey, String organizationId) {
+    private static String pushPromptScorer(
+            String name,
+            String prompt,
+            double threshold,
+            Map<String, Double> options,
+            String judgmentApiKey,
+            String organizationId) {
         try {
             Logger.info("Pushing prompt scorer to API...");
             Logger.info("Name: " + name);
@@ -167,7 +187,8 @@ public class PromptScorer extends APIScorer {
             Logger.info("Threshold: " + threshold);
             Logger.info("Options: " + options);
 
-            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL);
+            JudgmentSyncClient client =
+                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             SavePromptScorerRequest request = new SavePromptScorerRequest();
             request.setName(name);
             request.setPrompt(prompt);
@@ -176,8 +197,9 @@ public class PromptScorer extends APIScorer {
             request.setIsTrace(false); // Set is_trace to false for regular prompt scorers
 
             Logger.info("Sending request to save scorer...");
-            SavePromptScorerResponse response = client.saveScorer(judgmentApiKey, organizationId, request);
-            Logger.info("Save scorer response: " + (response != null ? response.getName() : "null"));
+            SavePromptScorerResponse response = client.saveScorer(request);
+            Logger.info(
+                    "Save scorer response: " + (response != null ? response.getName() : "null"));
             return response != null ? response.getName() : null;
         } catch (IOException | InterruptedException e) {
             Logger.error("Exception during save scorer: " + e.getMessage());
@@ -188,7 +210,14 @@ public class PromptScorer extends APIScorer {
 
     @Override
     public String toString() {
-        return "PromptScorer(name=" + getName() + ", prompt=" + prompt + ", threshold=" + getThreshold() + ", options="
-                + options + ")";
+        return "PromptScorer(name="
+                + getName()
+                + ", prompt="
+                + prompt
+                + ", threshold="
+                + getThreshold()
+                + ", options="
+                + options
+                + ")";
     }
 }

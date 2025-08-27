@@ -17,11 +17,12 @@ public class Main {
             options.put("yes", 1.0);
             options.put("no", 0.0);
 
-            PromptScorer scorer = PromptScorer.create(
-                    "test-scorer-" + System.currentTimeMillis(),
-                    "Did the chatbot answer the user's question in a kind way?",
-                    0.5,
-                    options);
+            PromptScorer scorer =
+                    PromptScorer.create(
+                            "test-scorer-" + System.currentTimeMillis(),
+                            "Did the chatbot answer the user's question in a kind way?",
+                            0.5,
+                            options);
 
             Logger.info("Created scorer: " + scorer.toString());
 

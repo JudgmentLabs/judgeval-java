@@ -9,9 +9,10 @@ import com.judgmentlabs.judgeval.scorers.APIScorer;
 public class FaithfulnessScorer extends APIScorer {
     public FaithfulnessScorer() {
         super(APIScorerType.FAITHFULNESS);
-        setRequiredParams(Arrays.asList(
-                ExampleParams.INPUT.getValue(),
-                ExampleParams.ACTUAL_OUTPUT.getValue(),
-                ExampleParams.RETRIEVAL_CONTEXT.getValue()));
+        setRequiredParams(
+                Arrays.asList(
+                        ExampleParams.INPUT.getValue(),
+                        ExampleParams.ACTUAL_OUTPUT.getValue(),
+                        ExampleParams.RETRIEVAL_CONTEXT.getValue()));
     }
 }

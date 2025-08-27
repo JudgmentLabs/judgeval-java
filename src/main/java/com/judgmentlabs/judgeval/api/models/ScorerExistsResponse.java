@@ -1,12 +1,12 @@
 package com.judgmentlabs.judgeval.api.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerExistsResponse {
     @JsonProperty("exists")
@@ -37,7 +37,8 @@ public class ScorerExistsResponse {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         ScorerExistsResponse other = (ScorerExistsResponse) obj;
-        return Objects.equals(exists, other.exists) && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(exists, other.exists)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override

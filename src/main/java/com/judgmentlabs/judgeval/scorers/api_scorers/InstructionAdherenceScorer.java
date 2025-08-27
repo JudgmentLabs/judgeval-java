@@ -10,9 +10,9 @@ public class InstructionAdherenceScorer extends APIScorer {
     public InstructionAdherenceScorer(double threshold) {
         super(APIScorerType.INSTRUCTION_ADHERENCE);
         setThreshold(threshold);
-        setRequiredParams(Arrays.asList(
-                ExampleParams.INPUT.getValue(),
-                ExampleParams.ACTUAL_OUTPUT.getValue()));
+        setRequiredParams(
+                Arrays.asList(
+                        ExampleParams.INPUT.getValue(), ExampleParams.ACTUAL_OUTPUT.getValue()));
         setName("Instruction Adherence");
     }
 }

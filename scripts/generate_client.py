@@ -309,7 +309,7 @@ def generate_method_signature(
 
     signature += f"{method_name}("
 
-    params = ["String apiKey", "String organizationId"]
+    params = []
 
     for param in query_params:
         if param["required"]:
@@ -366,13 +366,13 @@ def generate_method_body(
         lines.append("        HttpRequest request = HttpRequest.newBuilder()")
         lines.append("                .GET()")
         lines.append("                .uri(URI.create(url))")
-        lines.append("                .headers(buildHeaders(apiKey, organizationId))")
+        lines.append("                .headers(buildHeaders())")
         lines.append("                .build();")
     elif method == "DELETE":
         lines.append("        HttpRequest request = HttpRequest.newBuilder()")
         lines.append("                .DELETE()")
         lines.append("                .uri(URI.create(url))")
-        lines.append("                .headers(buildHeaders(apiKey, organizationId))")
+        lines.append("                .headers(buildHeaders())")
         lines.append("                .build();")
     else:
         if is_async:
@@ -398,7 +398,7 @@ def generate_method_body(
             f"                .{method}(HttpRequest.BodyPublishers.ofString(jsonPayload))"
         )
         lines.append("                .uri(URI.create(url))")
-        lines.append("                .headers(buildHeaders(apiKey, organizationId))")
+        lines.append("                .headers(buildHeaders())")
         lines.append("                .build();")
 
     if is_async:
@@ -448,9 +448,13 @@ def generate_client_class(
             "    private final HttpClient client;",
             "    private final ObjectMapper mapper;",
             "    private final String baseUrl;",
+            "    private final String apiKey;",
+            "    private final String organizationId;",
             "",
-            f"    public {className}(String baseUrl) {{",
+            f"    public {className}(String baseUrl, String apiKey, String organizationId) {{",
             "        this.baseUrl = baseUrl;",
+            "        this.apiKey = apiKey;",
+            "        this.organizationId = organizationId;",
             "        this.client = HttpClient.newBuilder()",
             "                .version(HttpClient.Version.HTTP_1_1)",
             "                .build();",
@@ -473,11 +477,17 @@ def generate_client_class(
             "        return buildUrl(path, new HashMap<>());",
             "    }",
             "",
-            "    private String[] buildHeaders(String apiKey, String organizationId) {",
-            "        return new String[]{",
-            '                "Content-Type", "application/json",',
-            '                "Authorization", "Bearer " + apiKey,',
-            '                "X-Organization-Id", organizationId',
+            "    private String[] buildHeaders() {",
+            "        if (apiKey == null || organizationId == null) {",
+            '            throw new IllegalArgumentException("API key and organization ID cannot be null");',
+            "        }",
+            "        return new String[] {",
+            '            "Content-Type",',
+            '            "application/json",',
+            '            "Authorization",',
+            '            "Bearer " + apiKey,',
+            '            "X-Organization-Id",',
+            "            organizationId",
             "        };",
             "    }",
             "",
