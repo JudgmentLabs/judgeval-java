@@ -10,7 +10,6 @@ import java.util.Set;
 
 import com.judgmentlabs.judgeval.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.api.models.EvalResultsFetch;
-import com.judgmentlabs.judgeval.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.data.EvaluationRun;
 import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.data.ScorerData;
@@ -63,46 +62,9 @@ public class JudgmentClient {
 
             List<Object> convertedScorers = new ArrayList<>();
             for (BaseScorer scorer : scorers) {
-                if (scorer instanceof PromptScorer) {
-                    PromptScorer promptScorer = (PromptScorer) scorer;
-                    ScorerConfig config = new ScorerConfig();
-                    config.setScoreType(promptScorer.getScoreType());
-                    config.setThreshold(promptScorer.getThreshold());
-                    config.setName(promptScorer.getName());
-                    config.setStrictMode(promptScorer.isStrictMode());
-                    config.setRequiredParams(promptScorer.getRequiredParams());
-
-                    Map<String, Object> kwargs = new HashMap<>();
-                    kwargs.put("prompt", promptScorer.getPrompt());
-                    if (promptScorer.getOptions() != null) {
-                        kwargs.put("options", promptScorer.getOptions());
-                    }
-                    if (promptScorer.getAdditionalProperties() != null) {
-                        kwargs.putAll(promptScorer.getAdditionalProperties());
-                    }
-                    config.setKwargs(kwargs);
-
-                    convertedScorers.add(config);
-                } else if (scorer instanceof APIScorer) {
-                    APIScorer apiScorer = (APIScorer) scorer;
-                    ScorerConfig config = new ScorerConfig();
-                    config.setScoreType(apiScorer.getScoreType());
-                    config.setThreshold(apiScorer.getThreshold());
-                    config.setName(apiScorer.getName());
-                    config.setStrictMode(apiScorer.isStrictMode());
-                    config.setRequiredParams(apiScorer.getRequiredParams());
-
-                    Map<String, Object> kwargs = new HashMap<>();
-                    if (apiScorer.getAdditionalProperties() != null) {
-                        kwargs.putAll(apiScorer.getAdditionalProperties());
-                    }
-                    config.setKwargs(kwargs);
-
-                    convertedScorers.add(config);
-                } else {
-                    convertedScorers.add(scorer);
-                }
+                convertedScorers.add(scorer.toTransport());
             }
+            Logger.info("Submitting scorers payload count=" + convertedScorers.size());
 
             EvaluationRun eval =
                     new EvaluationRun(
