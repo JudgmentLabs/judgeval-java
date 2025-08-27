@@ -30,8 +30,10 @@ public class JudgmentClient {
 
     public JudgmentClient(String apiKey, String organizationId) {
         this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");
-        this.organizationId = Objects.requireNonNull(organizationId, "Organization ID cannot be null");
-        this.client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
+        this.organizationId =
+                Objects.requireNonNull(organizationId, "Organization ID cannot be null");
+        this.client =
+                new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
     }
 
     public List<ScoringResult> runEvaluation(
@@ -102,13 +104,14 @@ public class JudgmentClient {
                 }
             }
 
-            EvaluationRun eval = new EvaluationRun(
-                    projectName,
-                    evalRunName,
-                    examples,
-                    convertedScorers,
-                    model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
-                    organizationId);
+            EvaluationRun eval =
+                    new EvaluationRun(
+                            projectName,
+                            evalRunName,
+                            examples,
+                            convertedScorers,
+                            model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
+                            organizationId);
 
             List<ScoringResult> results = runEval(eval);
 
@@ -134,7 +137,10 @@ public class JudgmentClient {
     }
 
     private void validateInputs(
-            List<Example> examples, List<BaseScorer> scorers, String projectName, String evalRunName) {
+            List<Example> examples,
+            List<BaseScorer> scorers,
+            String projectName,
+            String evalRunName) {
         if (examples == null || examples.isEmpty()) {
             throw new IllegalArgumentException("Examples cannot be null or empty");
         }
@@ -259,8 +265,9 @@ public class JudgmentClient {
                 long elapsed = (System.currentTimeMillis() - startTime) / 1000;
                 Logger.info("Running evaluation... (" + elapsed + " sec)");
 
-                Object statusResponse = client.getEvaluationStatus(
-                        eval.getId().toString(), eval.getProjectName().toString());
+                Object statusResponse =
+                        client.getEvaluationStatus(
+                                eval.getId().toString(), eval.getProjectName().toString());
 
                 if (statusResponse instanceof Map) {
                     Map<String, Object> statusMap = (Map<String, Object>) statusResponse;
@@ -278,7 +285,8 @@ public class JudgmentClient {
 
                 if (resultsResponse instanceof Map) {
                     Map<String, Object> resultsMap = (Map<String, Object>) resultsResponse;
-                    List<Map<String, Object>> examplesData = (List<Map<String, Object>>) resultsMap.get("examples");
+                    List<Map<String, Object>> examplesData =
+                            (List<Map<String, Object>>) resultsMap.get("examples");
 
                     if (examplesData == null) {
                         Thread.sleep((long) (pollIntervalSeconds * 1000));
@@ -310,7 +318,8 @@ public class JudgmentClient {
         List<ScoringResult> results = new ArrayList<>();
 
         for (Map<String, Object> exampleData : examplesData) {
-            List<Map<String, Object>> scorerDataList = (List<Map<String, Object>>) exampleData.get("scorer_data");
+            List<Map<String, Object>> scorerDataList =
+                    (List<Map<String, Object>>) exampleData.get("scorer_data");
             List<ScorerData> scorersData = new ArrayList<>();
 
             boolean success = true;

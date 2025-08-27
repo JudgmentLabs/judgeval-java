@@ -1,12 +1,12 @@
 package com.judgmentlabs.judgeval.api.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import java.util.List;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ResolveProjectNameResponse {
     @JsonProperty("project_id")
@@ -37,7 +37,8 @@ public class ResolveProjectNameResponse {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         ResolveProjectNameResponse other = (ResolveProjectNameResponse) obj;
-        return Objects.equals(projectId, other.projectId) && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(projectId, other.projectId)
+                && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override

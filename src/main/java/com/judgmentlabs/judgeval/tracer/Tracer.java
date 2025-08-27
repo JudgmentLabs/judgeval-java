@@ -29,16 +29,19 @@ public class Tracer {
         this(projectName, Env.JUDGMENT_API_KEY, Env.JUDGMENT_ORG_ID, true);
     }
 
-    public Tracer(String projectName, String apiKey, String organizationId, boolean enableEvaluation) {
+    public Tracer(
+            String projectName, String apiKey, String organizationId, boolean enableEvaluation) {
         this.projectName = projectName;
         this.apiKey = apiKey;
         this.organizationId = organizationId;
         this.enableEvaluation = enableEvaluation;
-        this.apiClient = new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
+        this.apiClient =
+                new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
         this.projectId = resolveProjectId(projectName);
         if (this.projectId == null) {
             Logger.warning(
-                    "Failed to resolve project " + projectName
+                    "Failed to resolve project "
+                            + projectName
                             + ", please create it first at https://app.judgmentlabs.ai/projects. Skipping Judgment export.");
         }
     }
@@ -46,8 +49,10 @@ public class Tracer {
     public SpanExporter getSpanExporter() {
         if (projectId == null)
             throw new IllegalStateException("Project not resolved; cannot create exporter");
-        String endpoint = Env.JUDGMENT_API_URL.endsWith("/") ? Env.JUDGMENT_API_URL + "otel/v1/traces"
-                : Env.JUDGMENT_API_URL + "/otel/v1/traces";
+        String endpoint =
+                Env.JUDGMENT_API_URL.endsWith("/")
+                        ? Env.JUDGMENT_API_URL + "otel/v1/traces"
+                        : Env.JUDGMENT_API_URL + "/otel/v1/traces";
         return new JudgmentSpanExporter(endpoint, apiKey, organizationId, projectId);
     }
 
@@ -63,28 +68,36 @@ public class Tracer {
         }
     }
 
-    public void asyncEvaluate(BaseScorer scorer, Example example, String model, double samplingRate) {
-        if (!enableEvaluation)
-            return;
+    public void asyncEvaluate(
+            BaseScorer scorer, Example example, String model, double samplingRate) {
+        if (!enableEvaluation) return;
         Span span = Span.current();
         SpanContext ctx = span.getSpanContext();
         String traceId = ctx != null ? ctx.getTraceId() : null;
         String spanId = ctx != null ? ctx.getSpanId() : null;
 
         Object transport = scorer.toTransport();
-        Logger.info("asyncEvaluate: project=" + projectName + ", traceId=" + traceId + ", spanId=" + spanId
-                + ", scorerTransport=" + (transport != null ? transport.getClass().getSimpleName() : "null"));
+        Logger.info(
+                "asyncEvaluate: project="
+                        + projectName
+                        + ", traceId="
+                        + traceId
+                        + ", spanId="
+                        + spanId
+                        + ", scorerTransport="
+                        + (transport != null ? transport.getClass().getSimpleName() : "null"));
 
         List<Object> scorers = new ArrayList<>();
         scorers.add(transport);
 
-        EvaluationRun eval = new EvaluationRun(
-                projectName,
-                "async_evaluate_" + (spanId != null ? spanId : System.currentTimeMillis()),
-                List.of(example),
-                scorers,
-                model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
-                organizationId);
+        EvaluationRun eval =
+                new EvaluationRun(
+                        projectName,
+                        "async_evaluate_" + (spanId != null ? spanId : System.currentTimeMillis()),
+                        List.of(example),
+                        scorers,
+                        model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
+                        organizationId);
         eval.setTraceId(traceId);
         eval.setTraceSpanId(spanId);
         try {
