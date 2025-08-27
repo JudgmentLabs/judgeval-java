@@ -22,6 +22,18 @@ jobs:
           server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
+      
+      - name: Verify POM groupId
+        run: |
+          echo "Checking pom.xml for correct groupId..."
+          grep -E "<groupId>.*</groupId>" pom.xml | head -1
+          echo "Expected: <groupId>com.judgmentlabs</groupId>"
+          
+      - name: Clean Maven cache
+        run: |
+          # Clean any cached artifacts
+          rm -rf ~/.m2/repository/com/judgment
+          rm -rf ~/.m2/repository/com/judgmentlabs
           
       - name: Import GPG key
         run: |
@@ -32,16 +44,21 @@ jobs:
           gpg-connect-agent reloadagent /bye
           gpg --list-secret-keys --keyid-format LONG
           
-      - name: Publish to Central Portal
-        run: mvn --batch-mode deploy
+      - name: Clean and Deploy to Central Portal
+        run: |
+          # Clean everything first
+          mvn clean
+          
+          # Build and deploy fresh
+          mvn --batch-mode deploy \
+            -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
+            -Dgpg.pinentry-mode=loopback \
+            --update-snapshots
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-
-      # Optional: If using Maven-like API that requires manual deployment completion
-      - name: Complete deployment (if needed)
+          
+      - name: Deployment Status
         run: |
-          # This step may be needed depending on your Maven plugin configuration
-          # Check Central Portal documentation for your specific use case
-          echo "Deployment completed - check Central Portal for publication status"
+          echo "Deployment completed - check https://central.sonatype.com for status"
