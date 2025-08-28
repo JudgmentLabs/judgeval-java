@@ -11,8 +11,7 @@ import com.judgmentlabs.judgeval.data.APIScorerType;
 public class APIScorer extends BaseScorer {
     private APIScorerType scoreType;
 
-    @JsonIgnore
-    private List<String> requiredParams;
+    @JsonIgnore private List<String> requiredParams;
 
     public APIScorer(APIScorerType scoreType) {
         super();
@@ -51,8 +50,7 @@ public class APIScorer extends BaseScorer {
         cfg.setStrictMode(isStrictMode());
         cfg.setRequiredParams(getRequiredParams());
         Map<String, Object> kwargs = new HashMap<>();
-        if (getAdditionalProperties() != null)
-            kwargs.putAll(getAdditionalProperties());
+        if (getAdditionalProperties() != null) kwargs.putAll(getAdditionalProperties());
         cfg.setKwargs(kwargs);
         return cfg;
     }

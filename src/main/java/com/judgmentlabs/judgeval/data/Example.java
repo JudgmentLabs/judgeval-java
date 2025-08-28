@@ -69,7 +69,8 @@ public class Example extends com.judgmentlabs.judgeval.api.models.Example {
         }
 
         public Builder retrievalContext(String retrievalContext) {
-            example.setAdditionalProperty(ExampleParams.RETRIEVAL_CONTEXT.getValue(), retrievalContext);
+            example.setAdditionalProperty(
+                    ExampleParams.RETRIEVAL_CONTEXT.getValue(), retrievalContext);
             return this;
         }
 

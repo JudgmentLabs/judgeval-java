@@ -24,45 +24,44 @@ import com.judgmentlabs.judgeval.utils.Logger;
 
 /**
  * Main client for running evaluations with Judgment Labs.
- * 
- * <p>
- * The JudgmentClient provides functionality to:
- * </p>
+ *
+ * <p>The JudgmentClient provides functionality to:
+ *
  * <ul>
- * <li>Run evaluations with multiple examples and scorers</li>
- * <li>Validate inputs and scorer configurations</li>
- * <li>Poll for evaluation results</li>
- * <li>Assert test results for automated testing</li>
+ *   <li>Run evaluations with multiple examples and scorers
+ *   <li>Validate inputs and scorer configurations
+ *   <li>Poll for evaluation results
+ *   <li>Assert test results for automated testing
  * </ul>
- * 
+ *
  * <h3>Basic Usage</h3>
- * 
+ *
  * <pre>{@code
  * JudgmentClient client = new JudgmentClient(apiKey, organizationId);
- * 
+ *
  * List<Example> examples = Arrays.asList(
  *         Example.builder()
  *                 .input("What is 2+2?")
  *                 .actualOutput("4")
  *                 .expectedOutput("4")
  *                 .build());
- * 
+ *
  * List<BaseScorer> scorers = Arrays.asList(
  *         AnswerCorrectnessScorer.create(0.8));
- * 
+ *
  * List<ScoringResult> results = client.runEvaluation(
  *         examples, scorers, "my-project", "test-run", "gpt-4", false);
  * }</pre>
- * 
+ *
  * <h3>Test Mode</h3>
- * 
+ *
  * <pre>{@code
  * // Enable test assertions
  * List<ScoringResult> results = client.runEvaluation(
  *         examples, scorers, "my-project", "test-run", "gpt-4", true);
  * // This will throw JudgmentTestError if any tests fail
  * }</pre>
- * 
+ *
  * @see Example
  * @see BaseScorer
  * @see ScoringResult
@@ -76,50 +75,44 @@ public class JudgmentClient {
 
     /**
      * Creates a new JudgmentClient with the specified API credentials.
-     * 
-     * @param apiKey         the API key for authentication (must not be null)
+     *
+     * @param apiKey the API key for authentication (must not be null)
      * @param organizationId the organization ID (must not be null)
      * @throws NullPointerException if apiKey or organizationId is null
      */
     public JudgmentClient(String apiKey, String organizationId) {
         this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");
-        this.organizationId = Objects.requireNonNull(organizationId, "Organization ID cannot be null");
-        this.client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
+        this.organizationId =
+                Objects.requireNonNull(organizationId, "Organization ID cannot be null");
+        this.client =
+                new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
     }
 
     /**
      * Runs an evaluation with the specified examples and scorers.
-     * 
-     * <p>
-     * This method submits an evaluation request to Judgment Labs and polls for
-     * results
-     * until completion. The evaluation can be run in test mode to automatically
-     * assert results.
-     * </p>
-     * 
-     * <p>
-     * The method performs the following validations:
-     * </p>
+     *
+     * <p>This method submits an evaluation request to Judgment Labs and polls for results until
+     * completion. The evaluation can be run in test mode to automatically assert results.
+     *
+     * <p>The method performs the following validations:
+     *
      * <ul>
-     * <li>All examples must have the same field keys</li>
-     * <li>Examples must contain required parameters for all scorers</li>
-     * <li>Cannot mix local and Judgment API scorers</li>
-     * <li>All input parameters must be valid</li>
+     *   <li>All examples must have the same field keys
+     *   <li>Examples must contain required parameters for all scorers
+     *   <li>Cannot mix local and Judgment API scorers
+     *   <li>All input parameters must be valid
      * </ul>
-     * 
-     * @param examples    the examples to evaluate (must not be null or empty)
-     * @param scorers     the scorers to use for evaluation (must not be null or
-     *                    empty)
+     *
+     * @param examples the examples to evaluate (must not be null or empty)
+     * @param scorers the scorers to use for evaluation (must not be null or empty)
      * @param projectName the project name (must not be null or empty)
      * @param evalRunName the evaluation run name (must not be null or empty)
-     * @param model       the model used for generation (can be null, will use
-     *                    default)
-     * @param assertTest  whether to assert test results and throw exceptions on
-     *                    failures
+     * @param model the model used for generation (can be null, will use default)
+     * @param assertTest whether to assert test results and throw exceptions on failures
      * @return a list of scoring results for each example
      * @throws IllegalArgumentException if inputs are invalid
-     * @throws JudgmentRuntimeError     if evaluation fails
-     * @throws JudgmentTestError        if assertTest is true and any tests fail
+     * @throws JudgmentRuntimeError if evaluation fails
+     * @throws JudgmentTestError if assertTest is true and any tests fail
      */
     public List<ScoringResult> runEvaluation(
             List<Example> examples,
@@ -152,12 +145,13 @@ public class JudgmentClient {
             }
             Logger.info("Submitting scorers payload count=" + convertedScorers.size());
 
-            EvaluationRun eval = EvaluationRun.builder(projectName, evalRunName)
-                    .examples(examples)
-                    .scorers(convertedScorers)
-                    .model(model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL)
-                    .organizationId(organizationId)
-                    .build();
+            EvaluationRun eval =
+                    EvaluationRun.builder(projectName, evalRunName)
+                            .examples(examples)
+                            .scorers(convertedScorers)
+                            .model(model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL)
+                            .organizationId(organizationId)
+                            .build();
 
             List<ScoringResult> results = runEval(eval);
 
@@ -184,9 +178,9 @@ public class JudgmentClient {
 
     /**
      * Runs an evaluation with default model and no test assertions.
-     * 
-     * @param examples    the examples to evaluate
-     * @param scorers     the scorers to use for evaluation
+     *
+     * @param examples the examples to evaluate
+     * @param scorers the scorers to use for evaluation
      * @param projectName the project name
      * @param evalRunName the evaluation run name
      * @return a list of scoring results
@@ -201,12 +195,12 @@ public class JudgmentClient {
 
     /**
      * Runs an evaluation with a single example and scorer.
-     * 
-     * @param example     the example to evaluate
-     * @param scorer      the scorer to use for evaluation
+     *
+     * @param example the example to evaluate
+     * @param scorer the scorer to use for evaluation
      * @param projectName the project name
      * @param evalRunName the evaluation run name
-     * @param model       the model used for generation (can be null)
+     * @param model the model used for generation (can be null)
      * @return a list of scoring results
      */
     public List<ScoringResult> runEvaluation(
@@ -216,36 +210,28 @@ public class JudgmentClient {
             String evalRunName,
             String model) {
         return runEvaluation(
-                List.of(example),
-                List.of(scorer),
-                projectName,
-                evalRunName,
-                model,
-                false);
+                List.of(example), List.of(scorer), projectName, evalRunName, model, false);
     }
 
     /**
      * Runs an evaluation with a single example and scorer using default model.
-     * 
-     * @param example     the example to evaluate
-     * @param scorer      the scorer to use for evaluation
+     *
+     * @param example the example to evaluate
+     * @param scorer the scorer to use for evaluation
      * @param projectName the project name
      * @param evalRunName the evaluation run name
      * @return a list of scoring results
      */
     public List<ScoringResult> runEvaluation(
-            Example example,
-            BaseScorer scorer,
-            String projectName,
-            String evalRunName) {
+            Example example, BaseScorer scorer, String projectName, String evalRunName) {
         return runEvaluation(example, scorer, projectName, evalRunName, null);
     }
 
     /**
      * Validates all input parameters for the evaluation.
-     * 
-     * @param examples    the examples to validate
-     * @param scorers     the scorers to validate
+     *
+     * @param examples the examples to validate
+     * @param scorers the scorers to validate
      * @param projectName the project name to validate
      * @param evalRunName the evaluation run name to validate
      * @throws IllegalArgumentException if any parameter is invalid
@@ -273,15 +259,13 @@ public class JudgmentClient {
 
     /**
      * Checks that all examples contain the required parameters for their scorers.
-     * 
-     * <p>
-     * This method validates that each example has all the required parameters
-     * for the scorers being used. If any parameters are missing, it logs warnings
-     * and optionally prompts the user to continue.
-     * </p>
-     * 
+     *
+     * <p>This method validates that each example has all the required parameters for the scorers
+     * being used. If any parameters are missing, it logs warnings and optionally prompts the user
+     * to continue.
+     *
      * @param examples the examples to check
-     * @param scorers  the scorers to validate against
+     * @param scorers the scorers to validate against
      */
     private void checkExamples(List<Example> examples, List<BaseScorer> scorers) {
         boolean promptUser = false;
@@ -331,12 +315,10 @@ public class JudgmentClient {
 
     /**
      * Validates that scorers are compatible with each other.
-     * 
-     * <p>
-     * Currently, the system does not support mixing local scorers (ExampleScorer)
-     * with Judgment API scorers (APIScorer, PromptScorer) in the same evaluation.
-     * </p>
-     * 
+     *
+     * <p>Currently, the system does not support mixing local scorers (ExampleScorer) with Judgment
+     * API scorers (APIScorer, PromptScorer) in the same evaluation.
+     *
      * @param scorers the scorers to validate
      * @throws IllegalArgumentException if incompatible scorers are mixed
      */
@@ -361,7 +343,7 @@ public class JudgmentClient {
 
     /**
      * Submits an evaluation run and polls for results until completion.
-     * 
+     *
      * @param eval the evaluation run to execute
      * @return a list of scoring results
      * @throws JudgmentRuntimeError if evaluation fails
@@ -390,8 +372,8 @@ public class JudgmentClient {
 
     /**
      * Polls for evaluation results until completion with default settings.
-     * 
-     * @param eval   the evaluation run to poll
+     *
+     * @param eval the evaluation run to poll
      * @param client the API client to use
      * @return a list of scoring results
      * @throws JudgmentRuntimeError if polling fails or times out
@@ -403,18 +385,15 @@ public class JudgmentClient {
 
     /**
      * Polls for evaluation results until completion with custom settings.
-     * 
-     * <p>
-     * This method continuously polls the API for evaluation status and results.
-     * It uses exponential backoff for retries and has configurable timeouts.
-     * </p>
-     * 
-     * @param eval                the evaluation run to poll
-     * @param client              the API client to use
+     *
+     * <p>This method continuously polls the API for evaluation status and results. It uses
+     * exponential backoff for retries and has configurable timeouts.
+     *
+     * @param eval the evaluation run to poll
+     * @param client the API client to use
      * @param pollIntervalSeconds the interval between polls in seconds
-     * @param maxFailures         the maximum number of consecutive failures before
-     *                            giving up
-     * @param maxPollCount        the maximum number of polls before timing out
+     * @param maxFailures the maximum number of consecutive failures before giving up
+     * @param maxPollCount the maximum number of polls before timing out
      * @return a list of scoring results
      * @throws JudgmentRuntimeError if polling fails or times out
      */
@@ -434,8 +413,9 @@ public class JudgmentClient {
                 long elapsed = (System.currentTimeMillis() - startTime) / 1000;
                 Logger.info("Running evaluation... (" + elapsed + " sec)");
 
-                Object statusResponse = client.getEvaluationStatus(
-                        eval.getId().toString(), eval.getProjectName().toString());
+                Object statusResponse =
+                        client.getEvaluationStatus(
+                                eval.getId().toString(), eval.getProjectName().toString());
 
                 if (statusResponse instanceof Map) {
                     Map<String, Object> statusMap = (Map<String, Object>) statusResponse;
@@ -453,7 +433,8 @@ public class JudgmentClient {
 
                 if (resultsResponse instanceof Map) {
                     Map<String, Object> resultsMap = (Map<String, Object>) resultsResponse;
-                    List<Map<String, Object>> examplesData = (List<Map<String, Object>>) resultsMap.get("examples");
+                    List<Map<String, Object>> examplesData =
+                            (List<Map<String, Object>>) resultsMap.get("examples");
 
                     if (examplesData == null) {
                         Thread.sleep((long) (pollIntervalSeconds * 1000));
@@ -483,12 +464,10 @@ public class JudgmentClient {
 
     /**
      * Parses raw evaluation results into structured ScoringResult objects.
-     * 
-     * <p>
-     * This method converts the raw API response data into properly structured
-     * ScoringResult objects that contain the evaluation results for each example.
-     * </p>
-     * 
+     *
+     * <p>This method converts the raw API response data into properly structured ScoringResult
+     * objects that contain the evaluation results for each example.
+     *
      * @param examplesData the raw examples data from the API response
      * @return a list of parsed ScoringResult objects
      */
@@ -497,20 +476,20 @@ public class JudgmentClient {
 
         for (Map<String, Object> exampleData : examplesData) {
             List<ScorerData> scorersData = parseScorerDataList(exampleData);
-            boolean success = scorersData.stream()
-                    .allMatch(scorerData -> Boolean.TRUE.equals(scorerData.getSuccess()));
+            boolean success =
+                    scorersData.stream()
+                            .allMatch(scorerData -> Boolean.TRUE.equals(scorerData.getSuccess()));
 
-            Example example = Example.builder()
-                    .name(parseString(exampleData.get("name")))
-                    .build();
+            Example example = Example.builder().name(parseString(exampleData.get("name"))).build();
             example.setExampleId(parseString(exampleData.get("example_id")));
             example.setCreatedAt(parseString(exampleData.get("created_at")));
 
-            ScoringResult result = ScoringResult.builder()
-                    .success(success)
-                    .scorersData(scorersData)
-                    .dataObject(example)
-                    .build();
+            ScoringResult result =
+                    ScoringResult.builder()
+                            .success(success)
+                            .scorersData(scorersData)
+                            .dataObject(example)
+                            .build();
 
             results.add(result);
         }
@@ -520,7 +499,7 @@ public class JudgmentClient {
 
     /**
      * Parses the scorer data list from the API response.
-     * 
+     *
      * @param exampleData the example data containing scorer information
      * @return a list of parsed ScorerData objects
      */
@@ -533,17 +512,19 @@ public class JudgmentClient {
             List<Map<String, Object>> scorerDataList = (List<Map<String, Object>>) scorerDataObj;
 
             for (Map<String, Object> rawScorerData : scorerDataList) {
-                ScorerData scorerData = ScorerData.builder()
-                        .name(parseString(rawScorerData.get("name")))
-                        .score(parseDouble(rawScorerData.get("score")))
-                        .success(parseBoolean(rawScorerData.get("success")))
-                        .reason(parseString(rawScorerData.get("reason")))
-                        .threshold(parseDouble(rawScorerData.get("threshold")))
-                        .strictMode(parseBoolean(rawScorerData.get("strict_mode")))
-                        .evaluationModel(parseString(rawScorerData.get("evaluation_model")))
-                        .error(parseString(rawScorerData.get("error")))
-                        .additionalMetadata(parseMetadata(rawScorerData.get("additional_metadata")))
-                        .build();
+                ScorerData scorerData =
+                        ScorerData.builder()
+                                .name(parseString(rawScorerData.get("name")))
+                                .score(parseDouble(rawScorerData.get("score")))
+                                .success(parseBoolean(rawScorerData.get("success")))
+                                .reason(parseString(rawScorerData.get("reason")))
+                                .threshold(parseDouble(rawScorerData.get("threshold")))
+                                .strictMode(parseBoolean(rawScorerData.get("strict_mode")))
+                                .evaluationModel(parseString(rawScorerData.get("evaluation_model")))
+                                .error(parseString(rawScorerData.get("error")))
+                                .additionalMetadata(
+                                        parseMetadata(rawScorerData.get("additional_metadata")))
+                                .build();
 
                 scorersData.add(scorerData);
             }
@@ -554,7 +535,7 @@ public class JudgmentClient {
 
     /**
      * Safely parses a string value from an object.
-     * 
+     *
      * @param value the value to parse
      * @return the string value, or null if not a string
      */
@@ -564,7 +545,7 @@ public class JudgmentClient {
 
     /**
      * Safely parses a double value from an object.
-     * 
+     *
      * @param value the value to parse
      * @return the double value, or null if not a number
      */
@@ -577,7 +558,7 @@ public class JudgmentClient {
 
     /**
      * Safely parses a boolean value from an object.
-     * 
+     *
      * @param value the value to parse
      * @return the boolean value, or null if not a boolean
      */
@@ -587,7 +568,7 @@ public class JudgmentClient {
 
     /**
      * Safely parses metadata from an object.
-     * 
+     *
      * @param value the value to parse
      * @return the metadata map, or null if not a map
      */
@@ -598,25 +579,21 @@ public class JudgmentClient {
 
     /**
      * Asserts test results and throws exceptions for failures.
-     * 
-     * <p>
-     * This method analyzes the evaluation results and throws a JudgmentTestError
-     * if any tests failed. It provides detailed logging of test results and
-     * comprehensive error messages for debugging.
-     * </p>
-     * 
-     * <p>
-     * The method logs:
-     * </p>
+     *
+     * <p>This method analyzes the evaluation results and throws a JudgmentTestError if any tests
+     * failed. It provides detailed logging of test results and comprehensive error messages for
+     * debugging.
+     *
+     * <p>The method logs:
+     *
      * <ul>
-     * <li>Overall test statistics (passed/failed counts)</li>
-     * <li>Individual test results with detailed scorer information</li>
-     * <li>Specific failure reasons and scores for each failed test</li>
+     *   <li>Overall test statistics (passed/failed counts)
+     *   <li>Individual test results with detailed scorer information
+     *   <li>Specific failure reasons and scores for each failed test
      * </ul>
-     * 
+     *
      * @param results the evaluation results to assert
-     * @throws JudgmentTestError if any tests failed, with detailed error
-     *                           information
+     * @throws JudgmentTestError if any tests failed, with detailed error information
      */
     private void assertTestResults(List<ScoringResult> results) {
         if (results == null || results.isEmpty()) {

@@ -17,14 +17,10 @@ import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 
 /**
- * SpanExporter implementation that sends spans to Judgment Labs with project
- * identification.
- * 
- * <p>
- * This exporter wraps the OTLP HTTP exporter and adds Judgment Labs specific
- * headers
- * and project identification to all exported spans.
- * </p>
+ * SpanExporter implementation that sends spans to Judgment Labs with project identification.
+ *
+ * <p>This exporter wraps the OTLP HTTP exporter and adds Judgment Labs specific headers and project
+ * identification to all exported spans.
  */
 public class JudgmentSpanExporter implements SpanExporter {
     private final SpanExporter delegate;
@@ -32,11 +28,11 @@ public class JudgmentSpanExporter implements SpanExporter {
 
     /**
      * Creates a new JudgmentSpanExporter with the specified configuration.
-     * 
-     * @param endpoint       the OTLP endpoint URL
-     * @param apiKey         the API key for authentication
+     *
+     * @param endpoint the OTLP endpoint URL
+     * @param apiKey the API key for authentication
      * @param organizationId the organization ID
-     * @param projectId      the project ID (must not be null or empty)
+     * @param projectId the project ID (must not be null or empty)
      * @throws IllegalArgumentException if projectId is null or empty
      */
     public JudgmentSpanExporter(
@@ -44,17 +40,18 @@ public class JudgmentSpanExporter implements SpanExporter {
         if (projectId == null || projectId.isEmpty()) {
             throw new IllegalArgumentException("projectId is required for JudgmentSpanExporter");
         }
-        this.delegate = OtlpHttpSpanExporter.builder()
-                .setEndpoint(endpoint)
-                .addHeader("Authorization", "Bearer " + apiKey)
-                .addHeader("X-Organization-Id", organizationId)
-                .build();
+        this.delegate =
+                OtlpHttpSpanExporter.builder()
+                        .setEndpoint(endpoint)
+                        .addHeader("Authorization", "Bearer " + apiKey)
+                        .addHeader("X-Organization-Id", organizationId)
+                        .build();
         this.projectId = projectId;
     }
 
     /**
      * Creates a new builder for constructing JudgmentSpanExporter instances.
-     * 
+     *
      * @return a new Builder instance
      */
     public static Builder builder() {
@@ -66,18 +63,21 @@ public class JudgmentSpanExporter implements SpanExporter {
         Logger.info(
                 "JudgmentSpanExporter exporting spans: count="
                         + (spans != null ? spans.size() : 0));
-        AttributeKey<String> key = AttributeKey.stringKey(OpenTelemetryKeys.ResourceKeys.JUDGMENT_PROJECT_ID);
+        AttributeKey<String> key =
+                AttributeKey.stringKey(OpenTelemetryKeys.ResourceKeys.JUDGMENT_PROJECT_ID);
         Attributes extra = Attributes.of(key, projectId);
         Resource added = Resource.create(extra);
-        List<SpanData> withResource = spans.stream()
-                .map(
-                        s -> new DelegatingSpanData(s) {
-                            @Override
-                            public Resource getResource() {
-                                return s.getResource().merge(added);
-                            }
-                        })
-                .collect(Collectors.toList());
+        List<SpanData> withResource =
+                spans.stream()
+                        .map(
+                                s ->
+                                        new DelegatingSpanData(s) {
+                                            @Override
+                                            public Resource getResource() {
+                                                return s.getResource().merge(added);
+                                            }
+                                        })
+                        .collect(Collectors.toList());
         return delegate.export(withResource);
     }
 
@@ -91,21 +91,18 @@ public class JudgmentSpanExporter implements SpanExporter {
         return delegate.shutdown();
     }
 
-    /**
-     * Builder for creating JudgmentSpanExporter instances.
-     */
+    /** Builder for creating JudgmentSpanExporter instances. */
     public static final class Builder {
         private String endpoint;
         private String apiKey;
         private String organizationId;
         private String projectId;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         /**
          * Sets the OTLP endpoint URL.
-         * 
+         *
          * @param endpoint the endpoint URL
          * @return this builder for method chaining
          */
@@ -116,7 +113,7 @@ public class JudgmentSpanExporter implements SpanExporter {
 
         /**
          * Sets the API key for authentication.
-         * 
+         *
          * @param apiKey the API key
          * @return this builder for method chaining
          */
@@ -127,7 +124,7 @@ public class JudgmentSpanExporter implements SpanExporter {
 
         /**
          * Sets the organization ID.
-         * 
+         *
          * @param organizationId the organization ID
          * @return this builder for method chaining
          */
@@ -138,7 +135,7 @@ public class JudgmentSpanExporter implements SpanExporter {
 
         /**
          * Sets the project ID.
-         * 
+         *
          * @param projectId the project ID
          * @return this builder for method chaining
          */
@@ -149,7 +146,7 @@ public class JudgmentSpanExporter implements SpanExporter {
 
         /**
          * Builds a new JudgmentSpanExporter with the current configuration.
-         * 
+         *
          * @return a new JudgmentSpanExporter instance
          * @throws IllegalArgumentException if required fields are missing
          */

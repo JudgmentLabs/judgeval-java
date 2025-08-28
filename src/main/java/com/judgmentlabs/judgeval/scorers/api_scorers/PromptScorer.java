@@ -26,8 +26,7 @@ public class PromptScorer extends APIScorer {
     @JsonProperty("options")
     private Map<String, Double> options;
 
-    @JsonIgnore
-    private JudgmentSyncClient client;
+    @JsonIgnore private JudgmentSyncClient client;
 
     public PromptScorer(String name, String prompt, double threshold, Map<String, Double> options) {
         this(
@@ -63,10 +62,8 @@ public class PromptScorer extends APIScorer {
         cfg.setRequiredParams(getRequiredParams());
         Map<String, Object> kwargs = new HashMap<>();
         kwargs.put("prompt", prompt);
-        if (options != null)
-            kwargs.put("options", options);
-        if (getAdditionalProperties() != null)
-            kwargs.putAll(getAdditionalProperties());
+        if (options != null) kwargs.put("options", options);
+        if (getAdditionalProperties() != null) kwargs.putAll(getAdditionalProperties());
         cfg.setKwargs(kwargs);
         return cfg;
     }
@@ -77,7 +74,8 @@ public class PromptScorer extends APIScorer {
 
     public static PromptScorer get(String name, String judgmentApiKey, String organizationId) {
         try {
-            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client =
+                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             FetchPromptScorerRequest request = new FetchPromptScorerRequest();
             request.setName(name);
 
@@ -116,7 +114,8 @@ public class PromptScorer extends APIScorer {
             String judgmentApiKey,
             String organizationId) {
         try {
-            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client =
+                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
 
             ScorerExistsRequest existsRequest = new ScorerExistsRequest();
             existsRequest.setName(name);
@@ -237,8 +236,7 @@ public class PromptScorer extends APIScorer {
         private Map<String, Double> options;
         private JudgmentSyncClient client;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         private Builder(String name, String prompt) {
             this.name = name;

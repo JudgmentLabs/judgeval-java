@@ -137,12 +137,9 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.Evaluati
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null || getClass() != obj.getClass())
-            return false;
-        if (!super.equals(obj))
-            return false;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        if (!super.equals(obj)) return false;
         EvaluationRun other = (EvaluationRun) obj;
         return Objects.equals(organizationId, other.organizationId);
     }
@@ -170,8 +167,7 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.Evaluati
         private String model;
         private String organizationId;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         private Builder(String projectName, String evalName) {
             this.projectName = projectName;
@@ -201,7 +197,8 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.Evaluati
             return this;
         }
 
-        public Builder localScorers(List<com.judgmentlabs.judgeval.scorers.BaseScorer> localScorers) {
+        public Builder localScorers(
+                List<com.judgmentlabs.judgeval.scorers.BaseScorer> localScorers) {
             this.localScorers = localScorers;
             return this;
         }
@@ -263,11 +260,14 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.Evaluati
 
             // Determine which type of scorers to use
             if (localScorers != null && !localScorers.isEmpty()) {
-                return createWithLocalScorers(projectName, evalName, examples, localScorers, model, organizationId);
+                return createWithLocalScorers(
+                        projectName, evalName, examples, localScorers, model, organizationId);
             } else if (apiScorers != null && !apiScorers.isEmpty()) {
-                return createWithApiScorers(projectName, evalName, examples, apiScorers, model, organizationId);
+                return createWithApiScorers(
+                        projectName, evalName, examples, apiScorers, model, organizationId);
             } else if (mixedScorers != null && !mixedScorers.isEmpty()) {
-                return new EvaluationRun(projectName, evalName, examples, mixedScorers, model, organizationId);
+                return new EvaluationRun(
+                        projectName, evalName, examples, mixedScorers, model, organizationId);
             } else {
                 throw new IllegalArgumentException("At least one scorer is required");
             }
