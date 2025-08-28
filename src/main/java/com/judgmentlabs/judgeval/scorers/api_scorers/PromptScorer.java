@@ -26,7 +26,8 @@ public class PromptScorer extends APIScorer {
     @JsonProperty("options")
     private Map<String, Double> options;
 
-    @JsonIgnore private JudgmentSyncClient client;
+    @JsonIgnore
+    private JudgmentSyncClient client;
 
     public PromptScorer(String name, String prompt, double threshold, Map<String, Double> options) {
         this(
@@ -62,8 +63,10 @@ public class PromptScorer extends APIScorer {
         cfg.setRequiredParams(getRequiredParams());
         Map<String, Object> kwargs = new HashMap<>();
         kwargs.put("prompt", prompt);
-        if (options != null) kwargs.put("options", options);
-        if (getAdditionalProperties() != null) kwargs.putAll(getAdditionalProperties());
+        if (options != null)
+            kwargs.put("options", options);
+        if (getAdditionalProperties() != null)
+            kwargs.putAll(getAdditionalProperties());
         cfg.setKwargs(kwargs);
         return cfg;
     }
@@ -74,8 +77,7 @@ public class PromptScorer extends APIScorer {
 
     public static PromptScorer get(String name, String judgmentApiKey, String organizationId) {
         try {
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             FetchPromptScorerRequest request = new FetchPromptScorerRequest();
             request.setName(name);
 
@@ -114,8 +116,7 @@ public class PromptScorer extends APIScorer {
             String judgmentApiKey,
             String organizationId) {
         try {
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
 
             ScorerExistsRequest existsRequest = new ScorerExistsRequest();
             existsRequest.setName(name);
@@ -219,5 +220,74 @@ public class PromptScorer extends APIScorer {
                 + ", options="
                 + options
                 + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static Builder builder(String name, String prompt) {
+        return new Builder(name, prompt);
+    }
+
+    public static final class Builder {
+        private String name;
+        private String prompt;
+        private double threshold = 0.5;
+        private Map<String, Double> options;
+        private JudgmentSyncClient client;
+
+        private Builder() {
+        }
+
+        private Builder(String name, String prompt) {
+            this.name = name;
+            this.prompt = prompt;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder prompt(String prompt) {
+            this.prompt = prompt;
+            return this;
+        }
+
+        public Builder threshold(double threshold) {
+            this.threshold = threshold;
+            return this;
+        }
+
+        public Builder options(Map<String, Double> options) {
+            this.options = options;
+            return this;
+        }
+
+        public Builder option(String key, Double value) {
+            if (this.options == null) {
+                this.options = new HashMap<>();
+            }
+            this.options.put(key, value);
+            return this;
+        }
+
+        public Builder client(JudgmentSyncClient client) {
+            this.client = client;
+            return this;
+        }
+
+        public PromptScorer build() {
+            if (name == null || prompt == null) {
+                throw new IllegalArgumentException("Name and prompt are required");
+            }
+
+            if (client != null) {
+                return new PromptScorer(client, name, prompt, threshold, options);
+            } else {
+                return new PromptScorer(name, prompt, threshold, options);
+            }
+        }
     }
 }

@@ -11,7 +11,8 @@ import com.judgmentlabs.judgeval.data.APIScorerType;
 public class APIScorer extends BaseScorer {
     private APIScorerType scoreType;
 
-    @JsonIgnore private List<String> requiredParams;
+    @JsonIgnore
+    private List<String> requiredParams;
 
     public APIScorer(APIScorerType scoreType) {
         super();
@@ -50,8 +51,59 @@ public class APIScorer extends BaseScorer {
         cfg.setStrictMode(isStrictMode());
         cfg.setRequiredParams(getRequiredParams());
         Map<String, Object> kwargs = new HashMap<>();
-        if (getAdditionalProperties() != null) kwargs.putAll(getAdditionalProperties());
+        if (getAdditionalProperties() != null)
+            kwargs.putAll(getAdditionalProperties());
         cfg.setKwargs(kwargs);
         return cfg;
+    }
+
+    public static <T extends APIScorer> Builder<T> builder(Class<T> scorerClass) {
+        return new Builder<>(scorerClass);
+    }
+
+    public static final class Builder<T extends APIScorer> {
+        private final T scorer;
+
+        private Builder(Class<T> scorerClass) {
+            try {
+                this.scorer = scorerClass.getDeclaredConstructor().newInstance();
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to create scorer instance", e);
+            }
+        }
+
+        public Builder<T> threshold(double threshold) {
+            scorer.setThreshold(threshold);
+            return this;
+        }
+
+        public Builder<T> name(String name) {
+            scorer.setName(name);
+            return this;
+        }
+
+        public Builder<T> strictMode(boolean strictMode) {
+            scorer.setStrictMode(strictMode);
+            return this;
+        }
+
+        public Builder<T> requiredParams(List<String> requiredParams) {
+            scorer.setRequiredParams(requiredParams);
+            return this;
+        }
+
+        public Builder<T> model(String model) {
+            scorer.setModel(model);
+            return this;
+        }
+
+        public Builder<T> additionalProperty(String key, Object value) {
+            scorer.setAdditionalProperty(key, value);
+            return this;
+        }
+
+        public T build() {
+            return scorer;
+        }
     }
 }

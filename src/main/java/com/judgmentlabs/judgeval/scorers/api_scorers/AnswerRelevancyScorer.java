@@ -13,4 +13,16 @@ public class AnswerRelevancyScorer extends APIScorer {
                 Arrays.asList(
                         ExampleParams.INPUT.getValue(), ExampleParams.ACTUAL_OUTPUT.getValue()));
     }
+
+    public static APIScorer.Builder<AnswerRelevancyScorer> builder() {
+        return APIScorer.builder(AnswerRelevancyScorer.class);
+    }
+
+    public static AnswerRelevancyScorer create() {
+        return new AnswerRelevancyScorer();
+    }
+
+    public static AnswerRelevancyScorer create(double threshold) {
+        return builder().threshold(threshold).build();
+    }
 }

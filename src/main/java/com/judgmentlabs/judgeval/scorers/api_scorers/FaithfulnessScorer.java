@@ -15,4 +15,16 @@ public class FaithfulnessScorer extends APIScorer {
                         ExampleParams.ACTUAL_OUTPUT.getValue(),
                         ExampleParams.RETRIEVAL_CONTEXT.getValue()));
     }
+
+    public static APIScorer.Builder<FaithfulnessScorer> builder() {
+        return APIScorer.builder(FaithfulnessScorer.class);
+    }
+
+    public static FaithfulnessScorer create() {
+        return new FaithfulnessScorer();
+    }
+
+    public static FaithfulnessScorer create(double threshold) {
+        return builder().threshold(threshold).build();
+    }
 }

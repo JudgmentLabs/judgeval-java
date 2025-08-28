@@ -2,6 +2,7 @@ package com.judgmentlabs.judgeval.tracer;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -328,6 +329,92 @@ public final class Tracer {
     }
 
     /**
+     * Asynchronously evaluates a scorer with an example using default sampling
+     * rate.
+     * 
+     * @param scorer  the scorer to use for evaluation (must not be null)
+     * @param example the example to evaluate (must not be null)
+     * @param model   the model used for generation (can be null, will use default)
+     * @throws NullPointerException if scorer or example is null
+     */
+    public void asyncEvaluate(BaseScorer scorer, Example example, String model) {
+        asyncEvaluate(scorer, example, model, 1.0);
+    }
+
+    /**
+     * Asynchronously evaluates a scorer with an example using default model and
+     * sampling rate.
+     * 
+     * @param scorer  the scorer to use for evaluation (must not be null)
+     * @param example the example to evaluate (must not be null)
+     * @throws NullPointerException if scorer or example is null
+     */
+    public void asyncEvaluate(BaseScorer scorer, Example example) {
+        asyncEvaluate(scorer, example, null, 1.0);
+    }
+
+    /**
+     * Sets multiple attributes on the current span.
+     * 
+     * @param attributes the attributes to set as key-value pairs
+     */
+    public void setAttributes(Map<String, Object> attributes) {
+        Optional.ofNullable(Span.current())
+                .ifPresent(span -> attributes.forEach((key, value) -> span.setAttribute(key, gson.toJson(value))));
+    }
+
+    /**
+     * Sets the span kind to "llm" for language model interactions.
+     */
+    public void setLLMSpan() {
+        setSpanKind("llm");
+    }
+
+    /**
+     * Sets the span kind to "tool" for external tool or API calls.
+     */
+    public void setToolSpan() {
+        setSpanKind("tool");
+    }
+
+    /**
+     * Sets the span kind to "span" for general application spans.
+     */
+    public void setGeneralSpan() {
+        setSpanKind("span");
+    }
+
+    /**
+     * Sets input and output attributes on the current span for LLM interactions.
+     * 
+     * @param input  the input to the LLM
+     * @param output the output from the LLM
+     */
+    public void setLLMIO(String input, String output) {
+        Optional.ofNullable(Span.current())
+                .ifPresent(span -> {
+                    span.setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input);
+                    span.setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output);
+                });
+    }
+
+    /**
+     * Sets input and output attributes on the current span for LLM interactions.
+     * 
+     * @param input  the input to the LLM
+     * @param output the output from the LLM
+     * @param model  the model used for generation
+     */
+    public void setLLMIO(String input, String output, String model) {
+        Optional.ofNullable(Span.current())
+                .ifPresent(span -> {
+                    span.setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input);
+                    span.setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output);
+                    span.setAttribute("model", model);
+                });
+    }
+
+    /**
      * Resolves the project ID from the project name.
      * 
      * <p>
@@ -362,7 +449,12 @@ public final class Tracer {
         String endpoint = configuration.apiUrl().endsWith("/")
                 ? configuration.apiUrl() + "otel/v1/traces"
                 : configuration.apiUrl() + "/otel/v1/traces";
-        return new JudgmentSpanExporter(endpoint, configuration.apiKey(), configuration.organizationId(), projectId);
+        return JudgmentSpanExporter.builder()
+                .endpoint(endpoint)
+                .apiKey(configuration.apiKey())
+                .organizationId(configuration.organizationId())
+                .projectId(projectId)
+                .build();
     }
 
     /**
