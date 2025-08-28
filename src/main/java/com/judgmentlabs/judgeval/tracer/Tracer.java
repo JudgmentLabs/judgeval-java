@@ -23,22 +23,18 @@ import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 
 /**
- * Main tracer class for integrating with Judgment Labs for distributed tracing
- * and evaluation.
+ * Main tracer class for integrating with Judgment Labs for distributed tracing and evaluation.
  *
- * <p>
- * The Tracer class provides functionality to:
+ * <p>The Tracer class provides functionality to:
  *
  * <ul>
- * <li>Export OpenTelemetry spans to Judgment Labs
- * <li>Automatically evaluate spans using configured scorers
- * <li>Set custom attributes on spans for better observability
- * <li>Integrate with existing OpenTelemetry instrumentation
+ *   <li>Export OpenTelemetry spans to Judgment Labs
+ *   <li>Automatically evaluate spans using configured scorers
+ *   <li>Set custom attributes on spans for better observability
+ *   <li>Integrate with existing OpenTelemetry instrumentation
  * </ul>
  *
- * <p>
- * This class is designed to work seamlessly with OpenTelemetry and provides a
- * SpanExporter that
+ * <p>This class is designed to work seamlessly with OpenTelemetry and provides a SpanExporter that
  * can be used with any OpenTelemetry SDK.
  *
  * <h3>Basic Usage</h3>
@@ -106,9 +102,8 @@ public final class Tracer {
      * Private constructor used by the builder and factory methods.
      *
      * @param configuration the tracer configuration (must not be null)
-     * @param apiClient     the API client for Judgment Labs (must not be null)
-     * @param gson          the Gson instance for JSON serialization (must not be
-     *                      null)
+     * @param apiClient the API client for Judgment Labs (must not be null)
+     * @param gson the Gson instance for JSON serialization (must not be null)
      */
     private Tracer(TracerConfiguration configuration, JudgmentSyncClient apiClient, Gson gson) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration cannot be null");
@@ -120,9 +115,7 @@ public final class Tracer {
     /**
      * Creates a new builder for constructing a Tracer with custom dependencies.
      *
-     * <p>
-     * This builder allows you to inject custom dependencies like API clients and
-     * Gson instances,
+     * <p>This builder allows you to inject custom dependencies like API clients and Gson instances,
      * which is useful for testing or advanced use cases.
      *
      * @return a new TracerBuilder instance
@@ -134,9 +127,7 @@ public final class Tracer {
     /**
      * Creates a Tracer with default configuration for the given project name.
      *
-     * <p>
-     * This is the simplest way to create a Tracer. It uses default values from
-     * environment
+     * <p>This is the simplest way to create a Tracer. It uses default values from environment
      * variables and enables evaluation by default.
      *
      * @param projectName the name of the project (must not be null or empty)
@@ -150,11 +141,8 @@ public final class Tracer {
     /**
      * Creates a Tracer with the specified configuration.
      *
-     * <p>
-     * This method allows you to use a pre-configured TracerConfiguration instance,
-     * which is
-     * useful when you want to reuse configuration across multiple tracers or when
-     * you have complex
+     * <p>This method allows you to use a pre-configured TracerConfiguration instance, which is
+     * useful when you want to reuse configuration across multiple tracers or when you have complex
      * configuration requirements.
      *
      * @param configuration the tracer configuration (must not be null)
@@ -167,17 +155,12 @@ public final class Tracer {
     /**
      * Gets the SpanExporter for integration with OpenTelemetry.
      *
-     * <p>
-     * This method returns a SpanExporter that can be used with any OpenTelemetry
-     * SDK.
+     * <p>This method returns a SpanExporter that can be used with any OpenTelemetry SDK.
      *
-     * <p>
-     * If the project ID cannot be resolved (e.g., the project doesn't exist), this
-     * method
+     * <p>If the project ID cannot be resolved (e.g., the project doesn't exist), this method
      * returns a NoOpSpanExporter.
      *
-     * <p>
-     * Example usage:
+     * <p>Example usage:
      *
      * <pre>{@code
      * Tracer tracer = Tracer.createDefault("my-project");
@@ -188,9 +171,8 @@ public final class Tracer {
      *         .build();
      * }</pre>
      *
-     * @return a SpanExporter that sends spans to Judgment Labs, or a
-     *         NoOpSpanExporter if project
-     *         resolution fails
+     * @return a SpanExporter that sends spans to Judgment Labs, or a NoOpSpanExporter if project
+     *     resolution fails
      */
     public SpanExporter getSpanExporter() {
         if (projectId == null) {
@@ -204,18 +186,15 @@ public final class Tracer {
     /**
      * Sets the span kind attribute on the current span.
      *
-     * <p>
-     * This method sets a special attribute that identifies the type of span for
-     * better
+     * <p>This method sets a special attribute that identifies the type of span for better
      * categorization in the Judgment Labs dashboard.
      *
-     * <p>
-     * Common span kinds include:
+     * <p>Common span kinds include:
      *
      * <ul>
-     * <li>"span" - General application spans
-     * <li>"llm" - Language model interactions
-     * <li>"tool" - External tool or API calls
+     *   <li>"span" - General application spans
+     *   <li>"llm" - Language model interactions
+     *   <li>"tool" - External tool or API calls
      * </ul>
      *
      * @param kind the span kind to set (if null, no attribute is set)
@@ -224,23 +203,20 @@ public final class Tracer {
         Optional.ofNullable(Span.current())
                 .filter(span -> kind != null)
                 .ifPresent(
-                        span -> span.setAttribute(
-                                OpenTelemetryKeys.AttributeKeys.JUDGMENT_SPAN_KIND, kind));
+                        span ->
+                                span.setAttribute(
+                                        OpenTelemetryKeys.AttributeKeys.JUDGMENT_SPAN_KIND, kind));
     }
 
     /**
      * Sets a custom attribute on the current span.
      *
-     * <p>
-     * This method serializes the value to JSON and sets it as a string attribute on
-     * the current
-     * span. This is useful for adding custom metadata to spans for better
-     * observability.
+     * <p>This method serializes the value to JSON and sets it as a string attribute on the current
+     * span. This is useful for adding custom metadata to spans for better observability.
      *
-     * <p>
-     * If there is no current span, this method does nothing.
+     * <p>If there is no current span, this method does nothing.
      *
-     * @param key   the attribute key (must not be null)
+     * @param key the attribute key (must not be null)
      * @param value the attribute value (will be serialized to JSON)
      */
     public void setAttribute(String key, Object value) {
@@ -251,19 +227,15 @@ public final class Tracer {
     /**
      * Sets a custom attribute on the current span with a specific type.
      *
-     * <p>
-     * This method is similar to {@link #setAttribute(String, Object)} but allows
-     * you to specify
-     * the type for JSON serialization. This is useful when you need to preserve
-     * type information or
+     * <p>This method is similar to {@link #setAttribute(String, Object)} but allows you to specify
+     * the type for JSON serialization. This is useful when you need to preserve type information or
      * when dealing with generic types.
      *
-     * <p>
-     * If there is no current span, this method does nothing.
+     * <p>If there is no current span, this method does nothing.
      *
-     * @param key   the attribute key (must not be null)
+     * @param key the attribute key (must not be null)
      * @param value the attribute value (will be serialized to JSON)
-     * @param type  the type to use for JSON serialization (must not be null)
+     * @param type the type to use for JSON serialization (must not be null)
      */
     public void setAttribute(String key, Object value, Type type) {
         Optional.ofNullable(Span.current())
@@ -273,29 +245,23 @@ public final class Tracer {
     /**
      * Asynchronously evaluates a scorer with an example.
      *
-     * <p>
-     * This method submits an evaluation request to Judgment Labs for processing.
-     * The evaluation
-     * is performed asynchronously and the results will be available in the Judgment
-     * Labs dashboard.
+     * <p>This method submits an evaluation request to Judgment Labs for processing. The evaluation
+     * is performed asynchronously and the results will be available in the Judgment Labs dashboard.
      *
-     * <p>
-     * The evaluation includes:
+     * <p>The evaluation includes:
      *
      * <ul>
-     * <li>The current trace and span context for correlation
-     * <li>The scorer configuration and threshold
-     * <li>The example input and output data
-     * <li>The model used for generation
+     *   <li>The current trace and span context for correlation
+     *   <li>The scorer configuration and threshold
+     *   <li>The example input and output data
+     *   <li>The model used for generation
      * </ul>
      *
-     * <p>
-     * If evaluation is disabled in the configuration, this method does nothing.
+     * <p>If evaluation is disabled in the configuration, this method does nothing.
      *
-     * @param scorer       the scorer to use for evaluation (must not be null)
-     * @param example      the example to evaluate (must not be null)
-     * @param model        the model used for generation (can be null, will use
-     *                     default)
+     * @param scorer the scorer to use for evaluation (must not be null)
+     * @param example the example to evaluate (must not be null)
+     * @param model the model used for generation (can be null, will use default)
      * @param samplingRate the sampling rate for evaluation (0.0 to 1.0)
      */
     public void asyncEvaluate(
@@ -305,7 +271,8 @@ public final class Tracer {
             return;
         }
 
-        SpanContext spanContext = Optional.ofNullable(Span.current()).map(Span::getSpanContext).orElse(null);
+        SpanContext spanContext =
+                Optional.ofNullable(Span.current()).map(Span::getSpanContext).orElse(null);
 
         String traceId = spanContext != null ? spanContext.getTraceId() : null;
         String spanId = spanContext != null ? spanContext.getSpanId() : null;
@@ -326,22 +293,20 @@ public final class Tracer {
     }
 
     /**
-     * Asynchronously evaluates a scorer with an example using default sampling
-     * rate.
+     * Asynchronously evaluates a scorer with an example using default sampling rate.
      *
-     * @param scorer  the scorer to use for evaluation (must not be null)
+     * @param scorer the scorer to use for evaluation (must not be null)
      * @param example the example to evaluate (must not be null)
-     * @param model   the model used for generation (can be null, will use default)
+     * @param model the model used for generation (can be null, will use default)
      */
     public void asyncEvaluate(BaseScorer scorer, Example example, String model) {
         asyncEvaluate(scorer, example, model, 1.0);
     }
 
     /**
-     * Asynchronously evaluates a scorer with an example using default model and
-     * sampling rate.
+     * Asynchronously evaluates a scorer with an example using default model and sampling rate.
      *
-     * @param scorer  the scorer to use for evaluation (must not be null)
+     * @param scorer the scorer to use for evaluation (must not be null)
      * @param example the example to evaluate (must not be null)
      */
     public void asyncEvaluate(BaseScorer scorer, Example example) {
@@ -356,8 +321,10 @@ public final class Tracer {
     public void setAttributes(Map<String, Object> attributes) {
         Optional.ofNullable(Span.current())
                 .ifPresent(
-                        span -> attributes.forEach(
-                                (key, value) -> span.setAttribute(key, gson.toJson(value))));
+                        span ->
+                                attributes.forEach(
+                                        (key, value) ->
+                                                span.setAttribute(key, gson.toJson(value))));
     }
 
     /** Sets the span kind to "llm" for language model interactions. */
@@ -382,8 +349,10 @@ public final class Tracer {
      */
     public void setInput(String input) {
         Optional.ofNullable(Span.current())
-                .ifPresent(span -> span.setAttribute(
-                        OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input));
+                .ifPresent(
+                        span ->
+                                span.setAttribute(
+                                        OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input));
     }
 
     /**
@@ -393,44 +362,50 @@ public final class Tracer {
      */
     public void setOutput(String output) {
         Optional.ofNullable(Span.current())
-                .ifPresent(span -> span.setAttribute(
-                        OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output));
+                .ifPresent(
+                        span ->
+                                span.setAttribute(
+                                        OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output));
     }
 
     /**
      * Sets the input attribute on the current span with additional metadata.
      *
-     * @param input    the input data
+     * @param input the input data
      * @param metadata additional metadata to set on the span
      */
     public void setInput(String input, Map<String, Object> metadata) {
         Optional.ofNullable(Span.current())
-                .ifPresent(span -> {
-                    span.setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input);
-                    metadata.forEach((key, value) -> span.setAttribute(key, gson.toJson(value)));
-                });
+                .ifPresent(
+                        span -> {
+                            span.setAttribute(
+                                    OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input);
+                            metadata.forEach(
+                                    (key, value) -> span.setAttribute(key, gson.toJson(value)));
+                        });
     }
 
     /**
      * Sets the output attribute on the current span with additional metadata.
      *
-     * @param output   the output data
+     * @param output the output data
      * @param metadata additional metadata to set on the span
      */
     public void setOutput(String output, Map<String, Object> metadata) {
         Optional.ofNullable(Span.current())
-                .ifPresent(span -> {
-                    span.setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output);
-                    metadata.forEach((key, value) -> span.setAttribute(key, gson.toJson(value)));
-                });
+                .ifPresent(
+                        span -> {
+                            span.setAttribute(
+                                    OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output);
+                            metadata.forEach(
+                                    (key, value) -> span.setAttribute(key, gson.toJson(value)));
+                        });
     }
 
     /**
      * Resolves the project ID from the project name.
      *
-     * <p>
-     * This method makes an API call to Judgment Labs to resolve the project name to
-     * a project
+     * <p>This method makes an API call to Judgment Labs to resolve the project name to a project
      * ID. If the project doesn't exist, this method returns null.
      *
      * @param name the project name to resolve
@@ -456,9 +431,10 @@ public final class Tracer {
      * @return a new JudgmentSpanExporter instance
      */
     private JudgmentSpanExporter createJudgmentSpanExporter(String projectId) {
-        String endpoint = configuration.apiUrl().endsWith("/")
-                ? configuration.apiUrl() + "otel/v1/traces"
-                : configuration.apiUrl() + "/otel/v1/traces";
+        String endpoint =
+                configuration.apiUrl().endsWith("/")
+                        ? configuration.apiUrl() + "otel/v1/traces"
+                        : configuration.apiUrl() + "/otel/v1/traces";
         return JudgmentSpanExporter.builder()
                 .endpoint(endpoint)
                 .apiKey(configuration.apiKey())
@@ -470,11 +446,11 @@ public final class Tracer {
     /**
      * Creates an EvaluationRun for the given parameters.
      *
-     * @param scorer  the scorer to use
+     * @param scorer the scorer to use
      * @param example the example to evaluate
-     * @param model   the model used for generation
+     * @param model the model used for generation
      * @param traceId the trace ID for correlation
-     * @param spanId  the span ID for correlation
+     * @param spanId the span ID for correlation
      * @return a new EvaluationRun instance
      */
     private EvaluationRun createEvaluationRun(
@@ -482,13 +458,14 @@ public final class Tracer {
         String runId = "async_evaluate_" + (spanId != null ? spanId : System.currentTimeMillis());
         String modelName = model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL;
 
-        EvaluationRun evaluationRun = new EvaluationRun(
-                configuration.projectName(),
-                runId,
-                List.of(example),
-                List.of(scorer.toTransport()),
-                modelName,
-                configuration.organizationId());
+        EvaluationRun evaluationRun =
+                new EvaluationRun(
+                        configuration.projectName(),
+                        runId,
+                        List.of(example),
+                        List.of(scorer.toTransport()),
+                        modelName,
+                        configuration.organizationId());
         evaluationRun.setTraceId(traceId);
         evaluationRun.setTraceSpanId(spanId);
         return evaluationRun;
@@ -510,13 +487,10 @@ public final class Tracer {
     /**
      * Builder for creating Tracer instances with custom dependencies.
      *
-     * <p>
-     * This builder allows you to inject custom dependencies like API clients and
-     * Gson instances,
+     * <p>This builder allows you to inject custom dependencies like API clients and Gson instances,
      * which is useful for testing or advanced use cases.
      *
-     * <p>
-     * Example usage:
+     * <p>Example usage:
      *
      * <pre>{@code
      * TracerConfiguration config = TracerConfiguration.builder()
@@ -552,9 +526,7 @@ public final class Tracer {
         /**
          * Sets a custom API client for this tracer.
          *
-         * <p>
-         * This is useful for testing or when you need to use a custom API client
-         * configuration.
+         * <p>This is useful for testing or when you need to use a custom API client configuration.
          *
          * @param apiClient the custom API client (can be null to use default)
          * @return this builder for method chaining
@@ -567,9 +539,7 @@ public final class Tracer {
         /**
          * Sets a custom Gson instance for this tracer.
          *
-         * <p>
-         * This is useful when you need custom JSON serialization behavior or when you
-         * want to
+         * <p>This is useful when you need custom JSON serialization behavior or when you want to
          * reuse an existing Gson instance.
          *
          * @param gson the custom Gson instance (can be null to use default)
@@ -583,11 +553,8 @@ public final class Tracer {
         /**
          * Builds a new Tracer with the current builder state.
          *
-         * <p>
-         * This method validates the configuration and creates a new Tracer instance. If
-         * no
-         * custom API client is provided, a default one will be created using the
-         * configuration
+         * <p>This method validates the configuration and creates a new Tracer instance. If no
+         * custom API client is provided, a default one will be created using the configuration
          * values.
          *
          * @return a new Tracer instance
@@ -598,12 +565,13 @@ public final class Tracer {
                 throw new IllegalArgumentException("Configuration is required");
             }
 
-            JudgmentSyncClient client = apiClient != null
-                    ? apiClient
-                    : new JudgmentSyncClient(
-                            configuration.apiUrl(),
-                            configuration.apiKey(),
-                            configuration.organizationId());
+            JudgmentSyncClient client =
+                    apiClient != null
+                            ? apiClient
+                            : new JudgmentSyncClient(
+                                    configuration.apiUrl(),
+                                    configuration.apiKey(),
+                                    configuration.organizationId());
 
             return new Tracer(configuration, client, gson);
         }
