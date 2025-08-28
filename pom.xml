@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.judgmentlabs</groupId>
     <artifactId>judgeval-java</artifactId>
-    <version>0.1.4</version>
+    <version>0.1.5</version>
     <packaging>jar</packaging>
     <name>Judgeval Java</name>
     <description>Java SDK for Judgeval</description>
@@ -76,11 +76,15 @@
             <artifactId>opentelemetry-sdk</artifactId>
             <version>1.39.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
     </dependencies>
     
     <build>
         <plugins>
-            <!-- Central Publishing Plugin - REQUIRED for new Central Portal -->
             <plugin>
                 <groupId>org.sonatype.central</groupId>
                 <artifactId>central-publishing-maven-plugin</artifactId>

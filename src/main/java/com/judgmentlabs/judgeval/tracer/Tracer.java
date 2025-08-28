@@ -1,8 +1,10 @@
 package com.judgmentlabs.judgeval.tracer;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.api.models.ResolveProjectNameRequest;
@@ -25,6 +27,7 @@ public class Tracer {
     private final boolean enableEvaluation;
     private final JudgmentSyncClient apiClient;
     private final String projectId;
+    private final Gson gson;
 
     public Tracer(String projectName) {
         this(projectName, Env.JUDGMENT_API_KEY, Env.JUDGMENT_ORG_ID, true);
@@ -37,6 +40,7 @@ public class Tracer {
         this.organizationId = organizationId;
         this.enableEvaluation = enableEvaluation;
         this.apiClient = new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
+        this.gson = new Gson();
         this.projectId = resolveProjectId(projectName);
         if (this.projectId == null) {
             Logger.warning(
@@ -55,6 +59,29 @@ public class Tracer {
                 ? Env.JUDGMENT_API_URL + "otel/v1/traces"
                 : Env.JUDGMENT_API_URL + "/otel/v1/traces";
         return new JudgmentSpanExporter(endpoint, apiKey, organizationId, projectId);
+    }
+
+    public void setSpanKind(String kind) {
+        Span span = Span.current();
+        if (span != null && kind != null) {
+            span.setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_SPAN_KIND, kind);
+        }
+    }
+
+    public void setAttribute(String key, Object value) {
+        Span span = Span.current();
+        if (span != null) {
+            String jsonValue = gson.toJson(value);
+            span.setAttribute(key, jsonValue);
+        }
+    }
+
+    public void setAttribute(String key, Object value, Type type) {
+        Span span = Span.current();
+        if (span != null) {
+            String jsonValue = gson.toJson(value, type);
+            span.setAttribute(key, jsonValue);
+        }
     }
 
     private String resolveProjectId(String name) {
