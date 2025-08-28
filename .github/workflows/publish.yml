@@ -50,7 +50,7 @@ jobs:
       - name: Clean and Deploy to Central Portal
         run: |
           mvn clean
-          mvn -e -X --batch-mode deploy \
+          mvn -e --batch-mode deploy \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
             --update-snapshots
