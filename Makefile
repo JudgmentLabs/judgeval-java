@@ -20,7 +20,7 @@ build: ## Build the project
 	mvn clean compile
 
 install: ## Install the project
-	mvn clean install -Dgpg.skip=true -Dmaven.javadoc.skip=true
+	mvn clean install -Dgpg.skip=true
 
 generate-client: ## Generate API client from OpenAPI spec
 	./scripts/generate-client.sh

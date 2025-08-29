@@ -34,7 +34,7 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
  *   <li>Integrate with existing OpenTelemetry instrumentation
  * </ul>
  *
- * <h3>Basic Usage</h3>
+ * <h2>Basic Usage</h2>
  *
  * <pre>{@code
  * // Simple usage with defaults
@@ -55,7 +55,7 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
  * tracer.asyncEvaluate(scorer, example, "gpt-4", 1.0);
  * }</pre>
  *
- * <h3>Advanced Configuration</h3>
+ * <h2>Advanced Configuration</h2>
  *
  * <pre>{@code
  * TracerConfiguration config = TracerConfiguration.builder()
@@ -68,7 +68,7 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
  * Tracer tracer = Tracer.createWithConfiguration(config);
  * }</pre>
  *
- * <h3>OpenTelemetry Integration</h3>
+ * <h2>OpenTelemetry Integration</h2>
  *
  * <pre>{@code
  * Tracer tracer = Tracer.createDefault("my-project");
