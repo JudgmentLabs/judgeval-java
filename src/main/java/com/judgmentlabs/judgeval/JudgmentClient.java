@@ -34,7 +34,7 @@ import com.judgmentlabs.judgeval.utils.Logger;
  *   <li>Assert test results for automated testing
  * </ul>
  *
- * <h3>Basic Usage</h3>
+ * <h2>Basic Usage</h2>
  *
  * <pre>{@code
  * JudgmentClient client = new JudgmentClient(apiKey, organizationId);
@@ -53,7 +53,7 @@ import com.judgmentlabs.judgeval.utils.Logger;
  *         examples, scorers, "my-project", "test-run", "gpt-4", false);
  * }</pre>
  *
- * <h3>Test Mode</h3>
+ * <h2>Test Mode</h2>
  *
  * <pre>{@code
  * // Enable test assertions
