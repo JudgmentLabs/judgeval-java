@@ -1,4 +1,4 @@
-package com.judgmentlabs.judgeval.api.models;
+package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,15 +8,9 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Example {
-    @JsonProperty("example_id")
-    private String exampleId;
-
-    @JsonProperty("created_at")
-    private String createdAt;
-
+public class FetchPromptScorerRequest {
     @JsonProperty("name")
-    private Object name;
+    private String name;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -30,27 +24,11 @@ public class Example {
         additionalProperties.put(name, value);
     }
 
-    public String getExampleId() {
-        return exampleId;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public Object getName() {
+    public String getName() {
         return name;
     }
 
-    public void setExampleId(String exampleId) {
-        this.exampleId = exampleId;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public void setName(Object name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -58,15 +36,13 @@ public class Example {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        Example other = (Example) obj;
-        return Objects.equals(exampleId, other.exampleId)
-                && Objects.equals(createdAt, other.createdAt)
-                && Objects.equals(name, other.name)
+        FetchPromptScorerRequest other = (FetchPromptScorerRequest) obj;
+        return Objects.equals(name, other.name)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(exampleId, createdAt, name, Objects.hashCode(additionalProperties));
+        return Objects.hash(name, Objects.hashCode(additionalProperties));
     }
 }

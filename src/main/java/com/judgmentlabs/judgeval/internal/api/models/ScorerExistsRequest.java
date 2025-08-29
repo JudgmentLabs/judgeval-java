@@ -1,4 +1,4 @@
-package com.judgmentlabs.judgeval.api.models;
+package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ResolveProjectNameRequest {
-    @JsonProperty("project_name")
-    private String projectName;
+public class ScorerExistsRequest {
+    @JsonProperty("name")
+    private String name;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -24,25 +24,25 @@ public class ResolveProjectNameRequest {
         additionalProperties.put(name, value);
     }
 
-    public String getProjectName() {
-        return projectName;
+    public String getName() {
+        return name;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        ResolveProjectNameRequest other = (ResolveProjectNameRequest) obj;
-        return Objects.equals(projectName, other.projectName)
+        ScorerExistsRequest other = (ScorerExistsRequest) obj;
+        return Objects.equals(name, other.name)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(projectName, Objects.hashCode(additionalProperties));
+        return Objects.hash(name, Objects.hashCode(additionalProperties));
     }
 }

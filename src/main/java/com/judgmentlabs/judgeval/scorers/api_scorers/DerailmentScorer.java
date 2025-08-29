@@ -7,4 +7,16 @@ public class DerailmentScorer extends APIScorer {
     public DerailmentScorer() {
         super(APIScorerType.DERAILMENT);
     }
+
+    public static APIScorer.Builder<DerailmentScorer> builder() {
+        return APIScorer.builder(DerailmentScorer.class);
+    }
+
+    public static DerailmentScorer create() {
+        return new DerailmentScorer();
+    }
+
+    public static DerailmentScorer create(double threshold) {
+        return builder().threshold(threshold).build();
+    }
 }

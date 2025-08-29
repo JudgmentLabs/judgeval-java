@@ -7,16 +7,16 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.judgmentlabs.judgeval.Env;
-import com.judgmentlabs.judgeval.api.JudgmentSyncClient;
-import com.judgmentlabs.judgeval.api.models.FetchPromptScorerRequest;
-import com.judgmentlabs.judgeval.api.models.FetchPromptScorerResponse;
-import com.judgmentlabs.judgeval.api.models.SavePromptScorerRequest;
-import com.judgmentlabs.judgeval.api.models.SavePromptScorerResponse;
-import com.judgmentlabs.judgeval.api.models.ScorerConfig;
-import com.judgmentlabs.judgeval.api.models.ScorerExistsRequest;
-import com.judgmentlabs.judgeval.api.models.ScorerExistsResponse;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.exceptions.JudgmentAPIError;
+import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
+import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorerRequest;
+import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorerResponse;
+import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerRequest;
+import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerResponse;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsRequest;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsResponse;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
 public class PromptScorer extends APIScorer {
@@ -80,7 +80,8 @@ public class PromptScorer extends APIScorer {
             request.setName(name);
 
             FetchPromptScorerResponse response = client.fetchScorer(request);
-            com.judgmentlabs.judgeval.api.models.PromptScorer scorerConfig = response.getScorer();
+            com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorerConfig =
+                    response.getScorer();
 
             return new PromptScorer(
                     client,
@@ -219,5 +220,73 @@ public class PromptScorer extends APIScorer {
                 + ", options="
                 + options
                 + ")";
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static Builder builder(String name, String prompt) {
+        return new Builder(name, prompt);
+    }
+
+    public static final class Builder {
+        private String name;
+        private String prompt;
+        private double threshold = 0.5;
+        private Map<String, Double> options;
+        private JudgmentSyncClient client;
+
+        private Builder() {}
+
+        private Builder(String name, String prompt) {
+            this.name = name;
+            this.prompt = prompt;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder prompt(String prompt) {
+            this.prompt = prompt;
+            return this;
+        }
+
+        public Builder threshold(double threshold) {
+            this.threshold = threshold;
+            return this;
+        }
+
+        public Builder options(Map<String, Double> options) {
+            this.options = options;
+            return this;
+        }
+
+        public Builder option(String key, Double value) {
+            if (this.options == null) {
+                this.options = new HashMap<>();
+            }
+            this.options.put(key, value);
+            return this;
+        }
+
+        public Builder client(JudgmentSyncClient client) {
+            this.client = client;
+            return this;
+        }
+
+        public PromptScorer build() {
+            if (name == null || prompt == null) {
+                throw new IllegalArgumentException("Name and prompt are required");
+            }
+
+            if (client != null) {
+                return new PromptScorer(client, name, prompt, threshold, options);
+            } else {
+                return new PromptScorer(name, prompt, threshold, options);
+            }
+        }
     }
 }

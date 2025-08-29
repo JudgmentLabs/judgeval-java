@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class BaseScorer extends com.judgmentlabs.judgeval.api.models.BaseScorer {
+public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer {
 
     public BaseScorer() {
         super();

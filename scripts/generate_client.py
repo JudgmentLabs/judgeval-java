@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import json
+import os
+import shutil
 import sys
-import re
 from typing import Any, Dict, List, Optional, Set
 import httpx
 
@@ -17,12 +18,16 @@ JUDGEVAL_PATHS = [
     "/projects/resolve/",
 ]
 
+HTTP_METHODS = {"GET", "POST", "PUT", "PATCH", "DELETE"}
+SUCCESS_STATUS_CODES = {"200", "201"}
+SCHEMA_REF_PREFIX = "#/components/schemas/"
+
 
 def resolve_ref(ref: str) -> str:
     assert ref.startswith(
-        "#/components/schemas/"
-    ), "Reference must start with #/components/schemas/"
-    return ref.replace("#/components/schemas/", "")
+        SCHEMA_REF_PREFIX
+    ), f"Reference must start with {SCHEMA_REF_PREFIX}"
+    return ref.replace(SCHEMA_REF_PREFIX, "")
 
 
 def to_camel_case(name: str) -> str:
@@ -41,46 +46,40 @@ def get_method_name_from_path(path: str, method: str) -> str:
 
 
 def get_query_parameters(operation: Dict[str, Any]) -> List[Dict[str, Any]]:
-    parameters = operation.get("parameters", [])
-    query_params = []
+    return [
+        {
+            "name": param["name"],
+            "required": param.get("required", False),
+            "type": param.get("schema", {}).get("type", "string"),
+        }
+        for param in operation.get("parameters", [])
+        if param.get("in") == "query"
+    ]
 
-    for param in parameters:
-        if param.get("in") == "query":
-            param_info = {
-                "name": param["name"],
-                "required": param.get("required", False),
-                "type": param.get("schema", {}).get("type", "string"),
-            }
-            query_params.append(param_info)
 
-    return query_params
+def get_schema_from_content(content: Dict[str, Any]) -> Optional[str]:
+    if "application/json" in content:
+        schema = content["application/json"].get("schema", {})
+        return resolve_ref(schema["$ref"]) if "$ref" in schema else None
+    return None
 
 
 def get_request_schema(operation: Dict[str, Any]) -> Optional[str]:
     request_body = operation.get("requestBody", {})
-    if not request_body:
-        return None
-
-    content = request_body.get("content", {})
-    if "application/json" in content:
-        schema = content["application/json"].get("schema", {})
-        if "$ref" in schema:
-            return resolve_ref(schema["$ref"])
-
-    return None
+    return (
+        get_schema_from_content(request_body.get("content", {}))
+        if request_body
+        else None
+    )
 
 
 def get_response_schema(operation: Dict[str, Any]) -> Optional[str]:
     responses = operation.get("responses", {})
-    for status_code in ["200", "201"]:
+    for status_code in SUCCESS_STATUS_CODES:
         if status_code in responses:
-            response = responses[status_code]
-            content = response.get("content", {})
-            if "application/json" in content:
-                schema = content["application/json"].get("schema", {})
-                if "$ref" in schema:
-                    return resolve_ref(schema["$ref"])
-
+            result = get_schema_from_content(responses[status_code].get("content", {}))
+            if result:
+                return result
     return None
 
 
@@ -90,30 +89,20 @@ def extract_dependencies(
     if visited is None:
         visited = set()
 
-    dependencies: Set[str] = set()
     schema_key = json.dumps(schema, sort_keys=True)
-
     if schema_key in visited:
-        return dependencies
+        return set()
 
     visited.add(schema_key)
+    dependencies: Set[str] = set()
 
     if "$ref" in schema:
-        ref_name = resolve_ref(schema["$ref"])
-        dependencies.add(ref_name)
-        return dependencies
+        return {resolve_ref(schema["$ref"])}
 
-    if "anyOf" in schema:
-        for s in schema["anyOf"]:
-            dependencies.update(extract_dependencies(s, visited))
-
-    if "oneOf" in schema:
-        for s in schema["oneOf"]:
-            dependencies.update(extract_dependencies(s, visited))
-
-    if "allOf" in schema:
-        for s in schema["allOf"]:
-            dependencies.update(extract_dependencies(s, visited))
+    for key in ["anyOf", "oneOf", "allOf"]:
+        if key in schema:
+            for s in schema[key]:
+                dependencies.update(extract_dependencies(s, visited))
 
     if "properties" in schema:
         for prop_schema in schema["properties"].values():
@@ -138,16 +127,14 @@ def find_used_schemas(spec: Dict[str, Any]) -> Set[str]:
 
     for path in JUDGEVAL_PATHS:
         if path in spec["paths"]:
-            path_data = spec["paths"][path]
-            for method, operation in path_data.items():
-                if method.upper() in ["GET", "POST", "PUT", "PATCH", "DELETE"]:
-                    request_schema = get_request_schema(operation)
-                    response_schema = get_response_schema(operation)
-
-                    if request_schema:
-                        used_schemas.add(request_schema)
-                    if response_schema:
-                        used_schemas.add(response_schema)
+            for method, operation in spec["paths"][path].items():
+                if method.upper() in HTTP_METHODS:
+                    for schema in [
+                        get_request_schema(operation),
+                        get_response_schema(operation),
+                    ]:
+                        if schema:
+                            used_schemas.add(schema)
 
     changed = True
     while changed:
@@ -156,8 +143,7 @@ def find_used_schemas(spec: Dict[str, Any]) -> Set[str]:
 
         for schema_name in used_schemas:
             if schema_name in schemas:
-                schema = schemas[schema_name]
-                deps = extract_dependencies(schema)
+                deps = extract_dependencies(schemas[schema_name])
                 for dep in deps:
                     if dep in schemas and dep not in used_schemas:
                         new_schemas.add(dep)
@@ -170,35 +156,27 @@ def find_used_schemas(spec: Dict[str, Any]) -> Set[str]:
 
 def get_java_type(schema: Dict[str, Any]) -> str:
     if "$ref" in schema:
-        ref = resolve_ref(schema["$ref"])
-        return to_class_name(ref)
+        return to_class_name(resolve_ref(schema["$ref"]))
 
-    if "type" not in schema:
-        return "Object"
+    schema_type = schema.get("type", "object")
+    type_mapping = {
+        "string": "String",
+        "integer": "Integer",
+        "number": "Double",
+        "boolean": "Boolean",
+        "object": "Object",
+    }
 
-    schema_type = schema["type"]
-    if schema_type == "string":
-        return "String"
-    elif schema_type == "integer":
-        return "Integer"
-    elif schema_type == "number":
-        return "Double"
-    elif schema_type == "boolean":
-        return "Boolean"
-    elif schema_type == "array":
+    if schema_type == "array":
         items = schema.get("items", {})
-        if items:
-            return f"List<{get_java_type(items)}>"
-        return "List<Object>"
-    elif schema_type == "object":
-        return "Object"
-    else:
-        return "Object"
+        return f"List<{get_java_type(items)}>" if items else "List<Object>"
+
+    return type_mapping.get(schema_type, "Object")
 
 
 def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
     lines = [
-        "package com.judgmentlabs.judgeval.api.models;",
+        "package com.judgmentlabs.judgeval.internal.api.models;",
         "",
         "import com.fasterxml.jackson.annotation.JsonProperty;",
         "import com.fasterxml.jackson.annotation.JsonAnySetter;",
@@ -222,45 +200,55 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
             java_type = get_java_type(property_schema)
             camel_case_name = to_camel_case(field_name)
 
-            fields.append(f'    @JsonProperty("{field_name}")')
-            fields.append(f"    private {java_type} {camel_case_name};")
-
-            getters.append(
-                f"    public {java_type} get{to_class_name(camel_case_name)}() {{"
+            fields.extend(
+                [
+                    f'    @JsonProperty("{field_name}")',
+                    f"    private {java_type} {camel_case_name};",
+                ]
             )
-            getters.append(f"        return {camel_case_name};")
-            getters.append("    }")
 
-            setters.append(
-                f"    public void set{to_class_name(camel_case_name)}({java_type} {camel_case_name}) {{"
+            getters.extend(
+                [
+                    f"    public {java_type} get{to_class_name(camel_case_name)}() {{",
+                    f"        return {camel_case_name};",
+                    "    }",
+                ]
             )
-            setters.append(f"        this.{camel_case_name} = {camel_case_name};")
-            setters.append("    }")
+
+            setters.extend(
+                [
+                    f"    public void set{to_class_name(camel_case_name)}({java_type} {camel_case_name}) {{",
+                    f"        this.{camel_case_name} = {camel_case_name};",
+                    "    }",
+                ]
+            )
 
             equals_parts.append(
                 f"Objects.equals({camel_case_name}, other.{camel_case_name})"
             )
-            hashCode_parts.append(f"{camel_case_name}")
+            hashCode_parts.append(camel_case_name)
 
     if fields:
         lines.extend(fields)
         lines.append("")
 
-    # Always add additional properties support to handle extra fields from server
-    lines.append(
-        "    private Map<String, Object> additionalProperties = new HashMap<>();"
+    lines.extend(
+        [
+            "    private Map<String, Object> additionalProperties = new HashMap<>();",
+            "",
+            "    @JsonAnyGetter",
+            "    public Map<String, Object> getAdditionalProperties() {",
+            "        return additionalProperties;",
+            "    }",
+            "",
+            "    @JsonAnySetter",
+            "    public void setAdditionalProperty(String name, Object value) {",
+            "        additionalProperties.put(name, value);",
+            "    }",
+            "",
+        ]
     )
-    lines.append("")
-    lines.append("    @JsonAnyGetter")
-    lines.append("    public Map<String, Object> getAdditionalProperties() {")
-    lines.append("        return additionalProperties;")
-    lines.append("    }")
-    lines.append("")
-    lines.append("    @JsonAnySetter")
-    lines.append("    public void setAdditionalProperty(String name, Object value) {")
-    lines.append("        additionalProperties.put(name, value);")
-    lines.append("    }")
-    lines.append("")
+
     equals_parts.append(
         "Objects.equals(additionalProperties, other.additionalProperties)"
     )
@@ -271,27 +259,23 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
     lines.extend(setters)
     lines.append("")
 
-    lines.append("    @Override")
-    lines.append("    public boolean equals(Object obj) {")
-    lines.append("        if (this == obj) return true;")
-    lines.append(
-        "        if (obj == null || getClass() != obj.getClass()) return false;"
+    lines.extend(
+        [
+            "    @Override",
+            "    public boolean equals(Object obj) {",
+            "        if (this == obj) return true;",
+            "        if (obj == null || getClass() != obj.getClass()) return false;",
+            f"        {className} other = ({className}) obj;",
+            f"        return {' && '.join(equals_parts) if equals_parts else 'true'};",
+            "    }",
+            "",
+            "    @Override",
+            "    public int hashCode() {",
+            f"        return Objects.hash({', '.join(hashCode_parts) if hashCode_parts else ''});",
+            "    }",
+            "}",
+        ]
     )
-    lines.append(f"        {className} other = ({className}) obj;")
-    if equals_parts:
-        lines.append(f"        return {' && '.join(equals_parts)};")
-    else:
-        lines.append("        return true;")
-    lines.append("    }")
-    lines.append("")
-    lines.append("    @Override")
-    lines.append("    public int hashCode() {")
-    if hashCode_parts:
-        lines.append(f"        return Objects.hash({', '.join(hashCode_parts)});")
-    else:
-        lines.append("        return 0;")
-    lines.append("    }")
-    lines.append("}")
 
     return "\n".join(lines)
 
@@ -303,13 +287,6 @@ def generate_method_signature(
     response_type: str,
     is_async: bool,
 ) -> str:
-    if is_async:
-        signature = f"    public CompletableFuture<{response_type}> "
-    else:
-        signature = f"    public {response_type} "
-
-    signature += f"{method_name}("
-
     params = []
 
     for param in query_params:
@@ -323,15 +300,12 @@ def generate_method_signature(
         if not param["required"]:
             params.append(f"String {param['name']}")
 
-    signature += ", ".join(params)
-    signature += ")"
+    return_type = f"CompletableFuture<{response_type}>" if is_async else response_type
+    throws_clause = "" if is_async else " throws IOException, InterruptedException"
 
-    if is_async:
-        signature += " {"
-    else:
-        signature += " throws IOException, InterruptedException {"
-
-    return signature
+    return (
+        f"    public {return_type} {method_name}({', '.join(params)}){throws_clause} {{"
+    )
 
 
 def generate_method_body(
@@ -352,61 +326,64 @@ def generate_method_body(
             if param["required"]:
                 lines.append(f'        queryParams.put("{param_name}", {param_name});')
             else:
-                lines.append(f"        if ({param_name} != null) {{")
-                lines.append(
-                    f'            queryParams.put("{param_name}", {param_name});'
+                lines.extend(
+                    [
+                        f"        if ({param_name} != null) {{",
+                        f'            queryParams.put("{param_name}", {param_name});',
+                        "        }",
+                    ]
                 )
-                lines.append("        }")
 
-    lines.append(f'        String url = buildUrl("{path}"')
-    if query_params:
-        lines.append(", queryParams")
-    lines.append(");")
+    lines.append(
+        f'        String url = buildUrl("{path}"{", queryParams" if query_params else ""});'
+    )
 
-    if method == "GET":
-        lines.append("        HttpRequest request = HttpRequest.newBuilder()")
-        lines.append("                .GET()")
-        lines.append("                .uri(URI.create(url))")
-        lines.append("                .headers(buildHeaders())")
-        lines.append("                .build();")
-    elif method == "DELETE":
-        lines.append("        HttpRequest request = HttpRequest.newBuilder()")
-        lines.append("                .DELETE()")
-        lines.append("                .uri(URI.create(url))")
-        lines.append("                .headers(buildHeaders())")
-        lines.append("                .build();")
+    if method in ["GET", "DELETE"]:
+        lines.extend(
+            [
+                "        HttpRequest request = HttpRequest.newBuilder()",
+                f"                .{method}()",
+                "                .uri(URI.create(url))",
+                "                .headers(buildHeaders())",
+                "                .build();",
+            ]
+        )
     else:
+        payload_expr = "payload" if request_type else "new Object()"
+
         if is_async:
-            lines.append("        String jsonPayload;")
-            lines.append("        try {")
-            payload_expr = "payload" if request_type else "new Object()"
-            lines.append(
-                f"            jsonPayload = mapper.writeValueAsString({payload_expr});"
+            lines.extend(
+                [
+                    "        String jsonPayload;",
+                    "        try {",
+                    f"            jsonPayload = mapper.writeValueAsString({payload_expr});",
+                    "        } catch (Exception e) {",
+                    '            throw new RuntimeException("Failed to serialize payload", e);',
+                    "        }",
+                ]
             )
-            lines.append("        } catch (Exception e) {")
-            lines.append(
-                '            throw new RuntimeException("Failed to serialize payload", e);'
-            )
-            lines.append("        }")
         else:
-            payload_expr = "payload" if request_type else "new Object()"
             lines.append(
                 f"        String jsonPayload = mapper.writeValueAsString({payload_expr});"
             )
 
-        lines.append("        HttpRequest request = HttpRequest.newBuilder()")
-        lines.append(
-            f"                .{method}(HttpRequest.BodyPublishers.ofString(jsonPayload))"
+        lines.extend(
+            [
+                "        HttpRequest request = HttpRequest.newBuilder()",
+                f"                .{method}(HttpRequest.BodyPublishers.ofString(jsonPayload))",
+                "                .uri(URI.create(url))",
+                "                .headers(buildHeaders())",
+                "                .build();",
+            ]
         )
-        lines.append("                .uri(URI.create(url))")
-        lines.append("                .headers(buildHeaders())")
-        lines.append("                .build();")
 
     if is_async:
-        lines.append(
-            "        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())"
+        lines.extend(
+            [
+                "        return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())",
+                "                .thenApply(this::handleResponse);",
+            ]
         )
-        lines.append("                .thenApply(this::handleResponse);")
     else:
         lines.append(
             "        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());"
@@ -424,8 +401,8 @@ def generate_method_body(
 def generate_client_class(
     className: str, methods: List[Dict[str, Any]], is_async: bool
 ) -> str:
-    lines = [
-        "package com.judgmentlabs.judgeval.api;",
+    imports = [
+        "package com.judgmentlabs.judgeval.internal.api;",
         "",
         "import com.fasterxml.jackson.databind.ObjectMapper;",
         "import com.fasterxml.jackson.core.type.TypeReference;",
@@ -436,76 +413,67 @@ def generate_client_class(
         "import java.net.http.HttpResponse;",
         "import java.util.HashMap;",
         "import java.util.Map;",
-        "import com.judgmentlabs.judgeval.api.models.*;",
+        "import com.judgmentlabs.judgeval.internal.api.models.*;",
     ]
 
     if is_async:
-        lines.append("import java.util.concurrent.CompletableFuture;")
+        imports.append("import java.util.concurrent.CompletableFuture;")
 
+    lines = imports + [
+        "",
+        f"public class {className} {{",
+        "    private final HttpClient client;",
+        "    private final ObjectMapper mapper;",
+        "    private final String baseUrl;",
+        "    private final String apiKey;",
+        "    private final String organizationId;",
+        "",
+        f"    public {className}(String baseUrl, String apiKey, String organizationId) {{",
+        "        this.baseUrl = baseUrl;",
+        "        this.apiKey = apiKey;",
+        "        this.organizationId = organizationId;",
+        "        this.client = HttpClient.newBuilder()",
+        "                .version(HttpClient.Version.HTTP_1_1)",
+        "                .build();",
+        "        this.mapper = new ObjectMapper();",
+        "    }",
+        "",
+        "    private String buildUrl(String path, Map<String, String> queryParams) {",
+        "        StringBuilder url = new StringBuilder(baseUrl).append(path);",
+        "        if (!queryParams.isEmpty()) {",
+        '            url.append("?");',
+        "            String queryString = queryParams.entrySet().stream()",
+        '                    .map(entry -> entry.getKey() + "=" + entry.getValue())',
+        '                    .reduce("", (a, b) -> a.isEmpty() ? b : a + "&" + b);',
+        "            url.append(queryString);",
+        "        }",
+        "        return url.toString();",
+        "    }",
+        "",
+        "    private String buildUrl(String path) {",
+        "        return buildUrl(path, new HashMap<>());",
+        "    }",
+        "",
+        "    private String[] buildHeaders() {",
+        "        if (apiKey == null || organizationId == null) {",
+        '            throw new IllegalArgumentException("API key and organization ID cannot be null");',
+        "        }",
+        "        return new String[] {",
+        '            "Content-Type",',
+        '            "application/json",',
+        '            "Authorization",',
+        '            "Bearer " + apiKey,',
+        '            "X-Organization-Id",',
+        "            organizationId",
+        "        };",
+        "    }",
+        "",
+    ]
+
+    throws_clause = "" if is_async else " throws IOException"
     lines.extend(
         [
-            "",
-            f"public class {className} {{",
-            "    private final HttpClient client;",
-            "    private final ObjectMapper mapper;",
-            "    private final String baseUrl;",
-            "    private final String apiKey;",
-            "    private final String organizationId;",
-            "",
-            f"    public {className}(String baseUrl, String apiKey, String organizationId) {{",
-            "        this.baseUrl = baseUrl;",
-            "        this.apiKey = apiKey;",
-            "        this.organizationId = organizationId;",
-            "        this.client = HttpClient.newBuilder()",
-            "                .version(HttpClient.Version.HTTP_1_1)",
-            "                .build();",
-            "        this.mapper = new ObjectMapper();",
-            "    }",
-            "",
-            "    private String buildUrl(String path, Map<String, String> queryParams) {",
-            "        StringBuilder url = new StringBuilder(baseUrl).append(path);",
-            "        if (!queryParams.isEmpty()) {",
-            '            url.append("?");',
-            "            String queryString = queryParams.entrySet().stream()",
-            '                    .map(entry -> entry.getKey() + "=" + entry.getValue())',
-            '                    .reduce("", (a, b) -> a.isEmpty() ? b : a + "&" + b);',
-            "            url.append(queryString);",
-            "        }",
-            "        return url.toString();",
-            "    }",
-            "",
-            "    private String buildUrl(String path) {",
-            "        return buildUrl(path, new HashMap<>());",
-            "    }",
-            "",
-            "    private String[] buildHeaders() {",
-            "        if (apiKey == null || organizationId == null) {",
-            '            throw new IllegalArgumentException("API key and organization ID cannot be null");',
-            "        }",
-            "        return new String[] {",
-            '            "Content-Type",',
-            '            "application/json",',
-            '            "Authorization",',
-            '            "Bearer " + apiKey,',
-            '            "X-Organization-Id",',
-            "            organizationId",
-            "        };",
-            "    }",
-            "",
-        ]
-    )
-
-    if is_async:
-        lines.append(
-            "    private <T> T handleResponse(HttpResponse<String> response) {"
-        )
-    else:
-        lines.append(
-            "    private <T> T handleResponse(HttpResponse<String> response) throws IOException {"
-        )
-
-    lines.extend(
-        [
+            f"    private <T> T handleResponse(HttpResponse<String> response){throws_clause} {{",
             "        if (response.statusCode() >= 400) {",
             '            throw new RuntimeException("HTTP Error: " + response.statusCode() + " - " + response.body());',
             "        }",
@@ -520,25 +488,22 @@ def generate_client_class(
     )
 
     for method_info in methods:
-        method_name = method_info["name"]
-        path = method_info["path"]
-        http_method = method_info["method"]
-        request_type = method_info["request_type"]
-        query_params = method_info["query_params"]
-        response_type = method_info["response_type"]
-
         signature = generate_method_signature(
-            method_name, request_type, query_params, response_type, is_async
+            method_info["name"],
+            method_info["request_type"],
+            method_info["query_params"],
+            method_info["response_type"],
+            is_async,
         )
         lines.append(signature)
 
         body = generate_method_body(
-            method_name,
-            path,
-            http_method,
-            request_type,
-            query_params,
-            response_type,
+            method_info["name"],
+            method_info["path"],
+            method_info["method"],
+            method_info["request_type"],
+            method_info["query_params"],
+            method_info["response_type"],
             is_async,
         )
         lines.append(body)
@@ -553,11 +518,7 @@ def generate_api_files(spec: Dict[str, Any]) -> None:
     used_schemas = find_used_schemas(spec)
     schemas = spec.get("components", {}).get("schemas", {})
 
-    import os
-    import shutil
-
-    models_dir = "src/main/java/com/judgmentlabs/judgeval/api/models"
-
+    models_dir = "src/main/java/com/judgmentlabs/judgeval/internal/api/models"
     if os.path.exists(models_dir):
         print(f"Clearing existing models directory: {models_dir}", file=sys.stderr)
         shutil.rmtree(models_dir)
@@ -585,12 +546,10 @@ def generate_api_files(spec: Dict[str, Any]) -> None:
         if path not in spec["paths"]:
             print(f"Path {path} not found in OpenAPI spec", file=sys.stderr)
 
-    sync_methods = []
-    async_methods = []
-
+    methods = []
     for path, path_data in filtered_paths.items():
         for method, operation in path_data.items():
-            if method.upper() in ["GET", "POST", "PUT", "PATCH", "DELETE"]:
+            if method.upper() in HTTP_METHODS:
                 method_name = get_method_name_from_path(path, method.upper())
                 request_schema = get_request_schema(operation)
                 response_schema = get_response_schema(operation)
@@ -601,40 +560,31 @@ def generate_api_files(spec: Dict[str, Any]) -> None:
                     file=sys.stderr,
                 )
 
-                request_type = to_class_name(request_schema) if request_schema else None
-                response_type = (
-                    to_class_name(response_schema) if response_schema else "Object"
-                )
-
                 method_info = {
                     "name": method_name,
                     "path": path,
                     "method": method.upper(),
-                    "request_type": request_type,
+                    "request_type": (
+                        to_class_name(request_schema) if request_schema else None
+                    ),
                     "query_params": query_params,
-                    "response_type": response_type,
+                    "response_type": (
+                        to_class_name(response_schema) if response_schema else "Object"
+                    ),
                 }
+                methods.append(method_info)
 
-                sync_methods.append(method_info)
-                async_methods.append(method_info)
-
-    sync_client = generate_client_class("JudgmentSyncClient", sync_methods, False)
-    async_client = generate_client_class("JudgmentAsyncClient", async_methods, True)
-
-    import os
-
-    api_dir = "src/main/java/com/judgmentlabs/judgeval/api"
+    api_dir = "src/main/java/com/judgmentlabs/judgeval/internal/api"
     os.makedirs(api_dir, exist_ok=True)
 
-    with open(f"{api_dir}/JudgmentSyncClient.java", "w") as f:
-        f.write(sync_client)
-
-    with open(f"{api_dir}/JudgmentAsyncClient.java", "w") as f:
-        f.write(async_client)
-
-    print("Generated files:", file=sys.stderr)
-    print(f"  {api_dir}/JudgmentSyncClient.java", file=sys.stderr)
-    print(f"  {api_dir}/JudgmentAsyncClient.java", file=sys.stderr)
+    for is_async, class_name in [
+        (False, "JudgmentSyncClient"),
+        (True, "JudgmentAsyncClient"),
+    ]:
+        client_class = generate_client_class(class_name, methods, is_async)
+        with open(f"{api_dir}/{class_name}.java", "w") as f:
+            f.write(client_class)
+        print(f"Generated: {api_dir}/{class_name}.java", file=sys.stderr)
 
 
 def main():

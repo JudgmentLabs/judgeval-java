@@ -8,20 +8,65 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 
-import com.judgmentlabs.judgeval.api.JudgmentSyncClient;
-import com.judgmentlabs.judgeval.api.models.EvalResultsFetch;
 import com.judgmentlabs.judgeval.data.EvaluationRun;
 import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.data.ScorerData;
 import com.judgmentlabs.judgeval.data.ScoringResult;
 import com.judgmentlabs.judgeval.exceptions.JudgmentRuntimeError;
 import com.judgmentlabs.judgeval.exceptions.JudgmentTestError;
+import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
+import com.judgmentlabs.judgeval.internal.api.models.EvalResultsFetch;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.scorers.ExampleScorer;
 import com.judgmentlabs.judgeval.scorers.api_scorers.PromptScorer;
 import com.judgmentlabs.judgeval.utils.Logger;
 
+/**
+ * Main client for running evaluations with Judgment Labs.
+ *
+ * <p>The JudgmentClient provides functionality to:
+ *
+ * <ul>
+ *   <li>Run evaluations with multiple examples and scorers
+ *   <li>Validate inputs and scorer configurations
+ *   <li>Poll for evaluation results
+ *   <li>Assert test results for automated testing
+ * </ul>
+ *
+ * <h3>Basic Usage</h3>
+ *
+ * <pre>{@code
+ * JudgmentClient client = new JudgmentClient(apiKey, organizationId);
+ *
+ * List<Example> examples = Arrays.asList(
+ *         Example.builder()
+ *                 .input("What is 2+2?")
+ *                 .actualOutput("4")
+ *                 .expectedOutput("4")
+ *                 .build());
+ *
+ * List<BaseScorer> scorers = Arrays.asList(
+ *         AnswerCorrectnessScorer.create(0.8));
+ *
+ * List<ScoringResult> results = client.runEvaluation(
+ *         examples, scorers, "my-project", "test-run", "gpt-4", false);
+ * }</pre>
+ *
+ * <h3>Test Mode</h3>
+ *
+ * <pre>{@code
+ * // Enable test assertions
+ * List<ScoringResult> results = client.runEvaluation(
+ *         examples, scorers, "my-project", "test-run", "gpt-4", true);
+ * // This will throw JudgmentTestError if any tests fail
+ * }</pre>
+ *
+ * @see Example
+ * @see BaseScorer
+ * @see ScoringResult
+ * @see JudgmentTestError
+ */
 public class JudgmentClient {
     private final String apiKey;
     private final String organizationId;
@@ -35,6 +80,29 @@ public class JudgmentClient {
                 new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
     }
 
+    /**
+     * Runs an evaluation with the specified examples and scorers.
+     *
+     * <p>The method performs the following validations:
+     *
+     * <ul>
+     *   <li>All examples must have the same field keys
+     *   <li>Examples must contain required parameters for all scorers
+     *   <li>Cannot mix local and Judgment API scorers
+     *   <li>All input parameters must be valid
+     * </ul>
+     *
+     * @param examples the examples to evaluate
+     * @param scorers the scorers to use for evaluation
+     * @param projectName the project name
+     * @param evalRunName the evaluation run name
+     * @param model the model used for generation (can be null, will use default)
+     * @param assertTest whether to assert test results and throw exceptions on failures
+     * @return a list of scoring results for each example
+     * @throws IllegalArgumentException if inputs are invalid
+     * @throws JudgmentRuntimeError if evaluation fails
+     * @throws JudgmentTestError if assertTest is true and any tests fail
+     */
     public List<ScoringResult> runEvaluation(
             List<Example> examples,
             List<BaseScorer> scorers,
@@ -45,9 +113,9 @@ public class JudgmentClient {
         validateInputs(examples, scorers, projectName, evalRunName);
 
         if (!examples.isEmpty()) {
-            Set<String> keys = examples.get(0).getFields().keySet();
+            Set<String> keys = examples.get(0).getAdditionalProperties().keySet();
             for (Example example : examples) {
-                Set<String> currentKeys = example.getFields().keySet();
+                Set<String> currentKeys = example.getAdditionalProperties().keySet();
                 if (!currentKeys.equals(keys)) {
                     throw new IllegalArgumentException(
                             String.format(
@@ -67,13 +135,12 @@ public class JudgmentClient {
             Logger.info("Submitting scorers payload count=" + convertedScorers.size());
 
             EvaluationRun eval =
-                    new EvaluationRun(
-                            projectName,
-                            evalRunName,
-                            examples,
-                            convertedScorers,
-                            model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL,
-                            organizationId);
+                    EvaluationRun.builder(projectName, evalRunName)
+                            .examples(examples)
+                            .scorers(convertedScorers)
+                            .model(model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL)
+                            .organizationId(organizationId)
+                            .build();
 
             List<ScoringResult> results = runEval(eval);
 
@@ -96,6 +163,29 @@ public class JudgmentClient {
                             "An unexpected error occurred during evaluation: %s", e.getMessage()),
                     e);
         }
+    }
+
+    public List<ScoringResult> runEvaluation(
+            List<Example> examples,
+            List<BaseScorer> scorers,
+            String projectName,
+            String evalRunName) {
+        return runEvaluation(examples, scorers, projectName, evalRunName, null, false);
+    }
+
+    public List<ScoringResult> runEvaluation(
+            Example example,
+            BaseScorer scorer,
+            String projectName,
+            String evalRunName,
+            String model) {
+        return runEvaluation(
+                List.of(example), List.of(scorer), projectName, evalRunName, model, false);
+    }
+
+    public List<ScoringResult> runEvaluation(
+            Example example, BaseScorer scorer, String projectName, String evalRunName) {
+        return runEvaluation(example, scorer, projectName, evalRunName, null);
     }
 
     private void validateInputs(
@@ -211,6 +301,17 @@ public class JudgmentClient {
         return pollEvaluationUntilComplete(eval, client, 2.0, 5, 60);
     }
 
+    /**
+     * Polls for evaluation results until completion with custom settings.
+     *
+     * @param eval the evaluation run to poll
+     * @param client the API client to use
+     * @param pollIntervalSeconds the interval between polls in seconds
+     * @param maxFailures the maximum number of consecutive failures before giving up
+     * @param maxPollCount the maximum number of polls before timing out
+     * @return a list of scoring results
+     * @throws JudgmentRuntimeError if polling fails or times out
+     */
     private List<ScoringResult> pollEvaluationUntilComplete(
             EvaluationRun eval,
             JudgmentSyncClient client,
@@ -280,47 +381,21 @@ public class JudgmentClient {
         List<ScoringResult> results = new ArrayList<>();
 
         for (Map<String, Object> exampleData : examplesData) {
-            List<Map<String, Object>> scorerDataList =
-                    (List<Map<String, Object>>) exampleData.get("scorer_data");
-            List<ScorerData> scorersData = new ArrayList<>();
+            List<ScorerData> scorersData = parseScorerDataList(exampleData);
+            boolean success =
+                    scorersData.stream()
+                            .allMatch(scorerData -> Boolean.TRUE.equals(scorerData.getSuccess()));
 
-            boolean success = true;
-            if (scorerDataList != null) {
-                for (Map<String, Object> rawScorerData : scorerDataList) {
-                    ScorerData scorerData = new ScorerData();
-                    scorerData.setName((String) rawScorerData.get("name"));
-                    Object scoreObj = rawScorerData.get("score");
-                    scorerData.setScore(
-                            scoreObj instanceof Number ? ((Number) scoreObj).doubleValue() : null);
-                    scorerData.setSuccess((Boolean) rawScorerData.get("success"));
-                    scorerData.setReason((String) rawScorerData.get("reason"));
-                    Object thresholdObj = rawScorerData.get("threshold");
-                    scorerData.setThreshold(
-                            thresholdObj instanceof Number
-                                    ? ((Number) thresholdObj).doubleValue()
-                                    : null);
-                    scorerData.setStrictMode((Boolean) rawScorerData.get("strict_mode"));
-                    scorerData.setEvaluationModel((String) rawScorerData.get("evaluation_model"));
-                    scorerData.setError((String) rawScorerData.get("error"));
-                    scorerData.setAdditionalMetadata(
-                            (Map<String, Object>) rawScorerData.get("additional_metadata"));
+            Example example = Example.builder().name(parseString(exampleData.get("name"))).build();
+            example.setExampleId(parseString(exampleData.get("example_id")));
+            example.setCreatedAt(parseString(exampleData.get("created_at")));
 
-                    scorersData.add(scorerData);
-                    if (!Boolean.TRUE.equals(scorerData.getSuccess())) {
-                        success = false;
-                    }
-                }
-            }
-
-            Example example = new Example();
-            example.setExampleId((String) exampleData.get("example_id"));
-            example.setCreatedAt((String) exampleData.get("created_at"));
-            example.setName(exampleData.get("name"));
-
-            ScoringResult result = new ScoringResult();
-            result.setSuccess(success);
-            result.setScorersData(scorersData);
-            result.setDataObject(example);
+            ScoringResult result =
+                    ScoringResult.builder()
+                            .success(success)
+                            .scorersData(scorersData)
+                            .dataObject(example)
+                            .build();
 
             results.add(result);
         }
@@ -328,6 +403,62 @@ public class JudgmentClient {
         return results;
     }
 
+    private List<ScorerData> parseScorerDataList(Map<String, Object> exampleData) {
+        List<ScorerData> scorersData = new ArrayList<>();
+        Object scorerDataObj = exampleData.get("scorer_data");
+
+        if (scorerDataObj instanceof List) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> scorerDataList = (List<Map<String, Object>>) scorerDataObj;
+
+            for (Map<String, Object> rawScorerData : scorerDataList) {
+                ScorerData scorerData =
+                        ScorerData.builder()
+                                .name(parseString(rawScorerData.get("name")))
+                                .score(parseDouble(rawScorerData.get("score")))
+                                .success(parseBoolean(rawScorerData.get("success")))
+                                .reason(parseString(rawScorerData.get("reason")))
+                                .threshold(parseDouble(rawScorerData.get("threshold")))
+                                .strictMode(parseBoolean(rawScorerData.get("strict_mode")))
+                                .evaluationModel(parseString(rawScorerData.get("evaluation_model")))
+                                .error(parseString(rawScorerData.get("error")))
+                                .additionalMetadata(
+                                        parseMetadata(rawScorerData.get("additional_metadata")))
+                                .build();
+
+                scorersData.add(scorerData);
+            }
+        }
+
+        return scorersData;
+    }
+
+    private String parseString(Object value) {
+        return value instanceof String ? (String) value : null;
+    }
+
+    private Double parseDouble(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+        return null;
+    }
+
+    private Boolean parseBoolean(Object value) {
+        return value instanceof Boolean ? (Boolean) value : null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> parseMetadata(Object value) {
+        return value instanceof Map ? (Map<String, Object>) value : null;
+    }
+
+    /**
+     * Asserts test results and throws exceptions for failures.
+     *
+     * @param results the evaluation results to assert
+     * @throws JudgmentTestError if any tests failed, with detailed error information
+     */
     private void assertTestResults(List<ScoringResult> results) {
         if (results == null || results.isEmpty()) {
             throw new JudgmentTestError("No results to assert");

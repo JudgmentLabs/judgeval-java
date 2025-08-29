@@ -15,4 +15,16 @@ public class AnswerCorrectnessScorer extends APIScorer {
                         ExampleParams.ACTUAL_OUTPUT.getValue(),
                         ExampleParams.EXPECTED_OUTPUT.getValue()));
     }
+
+    public static APIScorer.Builder<AnswerCorrectnessScorer> builder() {
+        return APIScorer.builder(AnswerCorrectnessScorer.class);
+    }
+
+    public static AnswerCorrectnessScorer create() {
+        return new AnswerCorrectnessScorer();
+    }
+
+    public static AnswerCorrectnessScorer create(double threshold) {
+        return builder().threshold(threshold).build();
+    }
 }
