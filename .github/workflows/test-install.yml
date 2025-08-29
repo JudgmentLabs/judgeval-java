@@ -1,0 +1,35 @@
+name: Test Install
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Test Install
+        run: |
+          mvn clean install -Dgpg.skip=true
+
+      - name: Verify Build Artifacts
+        run: |
+          echo "Checking build artifacts..."
+          ls -la target/
+          echo "JAR files:"
+          find target/ -name "*.jar" -type f
