@@ -8,11 +8,11 @@ import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
-import com.judgmentlabs.judgeval.api.JudgmentSyncClient;
-import com.judgmentlabs.judgeval.api.models.ResolveProjectNameRequest;
-import com.judgmentlabs.judgeval.api.models.ResolveProjectNameResponse;
 import com.judgmentlabs.judgeval.data.EvaluationRun;
 import com.judgmentlabs.judgeval.data.Example;
+import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
+import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
+import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
 import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;

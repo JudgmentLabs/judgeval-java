@@ -3,7 +3,7 @@ package com.judgmentlabs.judgeval.data;
 import java.time.Instant;
 import java.util.Map;
 
-public class Example extends com.judgmentlabs.judgeval.api.models.Example {
+public class Example extends com.judgmentlabs.judgeval.internal.api.models.Example {
 
     public enum ExampleParams {
         INPUT("input"),
@@ -31,10 +31,6 @@ public class Example extends com.judgmentlabs.judgeval.api.models.Example {
         setExampleId("");
         setCreatedAt(Instant.now().toString());
         setName(null);
-    }
-
-    public Map<String, Object> getFields() {
-        return getAdditionalProperties();
     }
 
     public static Builder builder() {

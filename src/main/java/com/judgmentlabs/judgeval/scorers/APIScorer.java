@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.judgmentlabs.judgeval.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.data.APIScorerType;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
 public class APIScorer extends BaseScorer {
     private APIScorerType scoreType;

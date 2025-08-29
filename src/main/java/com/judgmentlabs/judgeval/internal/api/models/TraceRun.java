@@ -1,4 +1,4 @@
-package com.judgmentlabs.judgeval.api.models;
+package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
 import java.util.List;
@@ -9,24 +9,18 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class EvaluationRun {
-    @JsonProperty("id")
-    private Object id;
-
+public class TraceRun {
     @JsonProperty("project_name")
     private Object projectName;
 
     @JsonProperty("eval_name")
     private Object evalName;
 
-    @JsonProperty("examples")
-    private List<Example> examples;
+    @JsonProperty("traces")
+    private List<Trace> traces;
 
-    @JsonProperty("custom_scorers")
-    private List<BaseScorer> customScorers;
-
-    @JsonProperty("judgment_scorers")
-    private List<ScorerConfig> judgmentScorers;
+    @JsonProperty("scorers")
+    private List<ScorerConfig> scorers;
 
     @JsonProperty("model")
     private String model;
@@ -34,11 +28,8 @@ public class EvaluationRun {
     @JsonProperty("trace_span_id")
     private Object traceSpanId;
 
-    @JsonProperty("trace_id")
-    private Object traceId;
-
-    @JsonProperty("created_at")
-    private Object createdAt;
+    @JsonProperty("tools")
+    private Object tools;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -52,10 +43,6 @@ public class EvaluationRun {
         additionalProperties.put(name, value);
     }
 
-    public Object getId() {
-        return id;
-    }
-
     public Object getProjectName() {
         return projectName;
     }
@@ -64,16 +51,12 @@ public class EvaluationRun {
         return evalName;
     }
 
-    public List<Example> getExamples() {
-        return examples;
+    public List<Trace> getTraces() {
+        return traces;
     }
 
-    public List<BaseScorer> getCustomScorers() {
-        return customScorers;
-    }
-
-    public List<ScorerConfig> getJudgmentScorers() {
-        return judgmentScorers;
+    public List<ScorerConfig> getScorers() {
+        return scorers;
     }
 
     public String getModel() {
@@ -84,16 +67,8 @@ public class EvaluationRun {
         return traceSpanId;
     }
 
-    public Object getTraceId() {
-        return traceId;
-    }
-
-    public Object getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setId(Object id) {
-        this.id = id;
+    public Object getTools() {
+        return tools;
     }
 
     public void setProjectName(Object projectName) {
@@ -104,16 +79,12 @@ public class EvaluationRun {
         this.evalName = evalName;
     }
 
-    public void setExamples(List<Example> examples) {
-        this.examples = examples;
+    public void setTraces(List<Trace> traces) {
+        this.traces = traces;
     }
 
-    public void setCustomScorers(List<BaseScorer> customScorers) {
-        this.customScorers = customScorers;
-    }
-
-    public void setJudgmentScorers(List<ScorerConfig> judgmentScorers) {
-        this.judgmentScorers = judgmentScorers;
+    public void setScorers(List<ScorerConfig> scorers) {
+        this.scorers = scorers;
     }
 
     public void setModel(String model) {
@@ -124,45 +95,35 @@ public class EvaluationRun {
         this.traceSpanId = traceSpanId;
     }
 
-    public void setTraceId(Object traceId) {
-        this.traceId = traceId;
-    }
-
-    public void setCreatedAt(Object createdAt) {
-        this.createdAt = createdAt;
+    public void setTools(Object tools) {
+        this.tools = tools;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        EvaluationRun other = (EvaluationRun) obj;
-        return Objects.equals(id, other.id)
-                && Objects.equals(projectName, other.projectName)
+        TraceRun other = (TraceRun) obj;
+        return Objects.equals(projectName, other.projectName)
                 && Objects.equals(evalName, other.evalName)
-                && Objects.equals(examples, other.examples)
-                && Objects.equals(customScorers, other.customScorers)
-                && Objects.equals(judgmentScorers, other.judgmentScorers)
+                && Objects.equals(traces, other.traces)
+                && Objects.equals(scorers, other.scorers)
                 && Objects.equals(model, other.model)
                 && Objects.equals(traceSpanId, other.traceSpanId)
-                && Objects.equals(traceId, other.traceId)
-                && Objects.equals(createdAt, other.createdAt)
+                && Objects.equals(tools, other.tools)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                id,
                 projectName,
                 evalName,
-                examples,
-                customScorers,
-                judgmentScorers,
+                traces,
+                scorers,
                 model,
                 traceSpanId,
-                traceId,
-                createdAt,
+                tools,
                 Objects.hashCode(additionalProperties));
     }
 }

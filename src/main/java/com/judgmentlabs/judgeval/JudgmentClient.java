@@ -8,14 +8,14 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 
-import com.judgmentlabs.judgeval.api.JudgmentSyncClient;
-import com.judgmentlabs.judgeval.api.models.EvalResultsFetch;
 import com.judgmentlabs.judgeval.data.EvaluationRun;
 import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.data.ScorerData;
 import com.judgmentlabs.judgeval.data.ScoringResult;
 import com.judgmentlabs.judgeval.exceptions.JudgmentRuntimeError;
 import com.judgmentlabs.judgeval.exceptions.JudgmentTestError;
+import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
+import com.judgmentlabs.judgeval.internal.api.models.EvalResultsFetch;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.scorers.ExampleScorer;
@@ -124,9 +124,9 @@ public class JudgmentClient {
         validateInputs(examples, scorers, projectName, evalRunName);
 
         if (!examples.isEmpty()) {
-            Set<String> keys = examples.get(0).getFields().keySet();
+            Set<String> keys = examples.get(0).getAdditionalProperties().keySet();
             for (Example example : examples) {
-                Set<String> currentKeys = example.getFields().keySet();
+                Set<String> currentKeys = example.getAdditionalProperties().keySet();
                 if (!currentKeys.equals(keys)) {
                     throw new IllegalArgumentException(
                             String.format(

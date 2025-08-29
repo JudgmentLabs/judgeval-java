@@ -2,7 +2,7 @@ package com.judgmentlabs.judgeval.data;
 
 import java.util.List;
 
-public class ScoringResult extends com.judgmentlabs.judgeval.api.models.ScoringResult {
+public class ScoringResult extends com.judgmentlabs.judgeval.internal.api.models.ScoringResult {
 
     public static Builder builder() {
         return new Builder();

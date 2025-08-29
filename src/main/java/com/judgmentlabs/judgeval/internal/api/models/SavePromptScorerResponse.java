@@ -1,4 +1,4 @@
-package com.judgmentlabs.judgeval.api.models;
+package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
 import java.util.Map;

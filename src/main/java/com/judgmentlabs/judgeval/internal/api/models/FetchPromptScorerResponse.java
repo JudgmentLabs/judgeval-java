@@ -1,4 +1,4 @@
-package com.judgmentlabs.judgeval.api.models;
+package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,9 +8,9 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ResolveProjectNameResponse {
-    @JsonProperty("project_id")
-    private String projectId;
+public class FetchPromptScorerResponse {
+    @JsonProperty("scorer")
+    private PromptScorer scorer;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -24,25 +24,25 @@ public class ResolveProjectNameResponse {
         additionalProperties.put(name, value);
     }
 
-    public String getProjectId() {
-        return projectId;
+    public PromptScorer getScorer() {
+        return scorer;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setScorer(PromptScorer scorer) {
+        this.scorer = scorer;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        ResolveProjectNameResponse other = (ResolveProjectNameResponse) obj;
-        return Objects.equals(projectId, other.projectId)
+        FetchPromptScorerResponse other = (FetchPromptScorerResponse) obj;
+        return Objects.equals(scorer, other.scorer)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(projectId, Objects.hashCode(additionalProperties));
+        return Objects.hash(scorer, Objects.hashCode(additionalProperties));
     }
 }

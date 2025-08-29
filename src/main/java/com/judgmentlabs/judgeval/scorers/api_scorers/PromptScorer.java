@@ -7,16 +7,16 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.judgmentlabs.judgeval.Env;
-import com.judgmentlabs.judgeval.api.JudgmentSyncClient;
-import com.judgmentlabs.judgeval.api.models.FetchPromptScorerRequest;
-import com.judgmentlabs.judgeval.api.models.FetchPromptScorerResponse;
-import com.judgmentlabs.judgeval.api.models.SavePromptScorerRequest;
-import com.judgmentlabs.judgeval.api.models.SavePromptScorerResponse;
-import com.judgmentlabs.judgeval.api.models.ScorerConfig;
-import com.judgmentlabs.judgeval.api.models.ScorerExistsRequest;
-import com.judgmentlabs.judgeval.api.models.ScorerExistsResponse;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.exceptions.JudgmentAPIError;
+import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
+import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorerRequest;
+import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorerResponse;
+import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerRequest;
+import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerResponse;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsRequest;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsResponse;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
 public class PromptScorer extends APIScorer {
@@ -80,7 +80,8 @@ public class PromptScorer extends APIScorer {
             request.setName(name);
 
             FetchPromptScorerResponse response = client.fetchScorer(request);
-            com.judgmentlabs.judgeval.api.models.PromptScorer scorerConfig = response.getScorer();
+            com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorerConfig =
+                    response.getScorer();
 
             return new PromptScorer(
                     client,

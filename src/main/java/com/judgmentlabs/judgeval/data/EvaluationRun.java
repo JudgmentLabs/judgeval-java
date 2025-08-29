@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.judgmentlabs.judgeval.api.models.BaseScorer;
-import com.judgmentlabs.judgeval.api.models.ScorerConfig;
+import com.judgmentlabs.judgeval.internal.api.models.BaseScorer;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
-public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.EvaluationRun {
+public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models.EvaluationRun {
 
     private String organizationId;
 
@@ -31,7 +31,8 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.Evaluati
         EvaluationRun eval = new EvaluationRun();
         eval.setProjectName(projectName);
         eval.setEvalName(evalName);
-        eval.setExamples((List<com.judgmentlabs.judgeval.api.models.Example>) (List<?>) examples);
+        eval.setExamples(
+                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples);
         eval.setModel(model);
         eval.setOrganizationId(organizationId);
 
@@ -61,7 +62,8 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.Evaluati
         EvaluationRun eval = new EvaluationRun();
         eval.setProjectName(projectName);
         eval.setEvalName(evalName);
-        eval.setExamples((List<com.judgmentlabs.judgeval.api.models.Example>) (List<?>) examples);
+        eval.setExamples(
+                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples);
         eval.setModel(model);
         eval.setOrganizationId(organizationId);
 
@@ -85,7 +87,8 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.api.models.Evaluati
         this();
         setProjectName(projectName);
         setEvalName(evalName);
-        setExamples((List<com.judgmentlabs.judgeval.api.models.Example>) (List<?>) examples);
+        setExamples(
+                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples);
         setModel(model);
         setOrganizationId(organizationId);
 

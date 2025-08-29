@@ -2,7 +2,7 @@ package com.judgmentlabs.judgeval.data;
 
 import java.util.Map;
 
-public class ScorerData extends com.judgmentlabs.judgeval.api.models.ScorerData {
+public class ScorerData extends com.judgmentlabs.judgeval.internal.api.models.ScorerData {
 
     public static Builder builder() {
         return new Builder();
