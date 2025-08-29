@@ -272,20 +272,20 @@ public final class Tracer {
         setSpanKind("span");
     }
 
-    public void setInput(String input) {
-        Optional.ofNullable(Span.current())
-                .ifPresent(
-                        span ->
-                                span.setAttribute(
-                                        OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input));
+    public void setInput(Object input) {
+        setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input);
     }
 
-    public void setOutput(String output) {
-        Optional.ofNullable(Span.current())
-                .ifPresent(
-                        span ->
-                                span.setAttribute(
-                                        OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output));
+    public void setOutput(Object output) {
+        setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output);
+    }
+
+    public void setInput(Object input, Type type) {
+        setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input, type);
+    }
+
+    public void setOutput(Object output, Type type) {
+        setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output, type);
     }
 
     public void setInput(String input, Map<String, Object> metadata) {
