@@ -257,25 +257,27 @@ public final class Tracer {
      *   <li>The model used for generation
      * </ul>
      *
-     * <p>If evaluation is disabled in the configuration, this method does nothing.
+     * <p>If evaluation is disabled in the configuration, this method does nothing. The method
+     * respects OpenTelemetry's internal sampler - evaluation only runs if the current span is
+     * recording.
      *
      * @param scorer the scorer to use for evaluation (must not be null)
      * @param example the example to evaluate (must not be null)
      * @param model the model used for generation (can be null, will use default)
-     * @param samplingRate the sampling rate for evaluation (0.0 to 1.0)
      */
-    public void asyncEvaluate(
-            BaseScorer scorer, Example example, String model, double samplingRate) {
+    public void asyncEvaluate(BaseScorer scorer, Example example, String model) {
         if (!configuration.enableEvaluation()) {
-            Logger.info("Skipping evaluation because enableEvaluation is false");
             return;
         }
 
-        SpanContext spanContext =
-                Optional.ofNullable(Span.current()).map(Span::getSpanContext).orElse(null);
+        Span currentSpan = Span.current();
+        if (currentSpan == null || !currentSpan.getSpanContext().isSampled()) {
+            return;
+        }
 
-        String traceId = spanContext != null ? spanContext.getTraceId() : null;
-        String spanId = spanContext != null ? spanContext.getSpanId() : null;
+        SpanContext spanContext = currentSpan.getSpanContext();
+        String traceId = spanContext.getTraceId();
+        String spanId = spanContext.getSpanId();
 
         Object transport = scorer.toTransport();
         Logger.info(
@@ -293,24 +295,13 @@ public final class Tracer {
     }
 
     /**
-     * Asynchronously evaluates a scorer with an example using default sampling rate.
-     *
-     * @param scorer the scorer to use for evaluation (must not be null)
-     * @param example the example to evaluate (must not be null)
-     * @param model the model used for generation (can be null, will use default)
-     */
-    public void asyncEvaluate(BaseScorer scorer, Example example, String model) {
-        asyncEvaluate(scorer, example, model, 1.0);
-    }
-
-    /**
-     * Asynchronously evaluates a scorer with an example using default model and sampling rate.
+     * Asynchronously evaluates a scorer with an example using default model.
      *
      * @param scorer the scorer to use for evaluation (must not be null)
      * @param example the example to evaluate (must not be null)
      */
     public void asyncEvaluate(BaseScorer scorer, Example example) {
-        asyncEvaluate(scorer, example, null, 1.0);
+        asyncEvaluate(scorer, example, null);
     }
 
     /**
