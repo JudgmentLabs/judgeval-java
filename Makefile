@@ -24,6 +24,7 @@ install: ## Install the project
 
 generate-client: ## Generate API client from OpenAPI spec
 	./scripts/generate-client.sh
+	make format
 
 lint: ## Run linting only
 	mvn checkstyle:check

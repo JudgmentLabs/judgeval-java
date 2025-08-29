@@ -25,9 +25,6 @@ public class Trace {
     @JsonProperty("trace_spans")
     private List<TraceSpan> traceSpans;
 
-    @JsonProperty("offline_mode")
-    private Boolean offlineMode;
-
     @JsonProperty("rules")
     private Object rules;
 
@@ -78,10 +75,6 @@ public class Trace {
         return traceSpans;
     }
 
-    public Boolean getOfflineMode() {
-        return offlineMode;
-    }
-
     public Object getRules() {
         return rules;
     }
@@ -126,10 +119,6 @@ public class Trace {
         this.traceSpans = traceSpans;
     }
 
-    public void setOfflineMode(Boolean offlineMode) {
-        this.offlineMode = offlineMode;
-    }
-
     public void setRules(Object rules) {
         this.rules = rules;
     }
@@ -164,7 +153,6 @@ public class Trace {
                 && Objects.equals(createdAt, other.createdAt)
                 && Objects.equals(duration, other.duration)
                 && Objects.equals(traceSpans, other.traceSpans)
-                && Objects.equals(offlineMode, other.offlineMode)
                 && Objects.equals(rules, other.rules)
                 && Objects.equals(hasNotification, other.hasNotification)
                 && Objects.equals(customerId, other.customerId)
@@ -182,7 +170,6 @@ public class Trace {
                 createdAt,
                 duration,
                 traceSpans,
-                offlineMode,
                 rules,
                 hasNotification,
                 customerId,
