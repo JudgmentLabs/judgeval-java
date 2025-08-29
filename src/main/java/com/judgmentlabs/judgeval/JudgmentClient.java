@@ -66,20 +66,12 @@ import com.judgmentlabs.judgeval.utils.Logger;
  * @see BaseScorer
  * @see ScoringResult
  * @see JudgmentTestError
- * @since 1.0.0
  */
 public class JudgmentClient {
     private final String apiKey;
     private final String organizationId;
     private final JudgmentSyncClient client;
 
-    /**
-     * Creates a new JudgmentClient with the specified API credentials.
-     *
-     * @param apiKey the API key for authentication (must not be null)
-     * @param organizationId the organization ID (must not be null)
-     * @throws NullPointerException if apiKey or organizationId is null
-     */
     public JudgmentClient(String apiKey, String organizationId) {
         this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");
         this.organizationId =
@@ -91,9 +83,6 @@ public class JudgmentClient {
     /**
      * Runs an evaluation with the specified examples and scorers.
      *
-     * <p>This method submits an evaluation request to Judgment Labs and polls for results until
-     * completion. The evaluation can be run in test mode to automatically assert results.
-     *
      * <p>The method performs the following validations:
      *
      * <ul>
@@ -103,10 +92,10 @@ public class JudgmentClient {
      *   <li>All input parameters must be valid
      * </ul>
      *
-     * @param examples the examples to evaluate (must not be null or empty)
-     * @param scorers the scorers to use for evaluation (must not be null or empty)
-     * @param projectName the project name (must not be null or empty)
-     * @param evalRunName the evaluation run name (must not be null or empty)
+     * @param examples the examples to evaluate
+     * @param scorers the scorers to use for evaluation
+     * @param projectName the project name
+     * @param evalRunName the evaluation run name
      * @param model the model used for generation (can be null, will use default)
      * @param assertTest whether to assert test results and throw exceptions on failures
      * @return a list of scoring results for each example
@@ -176,15 +165,6 @@ public class JudgmentClient {
         }
     }
 
-    /**
-     * Runs an evaluation with default model and no test assertions.
-     *
-     * @param examples the examples to evaluate
-     * @param scorers the scorers to use for evaluation
-     * @param projectName the project name
-     * @param evalRunName the evaluation run name
-     * @return a list of scoring results
-     */
     public List<ScoringResult> runEvaluation(
             List<Example> examples,
             List<BaseScorer> scorers,
@@ -193,16 +173,6 @@ public class JudgmentClient {
         return runEvaluation(examples, scorers, projectName, evalRunName, null, false);
     }
 
-    /**
-     * Runs an evaluation with a single example and scorer.
-     *
-     * @param example the example to evaluate
-     * @param scorer the scorer to use for evaluation
-     * @param projectName the project name
-     * @param evalRunName the evaluation run name
-     * @param model the model used for generation (can be null)
-     * @return a list of scoring results
-     */
     public List<ScoringResult> runEvaluation(
             Example example,
             BaseScorer scorer,
@@ -213,29 +183,11 @@ public class JudgmentClient {
                 List.of(example), List.of(scorer), projectName, evalRunName, model, false);
     }
 
-    /**
-     * Runs an evaluation with a single example and scorer using default model.
-     *
-     * @param example the example to evaluate
-     * @param scorer the scorer to use for evaluation
-     * @param projectName the project name
-     * @param evalRunName the evaluation run name
-     * @return a list of scoring results
-     */
     public List<ScoringResult> runEvaluation(
             Example example, BaseScorer scorer, String projectName, String evalRunName) {
         return runEvaluation(example, scorer, projectName, evalRunName, null);
     }
 
-    /**
-     * Validates all input parameters for the evaluation.
-     *
-     * @param examples the examples to validate
-     * @param scorers the scorers to validate
-     * @param projectName the project name to validate
-     * @param evalRunName the evaluation run name to validate
-     * @throws IllegalArgumentException if any parameter is invalid
-     */
     private void validateInputs(
             List<Example> examples,
             List<BaseScorer> scorers,
@@ -257,16 +209,6 @@ public class JudgmentClient {
         checkExamples(examples, scorers);
     }
 
-    /**
-     * Checks that all examples contain the required parameters for their scorers.
-     *
-     * <p>This method validates that each example has all the required parameters for the scorers
-     * being used. If any parameters are missing, it logs warnings and optionally prompts the user
-     * to continue.
-     *
-     * @param examples the examples to check
-     * @param scorers the scorers to validate against
-     */
     private void checkExamples(List<Example> examples, List<BaseScorer> scorers) {
         boolean promptUser = false;
 
@@ -313,15 +255,6 @@ public class JudgmentClient {
         }
     }
 
-    /**
-     * Validates that scorers are compatible with each other.
-     *
-     * <p>Currently, the system does not support mixing local scorers (ExampleScorer) with Judgment
-     * API scorers (APIScorer, PromptScorer) in the same evaluation.
-     *
-     * @param scorers the scorers to validate
-     * @throws IllegalArgumentException if incompatible scorers are mixed
-     */
     private void validateScorerTypes(List<BaseScorer> scorers) {
         int customScorers = 0;
         int judgmentScorers = 0;
@@ -341,13 +274,6 @@ public class JudgmentClient {
         }
     }
 
-    /**
-     * Submits an evaluation run and polls for results until completion.
-     *
-     * @param eval the evaluation run to execute
-     * @return a list of scoring results
-     * @throws JudgmentRuntimeError if evaluation fails
-     */
     private List<ScoringResult> runEval(EvaluationRun eval) {
         try {
             Logger.info("Submitting evaluation to API...");
@@ -370,14 +296,6 @@ public class JudgmentClient {
         }
     }
 
-    /**
-     * Polls for evaluation results until completion with default settings.
-     *
-     * @param eval the evaluation run to poll
-     * @param client the API client to use
-     * @return a list of scoring results
-     * @throws JudgmentRuntimeError if polling fails or times out
-     */
     private List<ScoringResult> pollEvaluationUntilComplete(
             EvaluationRun eval, JudgmentSyncClient client) {
         return pollEvaluationUntilComplete(eval, client, 2.0, 5, 60);
@@ -385,9 +303,6 @@ public class JudgmentClient {
 
     /**
      * Polls for evaluation results until completion with custom settings.
-     *
-     * <p>This method continuously polls the API for evaluation status and results. It uses
-     * exponential backoff for retries and has configurable timeouts.
      *
      * @param eval the evaluation run to poll
      * @param client the API client to use
@@ -462,15 +377,6 @@ public class JudgmentClient {
                 "Error checking evaluation status after " + pollCount + " attempts");
     }
 
-    /**
-     * Parses raw evaluation results into structured ScoringResult objects.
-     *
-     * <p>This method converts the raw API response data into properly structured ScoringResult
-     * objects that contain the evaluation results for each example.
-     *
-     * @param examplesData the raw examples data from the API response
-     * @return a list of parsed ScoringResult objects
-     */
     private List<ScoringResult> parseScoringResults(List<Map<String, Object>> examplesData) {
         List<ScoringResult> results = new ArrayList<>();
 
@@ -497,12 +403,6 @@ public class JudgmentClient {
         return results;
     }
 
-    /**
-     * Parses the scorer data list from the API response.
-     *
-     * @param exampleData the example data containing scorer information
-     * @return a list of parsed ScorerData objects
-     */
     private List<ScorerData> parseScorerDataList(Map<String, Object> exampleData) {
         List<ScorerData> scorersData = new ArrayList<>();
         Object scorerDataObj = exampleData.get("scorer_data");
@@ -533,22 +433,10 @@ public class JudgmentClient {
         return scorersData;
     }
 
-    /**
-     * Safely parses a string value from an object.
-     *
-     * @param value the value to parse
-     * @return the string value, or null if not a string
-     */
     private String parseString(Object value) {
         return value instanceof String ? (String) value : null;
     }
 
-    /**
-     * Safely parses a double value from an object.
-     *
-     * @param value the value to parse
-     * @return the double value, or null if not a number
-     */
     private Double parseDouble(Object value) {
         if (value instanceof Number) {
             return ((Number) value).doubleValue();
@@ -556,22 +444,10 @@ public class JudgmentClient {
         return null;
     }
 
-    /**
-     * Safely parses a boolean value from an object.
-     *
-     * @param value the value to parse
-     * @return the boolean value, or null if not a boolean
-     */
     private Boolean parseBoolean(Object value) {
         return value instanceof Boolean ? (Boolean) value : null;
     }
 
-    /**
-     * Safely parses metadata from an object.
-     *
-     * @param value the value to parse
-     * @return the metadata map, or null if not a map
-     */
     @SuppressWarnings("unchecked")
     private Map<String, Object> parseMetadata(Object value) {
         return value instanceof Map ? (Map<String, Object>) value : null;
@@ -579,18 +455,6 @@ public class JudgmentClient {
 
     /**
      * Asserts test results and throws exceptions for failures.
-     *
-     * <p>This method analyzes the evaluation results and throws a JudgmentTestError if any tests
-     * failed. It provides detailed logging of test results and comprehensive error messages for
-     * debugging.
-     *
-     * <p>The method logs:
-     *
-     * <ul>
-     *   <li>Overall test statistics (passed/failed counts)
-     *   <li>Individual test results with detailed scorer information
-     *   <li>Specific failure reasons and scores for each failed test
-     * </ul>
      *
      * @param results the evaluation results to assert
      * @throws JudgmentTestError if any tests failed, with detailed error information

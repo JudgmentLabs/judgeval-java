@@ -20,7 +20,6 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
         setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
     }
 
-    // Factory method for local scorers (BaseScorer)
     public static EvaluationRun createWithLocalScorers(
             String projectName,
             String evalName,
@@ -51,7 +50,6 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
         return eval;
     }
 
-    // Factory method for API scorers (ScorerConfig)
     public static EvaluationRun createWithApiScorers(
             String projectName,
             String evalName,
@@ -76,7 +74,6 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
         return eval;
     }
 
-    // Generic constructor for mixed types (Object)
     public EvaluationRun(
             String projectName,
             String evalName,
@@ -261,7 +258,6 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
                 throw new IllegalArgumentException("At least one example is required");
             }
 
-            // Determine which type of scorers to use
             if (localScorers != null && !localScorers.isEmpty()) {
                 return createWithLocalScorers(
                         projectName, evalName, examples, localScorers, model, organizationId);
