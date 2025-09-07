@@ -4,232 +4,196 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BaseScorer {
     @JsonProperty("score_type")
-    @Nonnull
     private String scoreType;
 
     @JsonProperty("threshold")
-    @Nullable
     private Double threshold;
 
     @JsonProperty("name")
-    @Nullable
     private String name;
 
     @JsonProperty("class_name")
-    @Nullable
     private String className;
 
     @JsonProperty("score")
-    @Nullable
     private Double score;
 
     @JsonProperty("score_breakdown")
-    @Nullable
     private Object scoreBreakdown;
 
     @JsonProperty("reason")
-    @Nullable
     private String reason;
 
     @JsonProperty("using_native_model")
-    @Nullable
     private Boolean usingNativeModel;
 
     @JsonProperty("success")
-    @Nullable
     private Boolean success;
 
     @JsonProperty("model")
-    @Nullable
     private String model;
 
     @JsonProperty("model_client")
-    @Nullable
     private Object modelClient;
 
     @JsonProperty("strict_mode")
-    @Nullable
     private Boolean strictMode;
 
     @JsonProperty("error")
-    @Nullable
     private String error;
 
     @JsonProperty("additional_metadata")
-    @Nullable
     private Object additionalMetadata;
 
     @JsonProperty("user")
-    @Nullable
     private String user;
 
     @JsonProperty("server_hosted")
-    @Nullable
     private Boolean serverHosted;
 
-    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
-    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
+    public void setAdditionalProperty(String name, Object value) {
         additionalProperties.put(name, value);
     }
 
-    @Nonnull
     public String getScoreType() {
         return scoreType;
     }
 
-    @Nullable
     public Double getThreshold() {
         return threshold;
     }
 
-    @Nullable
     public String getName() {
         return name;
     }
 
-    @Nullable
     public String getClassName() {
         return className;
     }
 
-    @Nullable
     public Double getScore() {
         return score;
     }
 
-    @Nullable
     public Object getScoreBreakdown() {
         return scoreBreakdown;
     }
 
-    @Nullable
     public String getReason() {
         return reason;
     }
 
-    @Nullable
     public Boolean getUsingNativeModel() {
         return usingNativeModel;
     }
 
-    @Nullable
     public Boolean getSuccess() {
         return success;
     }
 
-    @Nullable
     public String getModel() {
         return model;
     }
 
-    @Nullable
     public Object getModelClient() {
         return modelClient;
     }
 
-    @Nullable
     public Boolean getStrictMode() {
         return strictMode;
     }
 
-    @Nullable
     public String getError() {
         return error;
     }
 
-    @Nullable
     public Object getAdditionalMetadata() {
         return additionalMetadata;
     }
 
-    @Nullable
     public String getUser() {
         return user;
     }
 
-    @Nullable
     public Boolean getServerHosted() {
         return serverHosted;
     }
 
-    public void setScoreType(@Nonnull String scoreType) {
+    public void setScoreType(String scoreType) {
         this.scoreType = scoreType;
     }
 
-    public void setThreshold(@Nullable Double threshold) {
+    public void setThreshold(Double threshold) {
         this.threshold = threshold;
     }
 
-    public void setName(@Nullable String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setClassName(@Nullable String className) {
+    public void setClassName(String className) {
         this.className = className;
     }
 
-    public void setScore(@Nullable Double score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 
-    public void setScoreBreakdown(@Nullable Object scoreBreakdown) {
+    public void setScoreBreakdown(Object scoreBreakdown) {
         this.scoreBreakdown = scoreBreakdown;
     }
 
-    public void setReason(@Nullable String reason) {
+    public void setReason(String reason) {
         this.reason = reason;
     }
 
-    public void setUsingNativeModel(@Nullable Boolean usingNativeModel) {
+    public void setUsingNativeModel(Boolean usingNativeModel) {
         this.usingNativeModel = usingNativeModel;
     }
 
-    public void setSuccess(@Nullable Boolean success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 
-    public void setModel(@Nullable String model) {
+    public void setModel(String model) {
         this.model = model;
     }
 
-    public void setModelClient(@Nullable Object modelClient) {
+    public void setModelClient(Object modelClient) {
         this.modelClient = modelClient;
     }
 
-    public void setStrictMode(@Nullable Boolean strictMode) {
+    public void setStrictMode(Boolean strictMode) {
         this.strictMode = strictMode;
     }
 
-    public void setError(@Nullable String error) {
+    public void setError(String error) {
         this.error = error;
     }
 
-    public void setAdditionalMetadata(@Nullable Object additionalMetadata) {
+    public void setAdditionalMetadata(Object additionalMetadata) {
         this.additionalMetadata = additionalMetadata;
     }
 
-    public void setUser(@Nullable String user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
-    public void setServerHosted(@Nullable Boolean serverHosted) {
+    public void setServerHosted(Boolean serverHosted) {
         this.serverHosted = serverHosted;
     }
 

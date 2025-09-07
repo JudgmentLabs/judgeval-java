@@ -191,36 +191,6 @@ def get_java_type(schema: Dict[str, Any]) -> str:
     return type_mapping.get(schema_type, "Object")
 
 
-def is_nullable_field(
-    field_name: str, property_schema: Dict[str, Any], schema: Dict[str, Any]
-) -> bool:
-    """Determine if a field should be marked as @Nullable based on OpenAPI spec."""
-    # Check explicit nullable property - if explicitly false, then @Nonnull
-    if property_schema.get("nullable") is False:
-        return False
-
-    # Check if field has union types containing null
-    for union_key in ["anyOf", "oneOf", "allOf"]:
-        if union_key in property_schema:
-            union_schemas = property_schema[union_key]
-            for union_schema in union_schemas:
-                if union_schema.get("type") == "null":
-                    return True
-
-    # Check explicit nullable property - if explicitly true, then @Nullable
-    if property_schema.get("nullable") is True:
-        return True
-
-    # In JSON/OpenAPI, most fields can be null unless explicitly prevented
-    # Only mark as @Nonnull if we're very sure (required + not nullable)
-    required_fields = schema.get("required", [])
-    is_required = field_name in required_fields
-
-    # Even required fields can be null in JSON unless explicitly marked nullable: false
-    # Be conservative and default to @Nullable for safety
-    return True
-
-
 def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
     lines = [
         "package com.judgmentlabs.judgeval.internal.api.models;",
@@ -232,8 +202,6 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
         "import java.util.Map;",
         "import java.util.HashMap;",
         "import java.util.Objects;",
-        "import javax.annotation.Nullable;",
-        "import javax.annotation.Nonnull;",
         "",
         f"public class {className} {{",
     ]
@@ -248,20 +216,16 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
         for field_name, property_schema in schema["properties"].items():
             java_type = get_java_type(property_schema)
             camel_case_name = to_camel_case(field_name)
-            is_nullable = is_nullable_field(field_name, property_schema, schema)
-            null_annotation = "@Nullable" if is_nullable else "@Nonnull"
 
             fields.extend(
                 [
                     f'    @JsonProperty("{field_name}")',
-                    f"    {null_annotation}",
                     f"    private {java_type} {camel_case_name};",
                 ]
             )
 
             getters.extend(
                 [
-                    f"    {null_annotation}",
                     f"    public {java_type} get{to_class_name(camel_case_name)}() {{",
                     f"        return {camel_case_name};",
                     "    }",
@@ -270,7 +234,7 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
 
             setters.extend(
                 [
-                    f"    public void set{to_class_name(camel_case_name)}({null_annotation} {java_type} {camel_case_name}) {{",
+                    f"    public void set{to_class_name(camel_case_name)}({java_type} {camel_case_name}) {{",
                     f"        this.{camel_case_name} = {camel_case_name};",
                     "    }",
                 ]
@@ -287,17 +251,15 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
 
     lines.extend(
         [
-            "    @Nonnull",
             "    private Map<String, Object> additionalProperties = new HashMap<>();",
             "",
             "    @JsonAnyGetter",
-            "    @Nonnull",
             "    public Map<String, Object> getAdditionalProperties() {",
             "        return additionalProperties;",
             "    }",
             "",
             "    @JsonAnySetter",
-            "    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {",
+            "    public void setAdditionalProperty(String name, Object value) {",
             "        additionalProperties.put(name, value);",
             "    }",
             "",

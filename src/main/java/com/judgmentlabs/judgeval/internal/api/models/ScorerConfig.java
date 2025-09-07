@@ -5,102 +5,86 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerConfig {
     @JsonProperty("score_type")
-    @Nonnull
     private String scoreType;
 
     @JsonProperty("name")
-    @Nullable
     private String name;
 
     @JsonProperty("threshold")
-    @Nullable
     private Double threshold;
 
     @JsonProperty("strict_mode")
-    @Nullable
     private Boolean strictMode;
 
     @JsonProperty("required_params")
-    @Nullable
     private List<String> requiredParams;
 
     @JsonProperty("kwargs")
-    @Nullable
     private Object kwargs;
 
-    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
-    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
+    public void setAdditionalProperty(String name, Object value) {
         additionalProperties.put(name, value);
     }
 
-    @Nonnull
     public String getScoreType() {
         return scoreType;
     }
 
-    @Nullable
     public String getName() {
         return name;
     }
 
-    @Nullable
     public Double getThreshold() {
         return threshold;
     }
 
-    @Nullable
     public Boolean getStrictMode() {
         return strictMode;
     }
 
-    @Nullable
     public List<String> getRequiredParams() {
         return requiredParams;
     }
 
-    @Nullable
     public Object getKwargs() {
         return kwargs;
     }
 
-    public void setScoreType(@Nonnull String scoreType) {
+    public void setScoreType(String scoreType) {
         this.scoreType = scoreType;
     }
 
-    public void setName(@Nullable String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setThreshold(@Nullable Double threshold) {
+    public void setThreshold(Double threshold) {
         this.threshold = threshold;
     }
 
-    public void setStrictMode(@Nullable Boolean strictMode) {
+    public void setStrictMode(Boolean strictMode) {
         this.strictMode = strictMode;
     }
 
-    public void setRequiredParams(@Nullable List<String> requiredParams) {
+    public void setRequiredParams(List<String> requiredParams) {
         this.requiredParams = requiredParams;
     }
 
-    public void setKwargs(@Nullable Object kwargs) {
+    public void setKwargs(Object kwargs) {
         this.kwargs = kwargs;
     }
 

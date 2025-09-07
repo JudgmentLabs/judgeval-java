@@ -46,16 +46,7 @@ public class ScorerData extends com.judgmentlabs.judgeval.internal.api.models.Sc
         }
 
         public Builder evaluationModel(String evaluationModel) {
-            if (evaluationModel != null) {
-                scorerData.setEvaluationModel(java.util.List.of(evaluationModel));
-            } else {
-                scorerData.setEvaluationModel(null);
-            }
-            return this;
-        }
-
-        public Builder evaluationModels(java.util.List<String> evaluationModels) {
-            scorerData.setEvaluationModel(evaluationModels);
+            scorerData.setEvaluationModel(evaluationModel);
             return this;
         }
 

@@ -5,102 +5,86 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Tool {
     @JsonProperty("tool_name")
-    @Nonnull
     private String toolName;
 
     @JsonProperty("parameters")
-    @Nullable
     private Object parameters;
 
     @JsonProperty("agent_name")
-    @Nullable
     private String agentName;
 
     @JsonProperty("result_dependencies")
-    @Nullable
     private List<Object> resultDependencies;
 
     @JsonProperty("action_dependencies")
-    @Nullable
     private List<Object> actionDependencies;
 
     @JsonProperty("require_all")
-    @Nullable
     private Boolean requireAll;
 
-    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
-    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
+    public void setAdditionalProperty(String name, Object value) {
         additionalProperties.put(name, value);
     }
 
-    @Nonnull
     public String getToolName() {
         return toolName;
     }
 
-    @Nullable
     public Object getParameters() {
         return parameters;
     }
 
-    @Nullable
     public String getAgentName() {
         return agentName;
     }
 
-    @Nullable
     public List<Object> getResultDependencies() {
         return resultDependencies;
     }
 
-    @Nullable
     public List<Object> getActionDependencies() {
         return actionDependencies;
     }
 
-    @Nullable
     public Boolean getRequireAll() {
         return requireAll;
     }
 
-    public void setToolName(@Nonnull String toolName) {
+    public void setToolName(String toolName) {
         this.toolName = toolName;
     }
 
-    public void setParameters(@Nullable Object parameters) {
+    public void setParameters(Object parameters) {
         this.parameters = parameters;
     }
 
-    public void setAgentName(@Nullable String agentName) {
+    public void setAgentName(String agentName) {
         this.agentName = agentName;
     }
 
-    public void setResultDependencies(@Nullable List<Object> resultDependencies) {
+    public void setResultDependencies(List<Object> resultDependencies) {
         this.resultDependencies = resultDependencies;
     }
 
-    public void setActionDependencies(@Nullable List<Object> actionDependencies) {
+    public void setActionDependencies(List<Object> actionDependencies) {
         this.actionDependencies = actionDependencies;
     }
 
-    public void setRequireAll(@Nullable Boolean requireAll) {
+    public void setRequireAll(Boolean requireAll) {
         this.requireAll = requireAll;
     }
 

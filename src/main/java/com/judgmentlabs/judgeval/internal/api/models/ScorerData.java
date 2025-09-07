@@ -1,12 +1,8 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -14,132 +10,113 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerData {
     @JsonProperty("name")
-    @Nonnull
     private String name;
 
     @JsonProperty("threshold")
-    @Nonnull
     private Double threshold;
 
     @JsonProperty("success")
-    @Nonnull
     private Boolean success;
 
     @JsonProperty("score")
-    @Nullable
     private Double score;
 
     @JsonProperty("reason")
-    @Nullable
     private String reason;
 
     @JsonProperty("strict_mode")
-    @Nullable
     private Boolean strictMode;
 
     @JsonProperty("evaluation_model")
-    @Nullable
-    private List<String> evaluationModel;
+    private String evaluationModel;
 
     @JsonProperty("error")
-    @Nullable
     private String error;
 
     @JsonProperty("additional_metadata")
-    @Nullable
     private Object additionalMetadata;
 
-    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
-    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
+    public void setAdditionalProperty(String name, Object value) {
         additionalProperties.put(name, value);
     }
 
-    @Nonnull
     public String getName() {
         return name;
     }
 
-    @Nonnull
     public Double getThreshold() {
         return threshold;
     }
 
-    @Nonnull
     public Boolean getSuccess() {
         return success;
     }
 
-    @Nullable
     public Double getScore() {
         return score;
     }
 
-    @Nullable
     public String getReason() {
         return reason;
     }
 
-    @Nullable
     public Boolean getStrictMode() {
         return strictMode;
     }
 
-    @Nullable
-    public List<String> getEvaluationModel() {
+    public String getEvaluationModel() {
         return evaluationModel;
     }
 
-    @Nullable
     public String getError() {
         return error;
     }
 
-    @Nullable
     public Object getAdditionalMetadata() {
         return additionalMetadata;
     }
 
-    public void setName(@Nonnull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setThreshold(@Nonnull Double threshold) {
+    public void setThreshold(Double threshold) {
         this.threshold = threshold;
     }
 
-    public void setSuccess(@Nonnull Boolean success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 
-    public void setScore(@Nullable Double score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 
-    public void setReason(@Nullable String reason) {
+    public void setReason(String reason) {
         this.reason = reason;
     }
 
-    public void setStrictMode(@Nullable Boolean strictMode) {
+    public void setStrictMode(Boolean strictMode) {
         this.strictMode = strictMode;
     }
 
-    public void setEvaluationModel(@Nullable List<String> evaluationModel) {
+    public void setEvaluationModel(String evaluationModel) {
         this.evaluationModel = evaluationModel;
     }
 
-    public void setError(@Nullable String error) {
+    public void setError(String error) {
         this.error = error;
     }
 
-    public void setAdditionalMetadata(@Nullable Object additionalMetadata) {
+    public void setAdditionalMetadata(Object additionalMetadata) {
         this.additionalMetadata = additionalMetadata;
     }
 

@@ -5,50 +5,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EvalResults {
     @JsonProperty("results")
-    @Nonnull
     private List<ScoringResult> results;
 
     @JsonProperty("run")
-    @Nonnull
-    private TraceEvaluationRun run;
+    private ExampleEvaluationRun run;
 
-    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
-    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
+    public void setAdditionalProperty(String name, Object value) {
         additionalProperties.put(name, value);
     }
 
-    @Nonnull
     public List<ScoringResult> getResults() {
         return results;
     }
 
-    @Nonnull
-    public TraceEvaluationRun getRun() {
+    public ExampleEvaluationRun getRun() {
         return run;
     }
 
-    public void setResults(@Nonnull List<ScoringResult> results) {
+    public void setResults(List<ScoringResult> results) {
         this.results = results;
     }
 
-    public void setRun(@Nonnull TraceEvaluationRun run) {
+    public void setRun(ExampleEvaluationRun run) {
         this.run = run;
     }
 

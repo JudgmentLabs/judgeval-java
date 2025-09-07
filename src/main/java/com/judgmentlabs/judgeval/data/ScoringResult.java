@@ -21,7 +21,9 @@ public class ScoringResult extends com.judgmentlabs.judgeval.internal.api.models
         }
 
         public Builder scorersData(List<ScorerData> scorersData) {
-            result.setScorersData(convertScorerDataToInternal(scorersData));
+            @SuppressWarnings("unchecked")
+            List<com.judgmentlabs.judgeval.internal.api.models.ScorerData> internalList = (List<com.judgmentlabs.judgeval.internal.api.models.ScorerData>) (List<?>) scorersData;
+            result.setScorersData(internalList);
             return this;
         }
 
@@ -29,16 +31,14 @@ public class ScoringResult extends com.judgmentlabs.judgeval.internal.api.models
             if (result.getScorersData() == null) {
                 result.setScorersData(new java.util.ArrayList<>());
             }
-            @SuppressWarnings("unchecked")
-            List<com.judgmentlabs.judgeval.internal.api.models.ScorerData> scorersData = (List<com.judgmentlabs.judgeval.internal.api.models.ScorerData>) result
-                    .getScorersData();
-            scorersData.add(convertScorerDataToInternal(scorerData));
+            result.getScorersData().add(scorerData);
             return this;
         }
 
         public Builder dataObject(Example dataObject) {
-            // TODO: Handle Example to TraceSpan conversion or make dataObject more flexible
-            // For now, store in additional properties
+            // Store Example in additional properties since setDataObject expects TraceSpan
+            // This indicates a potential API design issue - ScoringResult may be
+            // trace-specific
             if (dataObject != null) {
                 result.setAdditionalProperty("example", dataObject);
             }
@@ -47,33 +47,6 @@ public class ScoringResult extends com.judgmentlabs.judgeval.internal.api.models
 
         public ScoringResult build() {
             return result;
-        }
-
-        private static List<com.judgmentlabs.judgeval.internal.api.models.ScorerData> convertScorerDataToInternal(
-                List<ScorerData> dataList) {
-            if (dataList == null) {
-                return null;
-            }
-            List<com.judgmentlabs.judgeval.internal.api.models.ScorerData> result = new java.util.ArrayList<>();
-            for (ScorerData data : dataList) {
-                result.add(convertScorerDataToInternal(data));
-            }
-            return result;
-        }
-
-        private static com.judgmentlabs.judgeval.internal.api.models.ScorerData convertScorerDataToInternal(
-                ScorerData data) {
-            com.judgmentlabs.judgeval.internal.api.models.ScorerData internal = new com.judgmentlabs.judgeval.internal.api.models.ScorerData();
-            internal.setName(data.getName());
-            internal.setScore(data.getScore());
-            internal.setSuccess(data.getSuccess());
-            internal.setReason(data.getReason());
-            internal.setThreshold(data.getThreshold());
-            internal.setStrictMode(data.getStrictMode());
-            internal.setEvaluationModel(data.getEvaluationModel());
-            internal.setError(data.getError());
-            internal.setAdditionalMetadata(data.getAdditionalMetadata());
-            return internal;
         }
     }
 }

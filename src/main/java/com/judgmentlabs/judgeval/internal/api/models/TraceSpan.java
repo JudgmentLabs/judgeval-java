@@ -5,271 +5,229 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TraceSpan {
     @JsonProperty("span_id")
-    @Nonnull
     private String spanId;
 
     @JsonProperty("trace_id")
-    @Nonnull
     private String traceId;
 
     @JsonProperty("function")
-    @Nonnull
     private String function;
 
     @JsonProperty("created_at")
-    @Nullable
     private Object createdAt;
 
     @JsonProperty("parent_span_id")
-    @Nullable
     private String parentSpanId;
 
     @JsonProperty("span_type")
-    @Nullable
     private String spanType;
 
     @JsonProperty("inputs")
-    @Nullable
     private Object inputs;
 
     @JsonProperty("error")
-    @Nullable
     private Object error;
 
     @JsonProperty("output")
-    @Nullable
     private Object output;
 
     @JsonProperty("usage")
-    @Nullable
     private TraceUsage usage;
 
     @JsonProperty("duration")
-    @Nullable
     private Double duration;
 
     @JsonProperty("expected_tools")
-    @Nullable
     private List<Tool> expectedTools;
 
     @JsonProperty("additional_metadata")
-    @Nullable
     private Object additionalMetadata;
 
     @JsonProperty("has_evaluation")
-    @Nullable
     private Boolean hasEvaluation;
 
     @JsonProperty("agent_name")
-    @Nullable
     private String agentName;
 
     @JsonProperty("class_name")
-    @Nullable
     private String className;
 
     @JsonProperty("state_before")
-    @Nullable
     private Object stateBefore;
 
     @JsonProperty("state_after")
-    @Nullable
     private Object stateAfter;
 
     @JsonProperty("update_id")
-    @Nullable
     private Integer updateId;
 
-    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
-    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
+    public void setAdditionalProperty(String name, Object value) {
         additionalProperties.put(name, value);
     }
 
-    @Nonnull
     public String getSpanId() {
         return spanId;
     }
 
-    @Nonnull
     public String getTraceId() {
         return traceId;
     }
 
-    @Nonnull
     public String getFunction() {
         return function;
     }
 
-    @Nullable
     public Object getCreatedAt() {
         return createdAt;
     }
 
-    @Nullable
     public String getParentSpanId() {
         return parentSpanId;
     }
 
-    @Nullable
     public String getSpanType() {
         return spanType;
     }
 
-    @Nullable
     public Object getInputs() {
         return inputs;
     }
 
-    @Nullable
     public Object getError() {
         return error;
     }
 
-    @Nullable
     public Object getOutput() {
         return output;
     }
 
-    @Nullable
     public TraceUsage getUsage() {
         return usage;
     }
 
-    @Nullable
     public Double getDuration() {
         return duration;
     }
 
-    @Nullable
     public List<Tool> getExpectedTools() {
         return expectedTools;
     }
 
-    @Nullable
     public Object getAdditionalMetadata() {
         return additionalMetadata;
     }
 
-    @Nullable
     public Boolean getHasEvaluation() {
         return hasEvaluation;
     }
 
-    @Nullable
     public String getAgentName() {
         return agentName;
     }
 
-    @Nullable
     public String getClassName() {
         return className;
     }
 
-    @Nullable
     public Object getStateBefore() {
         return stateBefore;
     }
 
-    @Nullable
     public Object getStateAfter() {
         return stateAfter;
     }
 
-    @Nullable
     public Integer getUpdateId() {
         return updateId;
     }
 
-    public void setSpanId(@Nonnull String spanId) {
+    public void setSpanId(String spanId) {
         this.spanId = spanId;
     }
 
-    public void setTraceId(@Nonnull String traceId) {
+    public void setTraceId(String traceId) {
         this.traceId = traceId;
     }
 
-    public void setFunction(@Nonnull String function) {
+    public void setFunction(String function) {
         this.function = function;
     }
 
-    public void setCreatedAt(@Nullable Object createdAt) {
+    public void setCreatedAt(Object createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setParentSpanId(@Nullable String parentSpanId) {
+    public void setParentSpanId(String parentSpanId) {
         this.parentSpanId = parentSpanId;
     }
 
-    public void setSpanType(@Nullable String spanType) {
+    public void setSpanType(String spanType) {
         this.spanType = spanType;
     }
 
-    public void setInputs(@Nullable Object inputs) {
+    public void setInputs(Object inputs) {
         this.inputs = inputs;
     }
 
-    public void setError(@Nullable Object error) {
+    public void setError(Object error) {
         this.error = error;
     }
 
-    public void setOutput(@Nullable Object output) {
+    public void setOutput(Object output) {
         this.output = output;
     }
 
-    public void setUsage(@Nullable TraceUsage usage) {
+    public void setUsage(TraceUsage usage) {
         this.usage = usage;
     }
 
-    public void setDuration(@Nullable Double duration) {
+    public void setDuration(Double duration) {
         this.duration = duration;
     }
 
-    public void setExpectedTools(@Nullable List<Tool> expectedTools) {
+    public void setExpectedTools(List<Tool> expectedTools) {
         this.expectedTools = expectedTools;
     }
 
-    public void setAdditionalMetadata(@Nullable Object additionalMetadata) {
+    public void setAdditionalMetadata(Object additionalMetadata) {
         this.additionalMetadata = additionalMetadata;
     }
 
-    public void setHasEvaluation(@Nullable Boolean hasEvaluation) {
+    public void setHasEvaluation(Boolean hasEvaluation) {
         this.hasEvaluation = hasEvaluation;
     }
 
-    public void setAgentName(@Nullable String agentName) {
+    public void setAgentName(String agentName) {
         this.agentName = agentName;
     }
 
-    public void setClassName(@Nullable String className) {
+    public void setClassName(String className) {
         this.className = className;
     }
 
-    public void setStateBefore(@Nullable Object stateBefore) {
+    public void setStateBefore(Object stateBefore) {
         this.stateBefore = stateBefore;
     }
 
-    public void setStateAfter(@Nullable Object stateAfter) {
+    public void setStateAfter(Object stateAfter) {
         this.stateAfter = stateAfter;
     }
 
-    public void setUpdateId(@Nullable Integer updateId) {
+    public void setUpdateId(Integer updateId) {
         this.updateId = updateId;
     }
 

@@ -5,115 +5,97 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScoringResult {
     @JsonProperty("success")
-    @Nonnull
     private Boolean success;
 
     @JsonProperty("scorers_data")
-    @Nonnull
     private List<ScorerData> scorersData;
 
     @JsonProperty("name")
-    @Nullable
     private String name;
 
     @JsonProperty("data_object")
-    @Nullable
     private TraceSpan dataObject;
 
     @JsonProperty("trace_id")
-    @Nullable
     private String traceId;
 
     @JsonProperty("run_duration")
-    @Nullable
     private Double runDuration;
 
     @JsonProperty("evaluation_cost")
-    @Nullable
     private Double evaluationCost;
 
-    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
-    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
+    public void setAdditionalProperty(String name, Object value) {
         additionalProperties.put(name, value);
     }
 
-    @Nonnull
     public Boolean getSuccess() {
         return success;
     }
 
-    @Nonnull
     public List<ScorerData> getScorersData() {
         return scorersData;
     }
 
-    @Nullable
     public String getName() {
         return name;
     }
 
-    @Nullable
     public TraceSpan getDataObject() {
         return dataObject;
     }
 
-    @Nullable
     public String getTraceId() {
         return traceId;
     }
 
-    @Nullable
     public Double getRunDuration() {
         return runDuration;
     }
 
-    @Nullable
     public Double getEvaluationCost() {
         return evaluationCost;
     }
 
-    public void setSuccess(@Nonnull Boolean success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 
-    public void setScorersData(@Nonnull List<ScorerData> scorersData) {
+    public void setScorersData(List<ScorerData> scorersData) {
         this.scorersData = scorersData;
     }
 
-    public void setName(@Nullable String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setDataObject(@Nullable TraceSpan dataObject) {
+    public void setDataObject(TraceSpan dataObject) {
         this.dataObject = dataObject;
     }
 
-    public void setTraceId(@Nullable String traceId) {
+    public void setTraceId(String traceId) {
         this.traceId = traceId;
     }
 
-    public void setRunDuration(@Nullable Double runDuration) {
+    public void setRunDuration(Double runDuration) {
         this.runDuration = runDuration;
     }
 
-    public void setEvaluationCost(@Nullable Double evaluationCost) {
+    public void setEvaluationCost(Double evaluationCost) {
         this.evaluationCost = evaluationCost;
     }
 

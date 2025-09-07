@@ -4,89 +4,75 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SavePromptScorerRequest {
     @JsonProperty("name")
-    @Nonnull
     private String name;
 
     @JsonProperty("prompt")
-    @Nonnull
     private String prompt;
 
     @JsonProperty("threshold")
-    @Nonnull
     private Double threshold;
 
     @JsonProperty("options")
-    @Nullable
     private Object options;
 
     @JsonProperty("is_trace")
-    @Nullable
     private Boolean isTrace;
 
-    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
+    private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
-    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
+    public void setAdditionalProperty(String name, Object value) {
         additionalProperties.put(name, value);
     }
 
-    @Nonnull
     public String getName() {
         return name;
     }
 
-    @Nonnull
     public String getPrompt() {
         return prompt;
     }
 
-    @Nonnull
     public Double getThreshold() {
         return threshold;
     }
 
-    @Nullable
     public Object getOptions() {
         return options;
     }
 
-    @Nullable
     public Boolean getIsTrace() {
         return isTrace;
     }
 
-    public void setName(@Nonnull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setPrompt(@Nonnull String prompt) {
+    public void setPrompt(String prompt) {
         this.prompt = prompt;
     }
 
-    public void setThreshold(@Nonnull Double threshold) {
+    public void setThreshold(Double threshold) {
         this.threshold = threshold;
     }
 
-    public void setOptions(@Nullable Object options) {
+    public void setOptions(Object options) {
         this.options = options;
     }
 
-    public void setIsTrace(@Nullable Boolean isTrace) {
+    public void setIsTrace(Boolean isTrace) {
         this.isTrace = isTrace;
     }
 
