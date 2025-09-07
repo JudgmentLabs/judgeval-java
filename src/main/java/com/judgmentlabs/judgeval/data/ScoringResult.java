@@ -22,7 +22,9 @@ public class ScoringResult extends com.judgmentlabs.judgeval.internal.api.models
 
         public Builder scorersData(List<ScorerData> scorersData) {
             @SuppressWarnings("unchecked")
-            List<com.judgmentlabs.judgeval.internal.api.models.ScorerData> internalList = (List<com.judgmentlabs.judgeval.internal.api.models.ScorerData>) (List<?>) scorersData;
+            List<com.judgmentlabs.judgeval.internal.api.models.ScorerData> internalList =
+                    (List<com.judgmentlabs.judgeval.internal.api.models.ScorerData>)
+                            (List<?>) scorersData;
             result.setScorersData(internalList);
             return this;
         }

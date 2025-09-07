@@ -32,7 +32,8 @@ public class ExampleEvaluationRun
         eval.setProjectName(projectName);
         eval.setEvalName(evalName);
         @SuppressWarnings("unchecked")
-        List<com.judgmentlabs.judgeval.internal.api.models.Example> internalExamples = (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples;
+        List<com.judgmentlabs.judgeval.internal.api.models.Example> internalExamples =
+                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples;
         eval.setExamples(internalExamples);
         eval.setModel(model);
         eval.setOrganizationId(organizationId);
@@ -63,7 +64,8 @@ public class ExampleEvaluationRun
         eval.setProjectName(projectName);
         eval.setEvalName(evalName);
         @SuppressWarnings("unchecked")
-        List<com.judgmentlabs.judgeval.internal.api.models.Example> internalExamples = (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples;
+        List<com.judgmentlabs.judgeval.internal.api.models.Example> internalExamples =
+                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples;
         eval.setExamples(internalExamples);
         eval.setModel(model);
         eval.setOrganizationId(organizationId);
@@ -88,7 +90,8 @@ public class ExampleEvaluationRun
         setProjectName(projectName);
         setEvalName(evalName);
         @SuppressWarnings("unchecked")
-        List<com.judgmentlabs.judgeval.internal.api.models.Example> internalExamples = (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples;
+        List<com.judgmentlabs.judgeval.internal.api.models.Example> internalExamples =
+                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples;
         setExamples(internalExamples);
         setModel(model);
         setOrganizationId(organizationId);
@@ -141,12 +144,9 @@ public class ExampleEvaluationRun
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null || getClass() != obj.getClass())
-            return false;
-        if (!super.equals(obj))
-            return false;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        if (!super.equals(obj)) return false;
         ExampleEvaluationRun other = (ExampleEvaluationRun) obj;
         return Objects.equals(organizationId, other.organizationId);
     }
@@ -174,8 +174,7 @@ public class ExampleEvaluationRun
         private String model;
         private String organizationId;
 
-        private Builder() {
-        }
+        private Builder() {}
 
         private Builder(String projectName, String evalName) {
             this.projectName = projectName;
