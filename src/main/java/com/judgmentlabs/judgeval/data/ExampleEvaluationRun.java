@@ -10,28 +10,28 @@ import java.util.UUID;
 import com.judgmentlabs.judgeval.internal.api.models.BaseScorer;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
-public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models.EvaluationRun {
+public class ExampleEvaluationRun
+        extends com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun {
 
     private String organizationId;
 
-    public EvaluationRun() {
+    public ExampleEvaluationRun() {
         super();
         setId(UUID.randomUUID().toString());
         setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
     }
 
-    public static EvaluationRun createWithLocalScorers(
+    public static ExampleEvaluationRun createWithLocalScorers(
             String projectName,
             String evalName,
             List<Example> examples,
             List<com.judgmentlabs.judgeval.scorers.BaseScorer> localScorers,
             String model,
             String organizationId) {
-        EvaluationRun eval = new EvaluationRun();
+        ExampleEvaluationRun eval = new ExampleEvaluationRun();
         eval.setProjectName(projectName);
         eval.setEvalName(evalName);
-        eval.setExamples(
-                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples);
+        eval.setExamples(convertExamples(examples));
         eval.setModel(model);
         eval.setOrganizationId(organizationId);
 
@@ -50,18 +50,17 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
         return eval;
     }
 
-    public static EvaluationRun createWithApiScorers(
+    public static ExampleEvaluationRun createWithApiScorers(
             String projectName,
             String evalName,
             List<Example> examples,
             List<ScorerConfig> apiScorers,
             String model,
             String organizationId) {
-        EvaluationRun eval = new EvaluationRun();
+        ExampleEvaluationRun eval = new ExampleEvaluationRun();
         eval.setProjectName(projectName);
         eval.setEvalName(evalName);
-        eval.setExamples(
-                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples);
+        eval.setExamples(convertExamples(examples));
         eval.setModel(model);
         eval.setOrganizationId(organizationId);
 
@@ -74,7 +73,7 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
         return eval;
     }
 
-    public EvaluationRun(
+    public ExampleEvaluationRun(
             String projectName,
             String evalName,
             List<Example> examples,
@@ -84,8 +83,7 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
         this();
         setProjectName(projectName);
         setEvalName(evalName);
-        setExamples(
-                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples);
+        setExamples(convertExamples(examples));
         setModel(model);
         setOrganizationId(organizationId);
 
@@ -127,6 +125,14 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
         }
     }
 
+    private static List<com.judgmentlabs.judgeval.internal.api.models.Example> convertExamples(
+            List<Example> examples) {
+        if (examples == null) {
+            return null;
+        }
+        return new java.util.ArrayList<>(examples);
+    }
+
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
@@ -140,7 +146,7 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         if (!super.equals(obj)) return false;
-        EvaluationRun other = (EvaluationRun) obj;
+        ExampleEvaluationRun other = (ExampleEvaluationRun) obj;
         return Objects.equals(organizationId, other.organizationId);
     }
 
@@ -247,7 +253,7 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
             return this;
         }
 
-        public EvaluationRun build() {
+        public ExampleEvaluationRun build() {
             if (projectName == null || projectName.trim().isEmpty()) {
                 throw new IllegalArgumentException("Project name is required");
             }
@@ -265,7 +271,7 @@ public class EvaluationRun extends com.judgmentlabs.judgeval.internal.api.models
                 return createWithApiScorers(
                         projectName, evalName, examples, apiScorers, model, organizationId);
             } else if (mixedScorers != null && !mixedScorers.isEmpty()) {
-                return new EvaluationRun(
+                return new ExampleEvaluationRun(
                         projectName, evalName, examples, mixedScorers, model, organizationId);
             } else {
                 throw new IllegalArgumentException("At least one scorer is required");

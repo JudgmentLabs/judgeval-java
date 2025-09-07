@@ -1,8 +1,12 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -10,80 +14,93 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Tool {
     @JsonProperty("tool_name")
+    @Nonnull
     private String toolName;
 
     @JsonProperty("parameters")
+    @Nullable
     private Object parameters;
 
     @JsonProperty("agent_name")
-    private Object agentName;
+    @Nullable
+    private String agentName;
 
     @JsonProperty("result_dependencies")
-    private Object resultDependencies;
+    @Nullable
+    private List<Object> resultDependencies;
 
     @JsonProperty("action_dependencies")
-    private Object actionDependencies;
+    @Nullable
+    private List<Object> actionDependencies;
 
     @JsonProperty("require_all")
-    private Object requireAll;
+    @Nullable
+    private Boolean requireAll;
 
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
+    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
         additionalProperties.put(name, value);
     }
 
+    @Nonnull
     public String getToolName() {
         return toolName;
     }
 
+    @Nullable
     public Object getParameters() {
         return parameters;
     }
 
-    public Object getAgentName() {
+    @Nullable
+    public String getAgentName() {
         return agentName;
     }
 
-    public Object getResultDependencies() {
+    @Nullable
+    public List<Object> getResultDependencies() {
         return resultDependencies;
     }
 
-    public Object getActionDependencies() {
+    @Nullable
+    public List<Object> getActionDependencies() {
         return actionDependencies;
     }
 
-    public Object getRequireAll() {
+    @Nullable
+    public Boolean getRequireAll() {
         return requireAll;
     }
 
-    public void setToolName(String toolName) {
+    public void setToolName(@Nonnull String toolName) {
         this.toolName = toolName;
     }
 
-    public void setParameters(Object parameters) {
+    public void setParameters(@Nullable Object parameters) {
         this.parameters = parameters;
     }
 
-    public void setAgentName(Object agentName) {
+    public void setAgentName(@Nullable String agentName) {
         this.agentName = agentName;
     }
 
-    public void setResultDependencies(Object resultDependencies) {
+    public void setResultDependencies(@Nullable List<Object> resultDependencies) {
         this.resultDependencies = resultDependencies;
     }
 
-    public void setActionDependencies(Object actionDependencies) {
+    public void setActionDependencies(@Nullable List<Object> actionDependencies) {
         this.actionDependencies = actionDependencies;
     }
 
-    public void setRequireAll(Object requireAll) {
+    public void setRequireAll(@Nullable Boolean requireAll) {
         this.requireAll = requireAll;
     }
 

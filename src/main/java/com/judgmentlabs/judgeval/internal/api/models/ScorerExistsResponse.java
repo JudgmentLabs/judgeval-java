@@ -4,31 +4,37 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerExistsResponse {
     @JsonProperty("exists")
+    @Nonnull
     private Boolean exists;
 
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
+    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
         additionalProperties.put(name, value);
     }
 
+    @Nonnull
     public Boolean getExists() {
         return exists;
     }
 
-    public void setExists(Boolean exists) {
+    public void setExists(@Nonnull Boolean exists) {
         this.exists = exists;
     }
 

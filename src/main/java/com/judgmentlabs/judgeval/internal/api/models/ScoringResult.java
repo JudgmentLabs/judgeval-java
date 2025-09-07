@@ -1,8 +1,12 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -10,91 +14,106 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScoringResult {
     @JsonProperty("success")
+    @Nonnull
     private Boolean success;
 
     @JsonProperty("scorers_data")
-    private Object scorersData;
+    @Nonnull
+    private List<ScorerData> scorersData;
 
     @JsonProperty("name")
-    private Object name;
+    @Nullable
+    private String name;
 
     @JsonProperty("data_object")
-    private Object dataObject;
+    @Nullable
+    private TraceSpan dataObject;
 
     @JsonProperty("trace_id")
-    private Object traceId;
+    @Nullable
+    private String traceId;
 
     @JsonProperty("run_duration")
-    private Object runDuration;
+    @Nullable
+    private Double runDuration;
 
     @JsonProperty("evaluation_cost")
-    private Object evaluationCost;
+    @Nullable
+    private Double evaluationCost;
 
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
+    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
         additionalProperties.put(name, value);
     }
 
+    @Nonnull
     public Boolean getSuccess() {
         return success;
     }
 
-    public Object getScorersData() {
+    @Nonnull
+    public List<ScorerData> getScorersData() {
         return scorersData;
     }
 
-    public Object getName() {
+    @Nullable
+    public String getName() {
         return name;
     }
 
-    public Object getDataObject() {
+    @Nullable
+    public TraceSpan getDataObject() {
         return dataObject;
     }
 
-    public Object getTraceId() {
+    @Nullable
+    public String getTraceId() {
         return traceId;
     }
 
-    public Object getRunDuration() {
+    @Nullable
+    public Double getRunDuration() {
         return runDuration;
     }
 
-    public Object getEvaluationCost() {
+    @Nullable
+    public Double getEvaluationCost() {
         return evaluationCost;
     }
 
-    public void setSuccess(Boolean success) {
+    public void setSuccess(@Nonnull Boolean success) {
         this.success = success;
     }
 
-    public void setScorersData(Object scorersData) {
+    public void setScorersData(@Nonnull List<ScorerData> scorersData) {
         this.scorersData = scorersData;
     }
 
-    public void setName(Object name) {
+    public void setName(@Nullable String name) {
         this.name = name;
     }
 
-    public void setDataObject(Object dataObject) {
+    public void setDataObject(@Nullable TraceSpan dataObject) {
         this.dataObject = dataObject;
     }
 
-    public void setTraceId(Object traceId) {
+    public void setTraceId(@Nullable String traceId) {
         this.traceId = traceId;
     }
 
-    public void setRunDuration(Object runDuration) {
+    public void setRunDuration(@Nullable Double runDuration) {
         this.runDuration = runDuration;
     }
 
-    public void setEvaluationCost(Object evaluationCost) {
+    public void setEvaluationCost(@Nullable Double evaluationCost) {
         this.evaluationCost = evaluationCost;
     }
 

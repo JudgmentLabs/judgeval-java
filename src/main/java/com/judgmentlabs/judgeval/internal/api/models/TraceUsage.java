@@ -4,119 +4,141 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TraceUsage {
     @JsonProperty("prompt_tokens")
-    private Object promptTokens;
+    @Nullable
+    private Integer promptTokens;
 
     @JsonProperty("completion_tokens")
-    private Object completionTokens;
+    @Nullable
+    private Integer completionTokens;
 
     @JsonProperty("cache_creation_input_tokens")
-    private Object cacheCreationInputTokens;
+    @Nullable
+    private Integer cacheCreationInputTokens;
 
     @JsonProperty("cache_read_input_tokens")
-    private Object cacheReadInputTokens;
+    @Nullable
+    private Integer cacheReadInputTokens;
 
     @JsonProperty("total_tokens")
-    private Object totalTokens;
+    @Nullable
+    private Integer totalTokens;
 
     @JsonProperty("prompt_tokens_cost_usd")
-    private Object promptTokensCostUsd;
+    @Nullable
+    private Double promptTokensCostUsd;
 
     @JsonProperty("completion_tokens_cost_usd")
-    private Object completionTokensCostUsd;
+    @Nullable
+    private Double completionTokensCostUsd;
 
     @JsonProperty("total_cost_usd")
-    private Object totalCostUsd;
+    @Nullable
+    private Double totalCostUsd;
 
     @JsonProperty("model_name")
-    private Object modelName;
+    @Nullable
+    private String modelName;
 
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
+    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
         additionalProperties.put(name, value);
     }
 
-    public Object getPromptTokens() {
+    @Nullable
+    public Integer getPromptTokens() {
         return promptTokens;
     }
 
-    public Object getCompletionTokens() {
+    @Nullable
+    public Integer getCompletionTokens() {
         return completionTokens;
     }
 
-    public Object getCacheCreationInputTokens() {
+    @Nullable
+    public Integer getCacheCreationInputTokens() {
         return cacheCreationInputTokens;
     }
 
-    public Object getCacheReadInputTokens() {
+    @Nullable
+    public Integer getCacheReadInputTokens() {
         return cacheReadInputTokens;
     }
 
-    public Object getTotalTokens() {
+    @Nullable
+    public Integer getTotalTokens() {
         return totalTokens;
     }
 
-    public Object getPromptTokensCostUsd() {
+    @Nullable
+    public Double getPromptTokensCostUsd() {
         return promptTokensCostUsd;
     }
 
-    public Object getCompletionTokensCostUsd() {
+    @Nullable
+    public Double getCompletionTokensCostUsd() {
         return completionTokensCostUsd;
     }
 
-    public Object getTotalCostUsd() {
+    @Nullable
+    public Double getTotalCostUsd() {
         return totalCostUsd;
     }
 
-    public Object getModelName() {
+    @Nullable
+    public String getModelName() {
         return modelName;
     }
 
-    public void setPromptTokens(Object promptTokens) {
+    public void setPromptTokens(@Nullable Integer promptTokens) {
         this.promptTokens = promptTokens;
     }
 
-    public void setCompletionTokens(Object completionTokens) {
+    public void setCompletionTokens(@Nullable Integer completionTokens) {
         this.completionTokens = completionTokens;
     }
 
-    public void setCacheCreationInputTokens(Object cacheCreationInputTokens) {
+    public void setCacheCreationInputTokens(@Nullable Integer cacheCreationInputTokens) {
         this.cacheCreationInputTokens = cacheCreationInputTokens;
     }
 
-    public void setCacheReadInputTokens(Object cacheReadInputTokens) {
+    public void setCacheReadInputTokens(@Nullable Integer cacheReadInputTokens) {
         this.cacheReadInputTokens = cacheReadInputTokens;
     }
 
-    public void setTotalTokens(Object totalTokens) {
+    public void setTotalTokens(@Nullable Integer totalTokens) {
         this.totalTokens = totalTokens;
     }
 
-    public void setPromptTokensCostUsd(Object promptTokensCostUsd) {
+    public void setPromptTokensCostUsd(@Nullable Double promptTokensCostUsd) {
         this.promptTokensCostUsd = promptTokensCostUsd;
     }
 
-    public void setCompletionTokensCostUsd(Object completionTokensCostUsd) {
+    public void setCompletionTokensCostUsd(@Nullable Double completionTokensCostUsd) {
         this.completionTokensCostUsd = completionTokensCostUsd;
     }
 
-    public void setTotalCostUsd(Object totalCostUsd) {
+    public void setTotalCostUsd(@Nullable Double totalCostUsd) {
         this.totalCostUsd = totalCostUsd;
     }
 
-    public void setModelName(Object modelName) {
+    public void setModelName(@Nullable String modelName) {
         this.modelName = modelName;
     }
 

@@ -1,8 +1,12 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -10,234 +14,262 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TraceSpan {
     @JsonProperty("span_id")
+    @Nonnull
     private String spanId;
 
     @JsonProperty("trace_id")
+    @Nonnull
     private String traceId;
 
     @JsonProperty("function")
+    @Nonnull
     private String function;
 
-    @JsonProperty("depth")
-    private Integer depth;
-
     @JsonProperty("created_at")
+    @Nullable
     private Object createdAt;
 
     @JsonProperty("parent_span_id")
-    private Object parentSpanId;
+    @Nullable
+    private String parentSpanId;
 
     @JsonProperty("span_type")
-    private Object spanType;
+    @Nullable
+    private String spanType;
 
     @JsonProperty("inputs")
+    @Nullable
     private Object inputs;
 
     @JsonProperty("error")
+    @Nullable
     private Object error;
 
     @JsonProperty("output")
+    @Nullable
     private Object output;
 
     @JsonProperty("usage")
-    private Object usage;
+    @Nullable
+    private TraceUsage usage;
 
     @JsonProperty("duration")
-    private Object duration;
+    @Nullable
+    private Double duration;
 
     @JsonProperty("expected_tools")
-    private Object expectedTools;
+    @Nullable
+    private List<Tool> expectedTools;
 
     @JsonProperty("additional_metadata")
+    @Nullable
     private Object additionalMetadata;
 
     @JsonProperty("has_evaluation")
-    private Object hasEvaluation;
+    @Nullable
+    private Boolean hasEvaluation;
 
     @JsonProperty("agent_name")
-    private Object agentName;
+    @Nullable
+    private String agentName;
 
     @JsonProperty("class_name")
-    private Object className;
+    @Nullable
+    private String className;
 
     @JsonProperty("state_before")
+    @Nullable
     private Object stateBefore;
 
     @JsonProperty("state_after")
+    @Nullable
     private Object stateAfter;
 
     @JsonProperty("update_id")
+    @Nullable
     private Integer updateId;
 
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
+    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
         additionalProperties.put(name, value);
     }
 
+    @Nonnull
     public String getSpanId() {
         return spanId;
     }
 
+    @Nonnull
     public String getTraceId() {
         return traceId;
     }
 
+    @Nonnull
     public String getFunction() {
         return function;
     }
 
-    public Integer getDepth() {
-        return depth;
-    }
-
+    @Nullable
     public Object getCreatedAt() {
         return createdAt;
     }
 
-    public Object getParentSpanId() {
+    @Nullable
+    public String getParentSpanId() {
         return parentSpanId;
     }
 
-    public Object getSpanType() {
+    @Nullable
+    public String getSpanType() {
         return spanType;
     }
 
+    @Nullable
     public Object getInputs() {
         return inputs;
     }
 
+    @Nullable
     public Object getError() {
         return error;
     }
 
+    @Nullable
     public Object getOutput() {
         return output;
     }
 
-    public Object getUsage() {
+    @Nullable
+    public TraceUsage getUsage() {
         return usage;
     }
 
-    public Object getDuration() {
+    @Nullable
+    public Double getDuration() {
         return duration;
     }
 
-    public Object getExpectedTools() {
+    @Nullable
+    public List<Tool> getExpectedTools() {
         return expectedTools;
     }
 
+    @Nullable
     public Object getAdditionalMetadata() {
         return additionalMetadata;
     }
 
-    public Object getHasEvaluation() {
+    @Nullable
+    public Boolean getHasEvaluation() {
         return hasEvaluation;
     }
 
-    public Object getAgentName() {
+    @Nullable
+    public String getAgentName() {
         return agentName;
     }
 
-    public Object getClassName() {
+    @Nullable
+    public String getClassName() {
         return className;
     }
 
+    @Nullable
     public Object getStateBefore() {
         return stateBefore;
     }
 
+    @Nullable
     public Object getStateAfter() {
         return stateAfter;
     }
 
+    @Nullable
     public Integer getUpdateId() {
         return updateId;
     }
 
-    public void setSpanId(String spanId) {
+    public void setSpanId(@Nonnull String spanId) {
         this.spanId = spanId;
     }
 
-    public void setTraceId(String traceId) {
+    public void setTraceId(@Nonnull String traceId) {
         this.traceId = traceId;
     }
 
-    public void setFunction(String function) {
+    public void setFunction(@Nonnull String function) {
         this.function = function;
     }
 
-    public void setDepth(Integer depth) {
-        this.depth = depth;
-    }
-
-    public void setCreatedAt(Object createdAt) {
+    public void setCreatedAt(@Nullable Object createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setParentSpanId(Object parentSpanId) {
+    public void setParentSpanId(@Nullable String parentSpanId) {
         this.parentSpanId = parentSpanId;
     }
 
-    public void setSpanType(Object spanType) {
+    public void setSpanType(@Nullable String spanType) {
         this.spanType = spanType;
     }
 
-    public void setInputs(Object inputs) {
+    public void setInputs(@Nullable Object inputs) {
         this.inputs = inputs;
     }
 
-    public void setError(Object error) {
+    public void setError(@Nullable Object error) {
         this.error = error;
     }
 
-    public void setOutput(Object output) {
+    public void setOutput(@Nullable Object output) {
         this.output = output;
     }
 
-    public void setUsage(Object usage) {
+    public void setUsage(@Nullable TraceUsage usage) {
         this.usage = usage;
     }
 
-    public void setDuration(Object duration) {
+    public void setDuration(@Nullable Double duration) {
         this.duration = duration;
     }
 
-    public void setExpectedTools(Object expectedTools) {
+    public void setExpectedTools(@Nullable List<Tool> expectedTools) {
         this.expectedTools = expectedTools;
     }
 
-    public void setAdditionalMetadata(Object additionalMetadata) {
+    public void setAdditionalMetadata(@Nullable Object additionalMetadata) {
         this.additionalMetadata = additionalMetadata;
     }
 
-    public void setHasEvaluation(Object hasEvaluation) {
+    public void setHasEvaluation(@Nullable Boolean hasEvaluation) {
         this.hasEvaluation = hasEvaluation;
     }
 
-    public void setAgentName(Object agentName) {
+    public void setAgentName(@Nullable String agentName) {
         this.agentName = agentName;
     }
 
-    public void setClassName(Object className) {
+    public void setClassName(@Nullable String className) {
         this.className = className;
     }
 
-    public void setStateBefore(Object stateBefore) {
+    public void setStateBefore(@Nullable Object stateBefore) {
         this.stateBefore = stateBefore;
     }
 
-    public void setStateAfter(Object stateAfter) {
+    public void setStateAfter(@Nullable Object stateAfter) {
         this.stateAfter = stateAfter;
     }
 
-    public void setUpdateId(Integer updateId) {
+    public void setUpdateId(@Nullable Integer updateId) {
         this.updateId = updateId;
     }
 
@@ -249,7 +281,6 @@ public class TraceSpan {
         return Objects.equals(spanId, other.spanId)
                 && Objects.equals(traceId, other.traceId)
                 && Objects.equals(function, other.function)
-                && Objects.equals(depth, other.depth)
                 && Objects.equals(createdAt, other.createdAt)
                 && Objects.equals(parentSpanId, other.parentSpanId)
                 && Objects.equals(spanType, other.spanType)
@@ -275,7 +306,6 @@ public class TraceSpan {
                 spanId,
                 traceId,
                 function,
-                depth,
                 createdAt,
                 parentSpanId,
                 spanType,

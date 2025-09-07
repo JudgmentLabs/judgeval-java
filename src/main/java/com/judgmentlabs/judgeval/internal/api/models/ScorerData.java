@@ -1,8 +1,12 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
@@ -10,113 +14,132 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerData {
     @JsonProperty("name")
+    @Nonnull
     private String name;
 
     @JsonProperty("threshold")
+    @Nonnull
     private Double threshold;
 
     @JsonProperty("success")
+    @Nonnull
     private Boolean success;
 
     @JsonProperty("score")
-    private Object score;
+    @Nullable
+    private Double score;
 
     @JsonProperty("reason")
-    private Object reason;
+    @Nullable
+    private String reason;
 
     @JsonProperty("strict_mode")
-    private Object strictMode;
+    @Nullable
+    private Boolean strictMode;
 
     @JsonProperty("evaluation_model")
-    private Object evaluationModel;
+    @Nullable
+    private List<String> evaluationModel;
 
     @JsonProperty("error")
-    private Object error;
+    @Nullable
+    private String error;
 
     @JsonProperty("additional_metadata")
+    @Nullable
     private Object additionalMetadata;
 
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
+    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
         additionalProperties.put(name, value);
     }
 
+    @Nonnull
     public String getName() {
         return name;
     }
 
+    @Nonnull
     public Double getThreshold() {
         return threshold;
     }
 
+    @Nonnull
     public Boolean getSuccess() {
         return success;
     }
 
-    public Object getScore() {
+    @Nullable
+    public Double getScore() {
         return score;
     }
 
-    public Object getReason() {
+    @Nullable
+    public String getReason() {
         return reason;
     }
 
-    public Object getStrictMode() {
+    @Nullable
+    public Boolean getStrictMode() {
         return strictMode;
     }
 
-    public Object getEvaluationModel() {
+    @Nullable
+    public List<String> getEvaluationModel() {
         return evaluationModel;
     }
 
-    public Object getError() {
+    @Nullable
+    public String getError() {
         return error;
     }
 
+    @Nullable
     public Object getAdditionalMetadata() {
         return additionalMetadata;
     }
 
-    public void setName(String name) {
+    public void setName(@Nonnull String name) {
         this.name = name;
     }
 
-    public void setThreshold(Double threshold) {
+    public void setThreshold(@Nonnull Double threshold) {
         this.threshold = threshold;
     }
 
-    public void setSuccess(Boolean success) {
+    public void setSuccess(@Nonnull Boolean success) {
         this.success = success;
     }
 
-    public void setScore(Object score) {
+    public void setScore(@Nullable Double score) {
         this.score = score;
     }
 
-    public void setReason(Object reason) {
+    public void setReason(@Nullable String reason) {
         this.reason = reason;
     }
 
-    public void setStrictMode(Object strictMode) {
+    public void setStrictMode(@Nullable Boolean strictMode) {
         this.strictMode = strictMode;
     }
 
-    public void setEvaluationModel(Object evaluationModel) {
+    public void setEvaluationModel(@Nullable List<String> evaluationModel) {
         this.evaluationModel = evaluationModel;
     }
 
-    public void setError(Object error) {
+    public void setError(@Nullable String error) {
         this.error = error;
     }
 
-    public void setAdditionalMetadata(Object additionalMetadata) {
+    public void setAdditionalMetadata(@Nullable Object additionalMetadata) {
         this.additionalMetadata = additionalMetadata;
     }
 

@@ -5,148 +5,158 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class EvaluationRun {
+public class TraceEvaluationRun {
     @JsonProperty("id")
-    private Object id;
+    @Nullable
+    private String id;
 
     @JsonProperty("project_name")
-    private Object projectName;
+    @Nullable
+    private String projectName;
 
     @JsonProperty("eval_name")
-    private Object evalName;
-
-    @JsonProperty("examples")
-    private List<Example> examples;
+    @Nullable
+    private String evalName;
 
     @JsonProperty("custom_scorers")
+    @Nullable
     private List<BaseScorer> customScorers;
 
     @JsonProperty("judgment_scorers")
+    @Nullable
     private List<ScorerConfig> judgmentScorers;
 
     @JsonProperty("model")
+    @Nonnull
     private String model;
 
-    @JsonProperty("trace_span_id")
-    private Object traceSpanId;
-
-    @JsonProperty("trace_id")
-    private Object traceId;
-
     @JsonProperty("created_at")
-    private Object createdAt;
+    @Nullable
+    private String createdAt;
 
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @JsonProperty("trace_and_span_ids")
+    @Nonnull
+    private List<List<Object>> traceAndSpanIds;
+
+    @JsonProperty("is_offline")
+    @Nullable
+    private Boolean isOffline;
+
+    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
+    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
         additionalProperties.put(name, value);
     }
 
-    public Object getId() {
+    @Nullable
+    public String getId() {
         return id;
     }
 
-    public Object getProjectName() {
+    @Nullable
+    public String getProjectName() {
         return projectName;
     }
 
-    public Object getEvalName() {
+    @Nullable
+    public String getEvalName() {
         return evalName;
     }
 
-    public List<Example> getExamples() {
-        return examples;
-    }
-
+    @Nullable
     public List<BaseScorer> getCustomScorers() {
         return customScorers;
     }
 
+    @Nullable
     public List<ScorerConfig> getJudgmentScorers() {
         return judgmentScorers;
     }
 
+    @Nonnull
     public String getModel() {
         return model;
     }
 
-    public Object getTraceSpanId() {
-        return traceSpanId;
-    }
-
-    public Object getTraceId() {
-        return traceId;
-    }
-
-    public Object getCreatedAt() {
+    @Nullable
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setId(Object id) {
+    @Nonnull
+    public List<List<Object>> getTraceAndSpanIds() {
+        return traceAndSpanIds;
+    }
+
+    @Nullable
+    public Boolean getIsOffline() {
+        return isOffline;
+    }
+
+    public void setId(@Nullable String id) {
         this.id = id;
     }
 
-    public void setProjectName(Object projectName) {
+    public void setProjectName(@Nullable String projectName) {
         this.projectName = projectName;
     }
 
-    public void setEvalName(Object evalName) {
+    public void setEvalName(@Nullable String evalName) {
         this.evalName = evalName;
     }
 
-    public void setExamples(List<Example> examples) {
-        this.examples = examples;
-    }
-
-    public void setCustomScorers(List<BaseScorer> customScorers) {
+    public void setCustomScorers(@Nullable List<BaseScorer> customScorers) {
         this.customScorers = customScorers;
     }
 
-    public void setJudgmentScorers(List<ScorerConfig> judgmentScorers) {
+    public void setJudgmentScorers(@Nullable List<ScorerConfig> judgmentScorers) {
         this.judgmentScorers = judgmentScorers;
     }
 
-    public void setModel(String model) {
+    public void setModel(@Nonnull String model) {
         this.model = model;
     }
 
-    public void setTraceSpanId(Object traceSpanId) {
-        this.traceSpanId = traceSpanId;
-    }
-
-    public void setTraceId(Object traceId) {
-        this.traceId = traceId;
-    }
-
-    public void setCreatedAt(Object createdAt) {
+    public void setCreatedAt(@Nullable String createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public void setTraceAndSpanIds(@Nonnull List<List<Object>> traceAndSpanIds) {
+        this.traceAndSpanIds = traceAndSpanIds;
+    }
+
+    public void setIsOffline(@Nullable Boolean isOffline) {
+        this.isOffline = isOffline;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        EvaluationRun other = (EvaluationRun) obj;
+        TraceEvaluationRun other = (TraceEvaluationRun) obj;
         return Objects.equals(id, other.id)
                 && Objects.equals(projectName, other.projectName)
                 && Objects.equals(evalName, other.evalName)
-                && Objects.equals(examples, other.examples)
                 && Objects.equals(customScorers, other.customScorers)
                 && Objects.equals(judgmentScorers, other.judgmentScorers)
                 && Objects.equals(model, other.model)
-                && Objects.equals(traceSpanId, other.traceSpanId)
-                && Objects.equals(traceId, other.traceId)
                 && Objects.equals(createdAt, other.createdAt)
+                && Objects.equals(traceAndSpanIds, other.traceAndSpanIds)
+                && Objects.equals(isOffline, other.isOffline)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
@@ -156,13 +166,12 @@ public class EvaluationRun {
                 id,
                 projectName,
                 evalName,
-                examples,
                 customScorers,
                 judgmentScorers,
                 model,
-                traceSpanId,
-                traceId,
                 createdAt,
+                traceAndSpanIds,
+                isOffline,
                 Objects.hashCode(additionalProperties));
     }
 }

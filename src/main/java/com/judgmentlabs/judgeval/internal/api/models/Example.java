@@ -4,53 +4,63 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Example {
     @JsonProperty("example_id")
+    @Nonnull
     private String exampleId;
 
     @JsonProperty("created_at")
+    @Nonnull
     private String createdAt;
 
     @JsonProperty("name")
-    private Object name;
+    @Nullable
+    private String name;
 
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    @Nonnull private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
+    @Nonnull
     public Map<String, Object> getAdditionalProperties() {
         return additionalProperties;
     }
 
     @JsonAnySetter
-    public void setAdditionalProperty(String name, Object value) {
+    public void setAdditionalProperty(@Nonnull String name, @Nullable Object value) {
         additionalProperties.put(name, value);
     }
 
+    @Nonnull
     public String getExampleId() {
         return exampleId;
     }
 
+    @Nonnull
     public String getCreatedAt() {
         return createdAt;
     }
 
-    public Object getName() {
+    @Nullable
+    public String getName() {
         return name;
     }
 
-    public void setExampleId(String exampleId) {
+    public void setExampleId(@Nonnull String exampleId) {
         this.exampleId = exampleId;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(@Nonnull String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setName(Object name) {
+    public void setName(@Nullable String name) {
         this.name = name;
     }
 

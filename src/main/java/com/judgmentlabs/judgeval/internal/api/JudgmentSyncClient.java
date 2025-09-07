@@ -70,7 +70,7 @@ public class JudgmentSyncClient {
         }
     }
 
-    public Object addToRunEvalQueue(EvaluationRun payload)
+    public Object addToRunEvalQueue(ExampleEvaluationRun payload)
             throws IOException, InterruptedException {
         String url = buildUrl("/add_to_run_eval_queue/");
         String jsonPayload = mapper.writeValueAsString(payload);

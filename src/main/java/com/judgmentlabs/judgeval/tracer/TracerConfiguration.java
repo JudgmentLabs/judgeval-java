@@ -5,7 +5,8 @@ import java.util.Objects;
 /**
  * Configuration for the Judgment Tracer that controls how tracing and evaluation behave.
  *
- * <p>This class encapsulates all configuration parameters needed to initialize a {@link Tracer}.
+ * <p>This class encapsulates all configuration parameters needed to initialize a {@link
+ * JudgevalTracer}.
  *
  * <p>Example usage:
  *
@@ -20,7 +21,7 @@ import java.util.Objects;
  * Tracer tracer = Tracer.createWithConfiguration(config);
  * }</pre>
  *
- * @see Tracer
+ * @see JudgevalTracer
  */
 public final class TracerConfiguration {
     private final String projectName;

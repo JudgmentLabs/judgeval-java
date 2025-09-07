@@ -8,8 +8,8 @@ import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
 
-import com.judgmentlabs.judgeval.data.EvaluationRun;
 import com.judgmentlabs.judgeval.data.Example;
+import com.judgmentlabs.judgeval.data.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.data.ScorerData;
 import com.judgmentlabs.judgeval.data.ScoringResult;
 import com.judgmentlabs.judgeval.exceptions.JudgmentRuntimeError;
@@ -25,13 +25,14 @@ import com.judgmentlabs.judgeval.utils.Logger;
 /**
  * Main client for running evaluations with Judgment Labs.
  *
- * <p>The JudgmentClient provides functionality to:
+ * <p>
+ * The JudgmentClient provides functionality to:
  *
  * <ul>
- *   <li>Run evaluations with multiple examples and scorers
- *   <li>Validate inputs and scorer configurations
- *   <li>Poll for evaluation results
- *   <li>Assert test results for automated testing
+ * <li>Run evaluations with multiple examples and scorers
+ * <li>Validate inputs and scorer configurations
+ * <li>Poll for evaluation results
+ * <li>Assert test results for automated testing
  * </ul>
  *
  * <h2>Basic Usage</h2>
@@ -74,34 +75,35 @@ public class JudgmentClient {
 
     public JudgmentClient(String apiKey, String organizationId) {
         this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");
-        this.organizationId =
-                Objects.requireNonNull(organizationId, "Organization ID cannot be null");
-        this.client =
-                new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
+        this.organizationId = Objects.requireNonNull(organizationId, "Organization ID cannot be null");
+        this.client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, this.apiKey, this.organizationId);
     }
 
     /**
      * Runs an evaluation with the specified examples and scorers.
      *
-     * <p>The method performs the following validations:
+     * <p>
+     * The method performs the following validations:
      *
      * <ul>
-     *   <li>All examples must have the same field keys
-     *   <li>Examples must contain required parameters for all scorers
-     *   <li>Cannot mix local and Judgment API scorers
-     *   <li>All input parameters must be valid
+     * <li>All examples must have the same field keys
+     * <li>Examples must contain required parameters for all scorers
+     * <li>Cannot mix local and Judgment API scorers
+     * <li>All input parameters must be valid
      * </ul>
      *
-     * @param examples the examples to evaluate
-     * @param scorers the scorers to use for evaluation
+     * @param examples    the examples to evaluate
+     * @param scorers     the scorers to use for evaluation
      * @param projectName the project name
      * @param evalRunName the evaluation run name
-     * @param model the model used for generation (can be null, will use default)
-     * @param assertTest whether to assert test results and throw exceptions on failures
+     * @param model       the model used for generation (can be null, will use
+     *                    default)
+     * @param assertTest  whether to assert test results and throw exceptions on
+     *                    failures
      * @return a list of scoring results for each example
      * @throws IllegalArgumentException if inputs are invalid
-     * @throws JudgmentRuntimeError if evaluation fails
-     * @throws JudgmentTestError if assertTest is true and any tests fail
+     * @throws JudgmentRuntimeError     if evaluation fails
+     * @throws JudgmentTestError        if assertTest is true and any tests fail
      */
     public List<ScoringResult> runEvaluation(
             List<Example> examples,
@@ -134,13 +136,12 @@ public class JudgmentClient {
             }
             Logger.info("Submitting scorers payload count=" + convertedScorers.size());
 
-            EvaluationRun eval =
-                    EvaluationRun.builder(projectName, evalRunName)
-                            .examples(examples)
-                            .scorers(convertedScorers)
-                            .model(model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL)
-                            .organizationId(organizationId)
-                            .build();
+            ExampleEvaluationRun eval = ExampleEvaluationRun.builder(projectName, evalRunName)
+                    .examples(examples)
+                    .scorers(convertedScorers)
+                    .model(model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL)
+                    .organizationId(organizationId)
+                    .build();
 
             List<ScoringResult> results = runEval(eval);
 
@@ -155,7 +156,7 @@ public class JudgmentClient {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException(
                     String.format(
-                            "Please check your EvaluationRun object, one or more fields are invalid: %s",
+                            "Please check your ExampleEvaluationRun object, one or more fields are invalid: %s",
                             e.getMessage()));
         } catch (Exception e) {
             throw new JudgmentRuntimeError(
@@ -274,7 +275,7 @@ public class JudgmentClient {
         }
     }
 
-    private List<ScoringResult> runEval(EvaluationRun eval) {
+    private List<ScoringResult> runEval(ExampleEvaluationRun eval) {
         try {
             Logger.info("Submitting evaluation to API...");
             Object response = client.addToRunEvalQueue(eval);
@@ -297,23 +298,24 @@ public class JudgmentClient {
     }
 
     private List<ScoringResult> pollEvaluationUntilComplete(
-            EvaluationRun eval, JudgmentSyncClient client) {
+            ExampleEvaluationRun eval, JudgmentSyncClient client) {
         return pollEvaluationUntilComplete(eval, client, 2.0, 5, 60);
     }
 
     /**
      * Polls for evaluation results until completion with custom settings.
      *
-     * @param eval the evaluation run to poll
-     * @param client the API client to use
+     * @param eval                the evaluation run to poll
+     * @param client              the API client to use
      * @param pollIntervalSeconds the interval between polls in seconds
-     * @param maxFailures the maximum number of consecutive failures before giving up
-     * @param maxPollCount the maximum number of polls before timing out
+     * @param maxFailures         the maximum number of consecutive failures before
+     *                            giving up
+     * @param maxPollCount        the maximum number of polls before timing out
      * @return a list of scoring results
      * @throws JudgmentRuntimeError if polling fails or times out
      */
     private List<ScoringResult> pollEvaluationUntilComplete(
-            EvaluationRun eval,
+            ExampleEvaluationRun eval,
             JudgmentSyncClient client,
             double pollIntervalSeconds,
             int maxFailures,
@@ -328,9 +330,8 @@ public class JudgmentClient {
                 long elapsed = (System.currentTimeMillis() - startTime) / 1000;
                 Logger.info("Running evaluation... (" + elapsed + " sec)");
 
-                Object statusResponse =
-                        client.getEvaluationStatus(
-                                eval.getId().toString(), eval.getProjectName().toString());
+                Object statusResponse = client.getEvaluationStatus(
+                        eval.getId().toString(), eval.getProjectName().toString());
 
                 if (statusResponse instanceof Map) {
                     Map<String, Object> statusMap = (Map<String, Object>) statusResponse;
@@ -348,8 +349,7 @@ public class JudgmentClient {
 
                 if (resultsResponse instanceof Map) {
                     Map<String, Object> resultsMap = (Map<String, Object>) resultsResponse;
-                    List<Map<String, Object>> examplesData =
-                            (List<Map<String, Object>>) resultsMap.get("examples");
+                    List<Map<String, Object>> examplesData = (List<Map<String, Object>>) resultsMap.get("examples");
 
                     if (examplesData == null) {
                         Thread.sleep((long) (pollIntervalSeconds * 1000));
@@ -382,20 +382,18 @@ public class JudgmentClient {
 
         for (Map<String, Object> exampleData : examplesData) {
             List<ScorerData> scorersData = parseScorerDataList(exampleData);
-            boolean success =
-                    scorersData.stream()
-                            .allMatch(scorerData -> Boolean.TRUE.equals(scorerData.getSuccess()));
+            boolean success = scorersData.stream()
+                    .allMatch(scorerData -> Boolean.TRUE.equals(scorerData.getSuccess()));
 
             Example example = Example.builder().name(parseString(exampleData.get("name"))).build();
             example.setExampleId(parseString(exampleData.get("example_id")));
             example.setCreatedAt(parseString(exampleData.get("created_at")));
 
-            ScoringResult result =
-                    ScoringResult.builder()
-                            .success(success)
-                            .scorersData(scorersData)
-                            .dataObject(example)
-                            .build();
+            ScoringResult result = ScoringResult.builder()
+                    .success(success)
+                    .scorersData(scorersData)
+                    .dataObject(example)
+                    .build();
 
             results.add(result);
         }
@@ -412,19 +410,18 @@ public class JudgmentClient {
             List<Map<String, Object>> scorerDataList = (List<Map<String, Object>>) scorerDataObj;
 
             for (Map<String, Object> rawScorerData : scorerDataList) {
-                ScorerData scorerData =
-                        ScorerData.builder()
-                                .name(parseString(rawScorerData.get("name")))
-                                .score(parseDouble(rawScorerData.get("score")))
-                                .success(parseBoolean(rawScorerData.get("success")))
-                                .reason(parseString(rawScorerData.get("reason")))
-                                .threshold(parseDouble(rawScorerData.get("threshold")))
-                                .strictMode(parseBoolean(rawScorerData.get("strict_mode")))
-                                .evaluationModel(parseString(rawScorerData.get("evaluation_model")))
-                                .error(parseString(rawScorerData.get("error")))
-                                .additionalMetadata(
-                                        parseMetadata(rawScorerData.get("additional_metadata")))
-                                .build();
+                ScorerData scorerData = ScorerData.builder()
+                        .name(parseString(rawScorerData.get("name")))
+                        .score(parseDouble(rawScorerData.get("score")))
+                        .success(parseBoolean(rawScorerData.get("success")))
+                        .reason(parseString(rawScorerData.get("reason")))
+                        .threshold(parseDouble(rawScorerData.get("threshold")))
+                        .strictMode(parseBoolean(rawScorerData.get("strict_mode")))
+                        .evaluationModel(parseString(rawScorerData.get("evaluation_model")))
+                        .error(parseString(rawScorerData.get("error")))
+                        .additionalMetadata(
+                                parseMetadata(rawScorerData.get("additional_metadata")))
+                        .build();
 
                 scorersData.add(scorerData);
             }
@@ -457,7 +454,8 @@ public class JudgmentClient {
      * Asserts test results and throws exceptions for failures.
      *
      * @param results the evaluation results to assert
-     * @throws JudgmentTestError if any tests failed, with detailed error information
+     * @throws JudgmentTestError if any tests failed, with detailed error
+     *                           information
      */
     private void assertTestResults(List<ScoringResult> results) {
         if (results == null || results.isEmpty()) {
@@ -472,7 +470,7 @@ public class JudgmentClient {
                 List<ScorerData> failedScorers = new ArrayList<>();
 
                 if (result.getScorersData() != null) {
-                    List<ScorerData> scorersData = (List<ScorerData>) result.getScorersData();
+                    List<ScorerData> scorersData = convertScorerDataList(result.getScorersData());
                     for (ScorerData scorerData : scorersData) {
                         if (!Boolean.TRUE.equals(scorerData.getSuccess())) {
                             if ("Tool Order".equals(scorerData.getName())) {
@@ -522,7 +520,7 @@ public class JudgmentClient {
                 } else {
                     Logger.error("Test " + testNum + ": FAILED");
                     if (result.getScorersData() != null) {
-                        List<ScorerData> scorersData = (List<ScorerData>) result.getScorersData();
+                        List<ScorerData> scorersData = convertScorerDataList(result.getScorersData());
                         for (ScorerData scorerData : scorersData) {
                             if (!Boolean.TRUE.equals(scorerData.getSuccess())) {
                                 Logger.warning("  Scorer: " + scorerData.getName());
@@ -570,5 +568,27 @@ public class JudgmentClient {
 
             throw new JudgmentTestError(errorMsg.toString());
         }
+    }
+
+    private List<ScorerData> convertScorerDataList(
+            List<com.judgmentlabs.judgeval.internal.api.models.ScorerData> internalList) {
+        if (internalList == null) {
+            return null;
+        }
+        List<ScorerData> result = new ArrayList<>();
+        for (com.judgmentlabs.judgeval.internal.api.models.ScorerData internal : internalList) {
+            ScorerData data = new ScorerData();
+            data.setName(internal.getName());
+            data.setScore(internal.getScore());
+            data.setSuccess(internal.getSuccess());
+            data.setReason(internal.getReason());
+            data.setThreshold(internal.getThreshold());
+            data.setStrictMode(internal.getStrictMode());
+            data.setEvaluationModel(internal.getEvaluationModel());
+            data.setError(internal.getError());
+            data.setAdditionalMetadata(internal.getAdditionalMetadata());
+            result.add(data);
+        }
+        return result;
     }
 }
