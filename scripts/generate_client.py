@@ -170,9 +170,10 @@ def get_java_type(schema: Dict[str, Any]) -> str:
                     types.add(get_java_type(union_schema))
 
             non_null_types = types - {"null"}
-            if non_null_types:
+            if len(non_null_types) == 1:
                 return list(non_null_types)[0]
             else:
+                print(f"Union type with multiple non-null types: {non_null_types}", file=sys.stderr)
                 return "Object"
 
     schema_type = schema.get("type", "object")

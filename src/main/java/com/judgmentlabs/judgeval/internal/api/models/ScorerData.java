@@ -28,7 +28,7 @@ public class ScorerData {
     private Boolean strictMode;
 
     @JsonProperty("evaluation_model")
-    private String evaluationModel;
+    private Object evaluationModel;
 
     @JsonProperty("error")
     private String error;
@@ -72,7 +72,7 @@ public class ScorerData {
         return strictMode;
     }
 
-    public String getEvaluationModel() {
+    public Object getEvaluationModel() {
         return evaluationModel;
     }
 
@@ -108,7 +108,7 @@ public class ScorerData {
         this.strictMode = strictMode;
     }
 
-    public void setEvaluationModel(String evaluationModel) {
+    public void setEvaluationModel(Object evaluationModel) {
         this.evaluationModel = evaluationModel;
     }
 

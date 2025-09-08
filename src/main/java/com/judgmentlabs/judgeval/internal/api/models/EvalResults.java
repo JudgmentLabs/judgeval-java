@@ -14,7 +14,7 @@ public class EvalResults {
     private List<ScoringResult> results;
 
     @JsonProperty("run")
-    private ExampleEvaluationRun run;
+    private Object run;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -32,7 +32,7 @@ public class EvalResults {
         return results;
     }
 
-    public ExampleEvaluationRun getRun() {
+    public Object getRun() {
         return run;
     }
 
@@ -40,7 +40,7 @@ public class EvalResults {
         this.results = results;
     }
 
-    public void setRun(ExampleEvaluationRun run) {
+    public void setRun(Object run) {
         this.run = run;
     }
 

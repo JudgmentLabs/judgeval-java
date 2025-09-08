@@ -20,7 +20,7 @@ public class ScoringResult {
     private String name;
 
     @JsonProperty("data_object")
-    private TraceSpan dataObject;
+    private Object dataObject;
 
     @JsonProperty("trace_id")
     private String traceId;
@@ -55,7 +55,7 @@ public class ScoringResult {
         return name;
     }
 
-    public TraceSpan getDataObject() {
+    public Object getDataObject() {
         return dataObject;
     }
 
@@ -83,7 +83,7 @@ public class ScoringResult {
         this.name = name;
     }
 
-    public void setDataObject(TraceSpan dataObject) {
+    public void setDataObject(Object dataObject) {
         this.dataObject = dataObject;
     }
 
