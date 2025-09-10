@@ -97,13 +97,13 @@ interface ISerializer {
  * @see BaseScorer
  * @see Example
  */
-public final class JudgevalTracer {
+public final class Tracer {
     private final TracerConfiguration configuration;
     private final JudgmentSyncClient apiClient;
     private final ISerializer serializer;
     private final String projectId;
 
-    private JudgevalTracer(
+    private Tracer(
             TracerConfiguration configuration,
             JudgmentSyncClient apiClient,
             ISerializer serializer) {
@@ -117,11 +117,11 @@ public final class JudgevalTracer {
         return new TracerBuilder();
     }
 
-    public static JudgevalTracer createDefault(String projectName) {
+    public static Tracer createDefault(String projectName) {
         return builder().configuration(TracerConfiguration.createDefault(projectName)).build();
     }
 
-    public static JudgevalTracer createWithConfiguration(TracerConfiguration configuration) {
+    public static Tracer createWithConfiguration(TracerConfiguration configuration) {
         return builder().configuration(configuration).build();
     }
 
@@ -397,7 +397,7 @@ public final class JudgevalTracer {
             return this;
         }
 
-        public JudgevalTracer build() {
+        public Tracer build() {
             if (configuration == null) {
                 throw new IllegalArgumentException("Configuration is required");
             }
@@ -410,7 +410,7 @@ public final class JudgevalTracer {
                                     configuration.apiKey(),
                                     configuration.organizationId());
 
-            return new JudgevalTracer(configuration, client, serializer);
+            return new Tracer(configuration, client, serializer);
         }
     }
 
