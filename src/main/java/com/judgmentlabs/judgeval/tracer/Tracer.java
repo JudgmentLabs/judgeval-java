@@ -22,15 +22,6 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 
-@FunctionalInterface
-interface ISerializer {
-    String serialize(Object obj);
-
-    default String serialize(Object obj, Type type) {
-        return serialize(obj);
-    }
-}
-
 /**
  * Main tracer class for integrating with Judgment Labs for distributed tracing and evaluation.
  *
@@ -368,7 +359,7 @@ public final class Tracer {
      *         .build();
      *
      * JudgmentSyncClient customClient = new JudgmentSyncClient(url, key, orgId);
-     * Serializer customSerializer = obj -> obj.toString();
+     * ISerializer customSerializer = obj -> obj.toString();
      *
      * Tracer tracer = Tracer.builder()
      *         .configuration(config)
