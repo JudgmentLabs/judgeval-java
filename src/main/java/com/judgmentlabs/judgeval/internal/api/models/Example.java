@@ -16,7 +16,7 @@ public class Example {
     private String createdAt;
 
     @JsonProperty("name")
-    private Object name;
+    private String name;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -38,7 +38,7 @@ public class Example {
         return createdAt;
     }
 
-    public Object getName() {
+    public String getName() {
         return name;
     }
 
@@ -50,7 +50,7 @@ public class Example {
         this.createdAt = createdAt;
     }
 
-    public void setName(Object name) {
+    public void setName(String name) {
         this.name = name;
     }
 

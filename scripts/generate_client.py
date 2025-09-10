@@ -158,6 +158,24 @@ def get_java_type(schema: Dict[str, Any]) -> str:
     if "$ref" in schema:
         return to_class_name(resolve_ref(schema["$ref"]))
 
+    for union_key in ["anyOf", "oneOf", "allOf"]:
+        if union_key in schema:
+            union_schemas = schema[union_key]
+            types = set()
+
+            for union_schema in union_schemas:
+                if union_schema.get("type") == "null":
+                    types.add("null")
+                else:
+                    types.add(get_java_type(union_schema))
+
+            non_null_types = types - {"null"}
+            if len(non_null_types) == 1:
+                return list(non_null_types)[0]
+            else:
+                print(f"Union type with multiple non-null types: {non_null_types}", file=sys.stderr)
+                return "Object"
+
     schema_type = schema.get("type", "object")
     type_mapping = {
         "string": "String",

@@ -22,13 +22,13 @@ public class PromptScorer {
     private Object options;
 
     @JsonProperty("created_at")
-    private Object createdAt;
+    private String createdAt;
 
     @JsonProperty("updated_at")
-    private Object updatedAt;
+    private String updatedAt;
 
     @JsonProperty("is_trace")
-    private Object isTrace;
+    private Boolean isTrace;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -58,15 +58,15 @@ public class PromptScorer {
         return options;
     }
 
-    public Object getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public Object getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public Object getIsTrace() {
+    public Boolean getIsTrace() {
         return isTrace;
     }
 
@@ -86,15 +86,15 @@ public class PromptScorer {
         this.options = options;
     }
 
-    public void setCreatedAt(Object createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setUpdatedAt(Object updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public void setIsTrace(Object isTrace) {
+    public void setIsTrace(Boolean isTrace) {
         this.isTrace = isTrace;
     }
 

@@ -21,7 +21,11 @@ public class ScoringResult extends com.judgmentlabs.judgeval.internal.api.models
         }
 
         public Builder scorersData(List<ScorerData> scorersData) {
-            result.setScorersData(scorersData);
+            @SuppressWarnings("unchecked")
+            List<com.judgmentlabs.judgeval.internal.api.models.ScorerData> internalList =
+                    (List<com.judgmentlabs.judgeval.internal.api.models.ScorerData>)
+                            (List<?>) scorersData;
+            result.setScorersData(internalList);
             return this;
         }
 
@@ -29,14 +33,17 @@ public class ScoringResult extends com.judgmentlabs.judgeval.internal.api.models
             if (result.getScorersData() == null) {
                 result.setScorersData(new java.util.ArrayList<>());
             }
-            @SuppressWarnings("unchecked")
-            List<ScorerData> scorersData = (List<ScorerData>) result.getScorersData();
-            scorersData.add(scorerData);
+            result.getScorersData().add(scorerData);
             return this;
         }
 
         public Builder dataObject(Example dataObject) {
-            result.setDataObject(dataObject);
+            // Store Example in additional properties since setDataObject expects TraceSpan
+            // This indicates a potential API design issue - ScoringResult may be
+            // trace-specific
+            if (dataObject != null) {
+                result.setAdditionalProperty("example", dataObject);
+            }
             return this;
         }
 

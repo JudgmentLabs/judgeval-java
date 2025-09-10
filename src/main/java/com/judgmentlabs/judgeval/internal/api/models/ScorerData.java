@@ -19,19 +19,19 @@ public class ScorerData {
     private Boolean success;
 
     @JsonProperty("score")
-    private Object score;
+    private Double score;
 
     @JsonProperty("reason")
-    private Object reason;
+    private String reason;
 
     @JsonProperty("strict_mode")
-    private Object strictMode;
+    private Boolean strictMode;
 
     @JsonProperty("evaluation_model")
     private Object evaluationModel;
 
     @JsonProperty("error")
-    private Object error;
+    private String error;
 
     @JsonProperty("additional_metadata")
     private Object additionalMetadata;
@@ -60,15 +60,15 @@ public class ScorerData {
         return success;
     }
 
-    public Object getScore() {
+    public Double getScore() {
         return score;
     }
 
-    public Object getReason() {
+    public String getReason() {
         return reason;
     }
 
-    public Object getStrictMode() {
+    public Boolean getStrictMode() {
         return strictMode;
     }
 
@@ -76,7 +76,7 @@ public class ScorerData {
         return evaluationModel;
     }
 
-    public Object getError() {
+    public String getError() {
         return error;
     }
 
@@ -96,15 +96,15 @@ public class ScorerData {
         this.success = success;
     }
 
-    public void setScore(Object score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 
-    public void setReason(Object reason) {
+    public void setReason(String reason) {
         this.reason = reason;
     }
 
-    public void setStrictMode(Object strictMode) {
+    public void setStrictMode(Boolean strictMode) {
         this.strictMode = strictMode;
     }
 
@@ -112,7 +112,7 @@ public class ScorerData {
         this.evaluationModel = evaluationModel;
     }
 
-    public void setError(Object error) {
+    public void setError(String error) {
         this.error = error;
     }
 

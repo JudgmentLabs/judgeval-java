@@ -10,31 +10,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TraceUsage {
     @JsonProperty("prompt_tokens")
-    private Object promptTokens;
+    private Integer promptTokens;
 
     @JsonProperty("completion_tokens")
-    private Object completionTokens;
+    private Integer completionTokens;
 
     @JsonProperty("cache_creation_input_tokens")
-    private Object cacheCreationInputTokens;
+    private Integer cacheCreationInputTokens;
 
     @JsonProperty("cache_read_input_tokens")
-    private Object cacheReadInputTokens;
+    private Integer cacheReadInputTokens;
 
     @JsonProperty("total_tokens")
-    private Object totalTokens;
+    private Integer totalTokens;
 
     @JsonProperty("prompt_tokens_cost_usd")
-    private Object promptTokensCostUsd;
+    private Double promptTokensCostUsd;
 
     @JsonProperty("completion_tokens_cost_usd")
-    private Object completionTokensCostUsd;
+    private Double completionTokensCostUsd;
 
     @JsonProperty("total_cost_usd")
-    private Object totalCostUsd;
+    private Double totalCostUsd;
 
     @JsonProperty("model_name")
-    private Object modelName;
+    private String modelName;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -48,75 +48,75 @@ public class TraceUsage {
         additionalProperties.put(name, value);
     }
 
-    public Object getPromptTokens() {
+    public Integer getPromptTokens() {
         return promptTokens;
     }
 
-    public Object getCompletionTokens() {
+    public Integer getCompletionTokens() {
         return completionTokens;
     }
 
-    public Object getCacheCreationInputTokens() {
+    public Integer getCacheCreationInputTokens() {
         return cacheCreationInputTokens;
     }
 
-    public Object getCacheReadInputTokens() {
+    public Integer getCacheReadInputTokens() {
         return cacheReadInputTokens;
     }
 
-    public Object getTotalTokens() {
+    public Integer getTotalTokens() {
         return totalTokens;
     }
 
-    public Object getPromptTokensCostUsd() {
+    public Double getPromptTokensCostUsd() {
         return promptTokensCostUsd;
     }
 
-    public Object getCompletionTokensCostUsd() {
+    public Double getCompletionTokensCostUsd() {
         return completionTokensCostUsd;
     }
 
-    public Object getTotalCostUsd() {
+    public Double getTotalCostUsd() {
         return totalCostUsd;
     }
 
-    public Object getModelName() {
+    public String getModelName() {
         return modelName;
     }
 
-    public void setPromptTokens(Object promptTokens) {
+    public void setPromptTokens(Integer promptTokens) {
         this.promptTokens = promptTokens;
     }
 
-    public void setCompletionTokens(Object completionTokens) {
+    public void setCompletionTokens(Integer completionTokens) {
         this.completionTokens = completionTokens;
     }
 
-    public void setCacheCreationInputTokens(Object cacheCreationInputTokens) {
+    public void setCacheCreationInputTokens(Integer cacheCreationInputTokens) {
         this.cacheCreationInputTokens = cacheCreationInputTokens;
     }
 
-    public void setCacheReadInputTokens(Object cacheReadInputTokens) {
+    public void setCacheReadInputTokens(Integer cacheReadInputTokens) {
         this.cacheReadInputTokens = cacheReadInputTokens;
     }
 
-    public void setTotalTokens(Object totalTokens) {
+    public void setTotalTokens(Integer totalTokens) {
         this.totalTokens = totalTokens;
     }
 
-    public void setPromptTokensCostUsd(Object promptTokensCostUsd) {
+    public void setPromptTokensCostUsd(Double promptTokensCostUsd) {
         this.promptTokensCostUsd = promptTokensCostUsd;
     }
 
-    public void setCompletionTokensCostUsd(Object completionTokensCostUsd) {
+    public void setCompletionTokensCostUsd(Double completionTokensCostUsd) {
         this.completionTokensCostUsd = completionTokensCostUsd;
     }
 
-    public void setTotalCostUsd(Object totalCostUsd) {
+    public void setTotalCostUsd(Double totalCostUsd) {
         this.totalCostUsd = totalCostUsd;
     }
 
-    public void setModelName(Object modelName) {
+    public void setModelName(String modelName) {
         this.modelName = modelName;
     }
 

@@ -1,6 +1,7 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -18,17 +19,14 @@ public class TraceSpan {
     @JsonProperty("function")
     private String function;
 
-    @JsonProperty("depth")
-    private Integer depth;
-
     @JsonProperty("created_at")
     private Object createdAt;
 
     @JsonProperty("parent_span_id")
-    private Object parentSpanId;
+    private String parentSpanId;
 
     @JsonProperty("span_type")
-    private Object spanType;
+    private String spanType;
 
     @JsonProperty("inputs")
     private Object inputs;
@@ -40,25 +38,25 @@ public class TraceSpan {
     private Object output;
 
     @JsonProperty("usage")
-    private Object usage;
+    private TraceUsage usage;
 
     @JsonProperty("duration")
-    private Object duration;
+    private Double duration;
 
     @JsonProperty("expected_tools")
-    private Object expectedTools;
+    private List<Tool> expectedTools;
 
     @JsonProperty("additional_metadata")
     private Object additionalMetadata;
 
     @JsonProperty("has_evaluation")
-    private Object hasEvaluation;
+    private Boolean hasEvaluation;
 
     @JsonProperty("agent_name")
-    private Object agentName;
+    private String agentName;
 
     @JsonProperty("class_name")
-    private Object className;
+    private String className;
 
     @JsonProperty("state_before")
     private Object stateBefore;
@@ -93,19 +91,15 @@ public class TraceSpan {
         return function;
     }
 
-    public Integer getDepth() {
-        return depth;
-    }
-
     public Object getCreatedAt() {
         return createdAt;
     }
 
-    public Object getParentSpanId() {
+    public String getParentSpanId() {
         return parentSpanId;
     }
 
-    public Object getSpanType() {
+    public String getSpanType() {
         return spanType;
     }
 
@@ -121,15 +115,15 @@ public class TraceSpan {
         return output;
     }
 
-    public Object getUsage() {
+    public TraceUsage getUsage() {
         return usage;
     }
 
-    public Object getDuration() {
+    public Double getDuration() {
         return duration;
     }
 
-    public Object getExpectedTools() {
+    public List<Tool> getExpectedTools() {
         return expectedTools;
     }
 
@@ -137,15 +131,15 @@ public class TraceSpan {
         return additionalMetadata;
     }
 
-    public Object getHasEvaluation() {
+    public Boolean getHasEvaluation() {
         return hasEvaluation;
     }
 
-    public Object getAgentName() {
+    public String getAgentName() {
         return agentName;
     }
 
-    public Object getClassName() {
+    public String getClassName() {
         return className;
     }
 
@@ -173,19 +167,15 @@ public class TraceSpan {
         this.function = function;
     }
 
-    public void setDepth(Integer depth) {
-        this.depth = depth;
-    }
-
     public void setCreatedAt(Object createdAt) {
         this.createdAt = createdAt;
     }
 
-    public void setParentSpanId(Object parentSpanId) {
+    public void setParentSpanId(String parentSpanId) {
         this.parentSpanId = parentSpanId;
     }
 
-    public void setSpanType(Object spanType) {
+    public void setSpanType(String spanType) {
         this.spanType = spanType;
     }
 
@@ -201,15 +191,15 @@ public class TraceSpan {
         this.output = output;
     }
 
-    public void setUsage(Object usage) {
+    public void setUsage(TraceUsage usage) {
         this.usage = usage;
     }
 
-    public void setDuration(Object duration) {
+    public void setDuration(Double duration) {
         this.duration = duration;
     }
 
-    public void setExpectedTools(Object expectedTools) {
+    public void setExpectedTools(List<Tool> expectedTools) {
         this.expectedTools = expectedTools;
     }
 
@@ -217,15 +207,15 @@ public class TraceSpan {
         this.additionalMetadata = additionalMetadata;
     }
 
-    public void setHasEvaluation(Object hasEvaluation) {
+    public void setHasEvaluation(Boolean hasEvaluation) {
         this.hasEvaluation = hasEvaluation;
     }
 
-    public void setAgentName(Object agentName) {
+    public void setAgentName(String agentName) {
         this.agentName = agentName;
     }
 
-    public void setClassName(Object className) {
+    public void setClassName(String className) {
         this.className = className;
     }
 
@@ -249,7 +239,6 @@ public class TraceSpan {
         return Objects.equals(spanId, other.spanId)
                 && Objects.equals(traceId, other.traceId)
                 && Objects.equals(function, other.function)
-                && Objects.equals(depth, other.depth)
                 && Objects.equals(createdAt, other.createdAt)
                 && Objects.equals(parentSpanId, other.parentSpanId)
                 && Objects.equals(spanType, other.spanType)
@@ -275,7 +264,6 @@ public class TraceSpan {
                 spanId,
                 traceId,
                 function,
-                depth,
                 createdAt,
                 parentSpanId,
                 spanType,

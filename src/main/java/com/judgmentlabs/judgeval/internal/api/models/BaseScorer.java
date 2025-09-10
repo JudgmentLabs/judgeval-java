@@ -16,28 +16,28 @@ public class BaseScorer {
     private Double threshold;
 
     @JsonProperty("name")
-    private Object name;
+    private String name;
 
     @JsonProperty("class_name")
-    private Object className;
+    private String className;
 
     @JsonProperty("score")
-    private Object score;
+    private Double score;
 
     @JsonProperty("score_breakdown")
     private Object scoreBreakdown;
 
     @JsonProperty("reason")
-    private Object reason;
+    private String reason;
 
     @JsonProperty("using_native_model")
-    private Object usingNativeModel;
+    private Boolean usingNativeModel;
 
     @JsonProperty("success")
-    private Object success;
+    private Boolean success;
 
     @JsonProperty("model")
-    private Object model;
+    private String model;
 
     @JsonProperty("model_client")
     private Object modelClient;
@@ -46,13 +46,13 @@ public class BaseScorer {
     private Boolean strictMode;
 
     @JsonProperty("error")
-    private Object error;
+    private String error;
 
     @JsonProperty("additional_metadata")
     private Object additionalMetadata;
 
     @JsonProperty("user")
-    private Object user;
+    private String user;
 
     @JsonProperty("server_hosted")
     private Boolean serverHosted;
@@ -77,15 +77,15 @@ public class BaseScorer {
         return threshold;
     }
 
-    public Object getName() {
+    public String getName() {
         return name;
     }
 
-    public Object getClassName() {
+    public String getClassName() {
         return className;
     }
 
-    public Object getScore() {
+    public Double getScore() {
         return score;
     }
 
@@ -93,19 +93,19 @@ public class BaseScorer {
         return scoreBreakdown;
     }
 
-    public Object getReason() {
+    public String getReason() {
         return reason;
     }
 
-    public Object getUsingNativeModel() {
+    public Boolean getUsingNativeModel() {
         return usingNativeModel;
     }
 
-    public Object getSuccess() {
+    public Boolean getSuccess() {
         return success;
     }
 
-    public Object getModel() {
+    public String getModel() {
         return model;
     }
 
@@ -117,7 +117,7 @@ public class BaseScorer {
         return strictMode;
     }
 
-    public Object getError() {
+    public String getError() {
         return error;
     }
 
@@ -125,7 +125,7 @@ public class BaseScorer {
         return additionalMetadata;
     }
 
-    public Object getUser() {
+    public String getUser() {
         return user;
     }
 
@@ -141,15 +141,15 @@ public class BaseScorer {
         this.threshold = threshold;
     }
 
-    public void setName(Object name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setClassName(Object className) {
+    public void setClassName(String className) {
         this.className = className;
     }
 
-    public void setScore(Object score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 
@@ -157,19 +157,19 @@ public class BaseScorer {
         this.scoreBreakdown = scoreBreakdown;
     }
 
-    public void setReason(Object reason) {
+    public void setReason(String reason) {
         this.reason = reason;
     }
 
-    public void setUsingNativeModel(Object usingNativeModel) {
+    public void setUsingNativeModel(Boolean usingNativeModel) {
         this.usingNativeModel = usingNativeModel;
     }
 
-    public void setSuccess(Object success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 
-    public void setModel(Object model) {
+    public void setModel(String model) {
         this.model = model;
     }
 
@@ -181,7 +181,7 @@ public class BaseScorer {
         this.strictMode = strictMode;
     }
 
-    public void setError(Object error) {
+    public void setError(String error) {
         this.error = error;
     }
 
@@ -189,7 +189,7 @@ public class BaseScorer {
         this.additionalMetadata = additionalMetadata;
     }
 
-    public void setUser(Object user) {
+    public void setUser(String user) {
         this.user = user;
     }
 

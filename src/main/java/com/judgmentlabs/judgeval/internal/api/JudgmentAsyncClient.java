@@ -70,7 +70,7 @@ public class JudgmentAsyncClient {
         }
     }
 
-    public CompletableFuture<Object> addToRunEvalQueue(EvaluationRun payload) {
+    public CompletableFuture<Object> addToRunEvalQueue(ExampleEvaluationRun payload) {
         String url = buildUrl("/add_to_run_eval_queue/");
         String jsonPayload;
         try {

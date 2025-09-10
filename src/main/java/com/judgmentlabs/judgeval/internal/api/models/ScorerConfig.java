@@ -14,7 +14,7 @@ public class ScorerConfig {
     private String scoreType;
 
     @JsonProperty("name")
-    private Object name;
+    private String name;
 
     @JsonProperty("threshold")
     private Double threshold;
@@ -44,7 +44,7 @@ public class ScorerConfig {
         return scoreType;
     }
 
-    public Object getName() {
+    public String getName() {
         return name;
     }
 
@@ -68,7 +68,7 @@ public class ScorerConfig {
         this.scoreType = scoreType;
     }
 
-    public void setName(Object name) {
+    public void setName(String name) {
         this.name = name;
     }
 

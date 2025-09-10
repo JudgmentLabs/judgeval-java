@@ -1,6 +1,7 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,16 +17,16 @@ public class Tool {
     private Object parameters;
 
     @JsonProperty("agent_name")
-    private Object agentName;
+    private String agentName;
 
     @JsonProperty("result_dependencies")
-    private Object resultDependencies;
+    private List<Object> resultDependencies;
 
     @JsonProperty("action_dependencies")
-    private Object actionDependencies;
+    private List<Object> actionDependencies;
 
     @JsonProperty("require_all")
-    private Object requireAll;
+    private Boolean requireAll;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -47,19 +48,19 @@ public class Tool {
         return parameters;
     }
 
-    public Object getAgentName() {
+    public String getAgentName() {
         return agentName;
     }
 
-    public Object getResultDependencies() {
+    public List<Object> getResultDependencies() {
         return resultDependencies;
     }
 
-    public Object getActionDependencies() {
+    public List<Object> getActionDependencies() {
         return actionDependencies;
     }
 
-    public Object getRequireAll() {
+    public Boolean getRequireAll() {
         return requireAll;
     }
 
@@ -71,19 +72,19 @@ public class Tool {
         this.parameters = parameters;
     }
 
-    public void setAgentName(Object agentName) {
+    public void setAgentName(String agentName) {
         this.agentName = agentName;
     }
 
-    public void setResultDependencies(Object resultDependencies) {
+    public void setResultDependencies(List<Object> resultDependencies) {
         this.resultDependencies = resultDependencies;
     }
 
-    public void setActionDependencies(Object actionDependencies) {
+    public void setActionDependencies(List<Object> actionDependencies) {
         this.actionDependencies = actionDependencies;
     }
 
-    public void setRequireAll(Object requireAll) {
+    public void setRequireAll(Boolean requireAll) {
         this.requireAll = requireAll;
     }
 

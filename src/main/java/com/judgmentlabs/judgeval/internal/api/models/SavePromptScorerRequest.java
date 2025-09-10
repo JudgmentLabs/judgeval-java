@@ -22,7 +22,7 @@ public class SavePromptScorerRequest {
     private Object options;
 
     @JsonProperty("is_trace")
-    private Object isTrace;
+    private Boolean isTrace;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -52,7 +52,7 @@ public class SavePromptScorerRequest {
         return options;
     }
 
-    public Object getIsTrace() {
+    public Boolean getIsTrace() {
         return isTrace;
     }
 
@@ -72,7 +72,7 @@ public class SavePromptScorerRequest {
         this.options = options;
     }
 
-    public void setIsTrace(Object isTrace) {
+    public void setIsTrace(Boolean isTrace) {
         this.isTrace = isTrace;
     }
 

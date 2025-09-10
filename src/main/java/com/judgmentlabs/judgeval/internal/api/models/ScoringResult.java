@@ -1,6 +1,7 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -13,22 +14,22 @@ public class ScoringResult {
     private Boolean success;
 
     @JsonProperty("scorers_data")
-    private Object scorersData;
+    private List<ScorerData> scorersData;
 
     @JsonProperty("name")
-    private Object name;
+    private String name;
 
     @JsonProperty("data_object")
     private Object dataObject;
 
     @JsonProperty("trace_id")
-    private Object traceId;
+    private String traceId;
 
     @JsonProperty("run_duration")
-    private Object runDuration;
+    private Double runDuration;
 
     @JsonProperty("evaluation_cost")
-    private Object evaluationCost;
+    private Double evaluationCost;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -46,11 +47,11 @@ public class ScoringResult {
         return success;
     }
 
-    public Object getScorersData() {
+    public List<ScorerData> getScorersData() {
         return scorersData;
     }
 
-    public Object getName() {
+    public String getName() {
         return name;
     }
 
@@ -58,15 +59,15 @@ public class ScoringResult {
         return dataObject;
     }
 
-    public Object getTraceId() {
+    public String getTraceId() {
         return traceId;
     }
 
-    public Object getRunDuration() {
+    public Double getRunDuration() {
         return runDuration;
     }
 
-    public Object getEvaluationCost() {
+    public Double getEvaluationCost() {
         return evaluationCost;
     }
 
@@ -74,11 +75,11 @@ public class ScoringResult {
         this.success = success;
     }
 
-    public void setScorersData(Object scorersData) {
+    public void setScorersData(List<ScorerData> scorersData) {
         this.scorersData = scorersData;
     }
 
-    public void setName(Object name) {
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -86,15 +87,15 @@ public class ScoringResult {
         this.dataObject = dataObject;
     }
 
-    public void setTraceId(Object traceId) {
+    public void setTraceId(String traceId) {
         this.traceId = traceId;
     }
 
-    public void setRunDuration(Object runDuration) {
+    public void setRunDuration(Double runDuration) {
         this.runDuration = runDuration;
     }
 
-    public void setEvaluationCost(Object evaluationCost) {
+    public void setEvaluationCost(Double evaluationCost) {
         this.evaluationCost = evaluationCost;
     }
 

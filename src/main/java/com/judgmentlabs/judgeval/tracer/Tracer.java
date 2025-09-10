@@ -8,8 +8,8 @@ import java.util.Optional;
 
 import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
-import com.judgmentlabs.judgeval.data.EvaluationRun;
 import com.judgmentlabs.judgeval.data.Example;
+import com.judgmentlabs.judgeval.data.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
@@ -91,13 +91,16 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 public final class Tracer {
     private final TracerConfiguration configuration;
     private final JudgmentSyncClient apiClient;
-    private final Gson gson;
+    private final ISerializer serializer;
     private final String projectId;
 
-    private Tracer(TracerConfiguration configuration, JudgmentSyncClient apiClient, Gson gson) {
+    private Tracer(
+            TracerConfiguration configuration,
+            JudgmentSyncClient apiClient,
+            ISerializer serializer) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration cannot be null");
         this.apiClient = Objects.requireNonNull(apiClient, "API client cannot be null");
-        this.gson = Objects.requireNonNull(gson, "Gson cannot be null");
+        this.serializer = Objects.requireNonNull(serializer, "Serializer cannot be null");
         this.projectId = resolveProjectId(configuration.projectName());
     }
 
@@ -177,7 +180,7 @@ public final class Tracer {
      */
     public void setAttribute(String key, Object value) {
         Optional.ofNullable(Span.current())
-                .ifPresent(span -> span.setAttribute(key, gson.toJson(value)));
+                .ifPresent(span -> span.setAttribute(key, serializer.serialize(value)));
     }
 
     /**
@@ -195,7 +198,7 @@ public final class Tracer {
      */
     public void setAttribute(String key, Object value, Type type) {
         Optional.ofNullable(Span.current())
-                .ifPresent(span -> span.setAttribute(key, gson.toJson(value, type)));
+                .ifPresent(span -> span.setAttribute(key, serializer.serialize(value, type)));
     }
 
     /**
@@ -243,7 +246,8 @@ public final class Tracer {
                         + ", scorerTransport="
                         + (transport != null ? transport.getClass().getSimpleName() : "null"));
 
-        EvaluationRun evaluationRun = createEvaluationRun(scorer, example, model, traceId, spanId);
+        ExampleEvaluationRun evaluationRun =
+                createEvaluationRun(scorer, example, model, traceId, spanId);
         enqueueEvaluation(evaluationRun);
     }
 
@@ -252,12 +256,16 @@ public final class Tracer {
     }
 
     public void setAttributes(Map<String, Object> attributes) {
+        if (attributes == null) {
+            return;
+        }
         Optional.ofNullable(Span.current())
                 .ifPresent(
                         span ->
                                 attributes.forEach(
                                         (key, value) ->
-                                                span.setAttribute(key, gson.toJson(value))));
+                                                span.setAttribute(
+                                                        key, serializer.serialize(value))));
     }
 
     public void setLLMSpan() {
@@ -288,28 +296,6 @@ public final class Tracer {
         setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output, type);
     }
 
-    public void setInput(String input, Map<String, Object> metadata) {
-        Optional.ofNullable(Span.current())
-                .ifPresent(
-                        span -> {
-                            span.setAttribute(
-                                    OpenTelemetryKeys.AttributeKeys.JUDGMENT_INPUT, input);
-                            metadata.forEach(
-                                    (key, value) -> span.setAttribute(key, gson.toJson(value)));
-                        });
-    }
-
-    public void setOutput(String output, Map<String, Object> metadata) {
-        Optional.ofNullable(Span.current())
-                .ifPresent(
-                        span -> {
-                            span.setAttribute(
-                                    OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output);
-                            metadata.forEach(
-                                    (key, value) -> span.setAttribute(key, gson.toJson(value)));
-                        });
-    }
-
     private String resolveProjectId(String name) {
         try {
             ResolveProjectNameRequest request = new ResolveProjectNameRequest();
@@ -336,13 +322,13 @@ public final class Tracer {
                 .build();
     }
 
-    private EvaluationRun createEvaluationRun(
+    private ExampleEvaluationRun createEvaluationRun(
             BaseScorer scorer, Example example, String model, String traceId, String spanId) {
         String runId = "async_evaluate_" + (spanId != null ? spanId : System.currentTimeMillis());
         String modelName = model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL;
 
-        EvaluationRun evaluationRun =
-                new EvaluationRun(
+        ExampleEvaluationRun evaluationRun =
+                new ExampleEvaluationRun(
                         configuration.projectName(),
                         runId,
                         List.of(example),
@@ -354,7 +340,7 @@ public final class Tracer {
         return evaluationRun;
     }
 
-    private void enqueueEvaluation(EvaluationRun evaluationRun) {
+    private void enqueueEvaluation(ExampleEvaluationRun evaluationRun) {
         try {
             apiClient.addToRunEvalQueue(evaluationRun);
         } catch (Exception e) {
@@ -373,19 +359,19 @@ public final class Tracer {
      *         .build();
      *
      * JudgmentSyncClient customClient = new JudgmentSyncClient(url, key, orgId);
-     * Gson customGson = new Gson();
+     * ISerializer customSerializer = obj -> obj.toString();
      *
      * Tracer tracer = Tracer.builder()
      *         .configuration(config)
      *         .apiClient(customClient)
-     *         .gson(customGson)
+     *         .serializer(customSerializer)
      *         .build();
      * }</pre>
      */
     public static final class TracerBuilder {
         private TracerConfiguration configuration;
         private JudgmentSyncClient apiClient;
-        private Gson gson = new Gson();
+        private ISerializer serializer = new GsonSerializer();
 
         public TracerBuilder configuration(TracerConfiguration configuration) {
             this.configuration = configuration;
@@ -397,8 +383,8 @@ public final class Tracer {
             return this;
         }
 
-        public TracerBuilder gson(Gson gson) {
-            this.gson = gson;
+        public TracerBuilder serializer(ISerializer serializer) {
+            this.serializer = serializer;
             return this;
         }
 
@@ -415,7 +401,21 @@ public final class Tracer {
                                     configuration.apiKey(),
                                     configuration.organizationId());
 
-            return new Tracer(configuration, client, gson);
+            return new Tracer(configuration, client, serializer);
+        }
+    }
+
+    private static class GsonSerializer implements ISerializer {
+        private final Gson gson = new Gson();
+
+        @Override
+        public String serialize(Object obj) {
+            return gson.toJson(obj);
+        }
+
+        @Override
+        public String serialize(Object obj, Type type) {
+            return gson.toJson(obj, type);
         }
     }
 }
