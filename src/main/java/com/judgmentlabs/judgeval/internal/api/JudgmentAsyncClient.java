@@ -172,9 +172,9 @@ public class JudgmentAsyncClient {
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<FetchPromptScorerResponse> fetchScorer(
-            FetchPromptScorerRequest payload) {
-        String url = buildUrl("/fetch_scorer/");
+    public CompletableFuture<FetchPromptScorersResponse> fetchScorers(
+            FetchPromptScorersRequest payload) {
+        String url = buildUrl("/fetch_scorers/");
         String jsonPayload;
         try {
             jsonPayload = mapper.writeValueAsString(payload);

@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.data.ExampleEvaluationRun;
+import com.judgmentlabs.judgeval.data.TraceEvaluationRun;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
@@ -52,7 +54,10 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
  * example.setAdditionalProperty("output", "model output");
  *
  * BaseScorer scorer = new AnswerRelevancyScorer();
- * tracer.asyncEvaluate(scorer, example, "gpt-4", 1.0);
+ * tracer.asyncEvaluate(scorer, example, "gpt-4");
+ *
+ * // Evaluate a scorer with trace context
+ * tracer.asyncTraceEvaluate(scorer, "gpt-4");
  * }</pre>
  *
  * <h2>Advanced Configuration</h2>
@@ -92,6 +97,7 @@ public final class Tracer {
     private final TracerConfiguration configuration;
     private final JudgmentSyncClient apiClient;
     private final ISerializer serializer;
+    private final ObjectMapper jacksonMapper;
     private final String projectId;
 
     private Tracer(
@@ -101,7 +107,16 @@ public final class Tracer {
         this.configuration = Objects.requireNonNull(configuration, "Configuration cannot be null");
         this.apiClient = Objects.requireNonNull(apiClient, "API client cannot be null");
         this.serializer = Objects.requireNonNull(serializer, "Serializer cannot be null");
+        this.jacksonMapper = new ObjectMapper();
         this.projectId = resolveProjectId(configuration.projectName());
+        if (this.projectId == null) {
+            Logger.error(
+                    "Failed to resolve project "
+                            + configuration.projectName()
+                            + ", please create it first at https://app.judgmentlabs.ai/org/"
+                            + configuration.organizationId()
+                            + "/projects. Skipping Judgment export.");
+        }
     }
 
     public static TracerBuilder builder() {
@@ -222,37 +237,96 @@ public final class Tracer {
      * @param model the model used for generation (can be null, will use default)
      */
     public void asyncEvaluate(BaseScorer scorer, Example example, String model) {
-        if (!configuration.enableEvaluation()) {
-            return;
+        try {
+            if (!configuration.enableEvaluation()) {
+                return;
+            }
+
+            Span currentSpan = Span.current();
+            if (currentSpan == null || !currentSpan.getSpanContext().isSampled()) {
+                return;
+            }
+
+            SpanContext spanContext = currentSpan.getSpanContext();
+            String traceId = spanContext.getTraceId();
+            String spanId = spanContext.getSpanId();
+
+            Logger.info(
+                    "asyncEvaluate: project="
+                            + configuration.projectName()
+                            + ", traceId="
+                            + traceId
+                            + ", spanId="
+                            + spanId
+                            + ", scorer="
+                            + scorer.getName());
+
+            ExampleEvaluationRun evaluationRun =
+                    createEvaluationRun(scorer, example, model, traceId, spanId);
+            enqueueEvaluation(evaluationRun);
+        } catch (Exception e) {
+            Logger.error("Failed to evaluate scorer: " + e.getMessage());
         }
-
-        Span currentSpan = Span.current();
-        if (currentSpan == null || !currentSpan.getSpanContext().isSampled()) {
-            return;
-        }
-
-        SpanContext spanContext = currentSpan.getSpanContext();
-        String traceId = spanContext.getTraceId();
-        String spanId = spanContext.getSpanId();
-
-        Object transport = scorer.toTransport();
-        Logger.info(
-                "asyncEvaluate: project="
-                        + configuration.projectName()
-                        + ", traceId="
-                        + traceId
-                        + ", spanId="
-                        + spanId
-                        + ", scorerTransport="
-                        + (transport != null ? transport.getClass().getSimpleName() : "null"));
-
-        ExampleEvaluationRun evaluationRun =
-                createEvaluationRun(scorer, example, model, traceId, spanId);
-        enqueueEvaluation(evaluationRun);
     }
 
     public void asyncEvaluate(BaseScorer scorer, Example example) {
         asyncEvaluate(scorer, example, null);
+    }
+
+    /**
+     * Asynchronously evaluates a scorer with trace and span context.
+     *
+     * <p>This method creates a trace evaluation run and sets it as an attribute on the current
+     * span. The evaluation will be processed when the span is exported.
+     *
+     * <p>If evaluation is disabled in the configuration, this method does nothing. The method
+     * respects OpenTelemetry's internal sampler - evaluation only runs if the current span is
+     * recording.
+     *
+     * @param scorer the scorer to use for evaluation (must not be null)
+     * @param model the model used for generation (can be null, will use default)
+     */
+    public void asyncTraceEvaluate(BaseScorer scorer, String model) {
+        try {
+            if (!configuration.enableEvaluation()) {
+                return;
+            }
+
+            Span currentSpan = Span.current();
+            if (currentSpan == null || !currentSpan.getSpanContext().isSampled()) {
+                return;
+            }
+
+            SpanContext spanContext = currentSpan.getSpanContext();
+            String traceId = spanContext.getTraceId();
+            String spanId = spanContext.getSpanId();
+
+            Logger.info(
+                    "asyncTraceEvaluate: project="
+                            + configuration.projectName()
+                            + ", traceId="
+                            + traceId
+                            + ", spanId="
+                            + spanId
+                            + ", scorer="
+                            + scorer.getName());
+
+            TraceEvaluationRun evaluationRun =
+                    createTraceEvaluationRun(scorer, model, traceId, spanId);
+            try {
+                String traceEvalJson = jacksonMapper.writeValueAsString(evaluationRun);
+                currentSpan.setAttribute(
+                        OpenTelemetryKeys.AttributeKeys.PENDING_TRACE_EVAL, traceEvalJson);
+            } catch (Exception e) {
+                Logger.error("Failed to serialize trace evaluation: " + e.getMessage());
+            }
+        } catch (Exception e) {
+            Logger.error("Failed to evaluate trace scorer: " + e.getMessage());
+        }
+    }
+
+    public void asyncTraceEvaluate(BaseScorer scorer) {
+        asyncTraceEvaluate(scorer, null);
     }
 
     public void setAttributes(Map<String, Object> attributes) {
@@ -303,8 +377,6 @@ public final class Tracer {
             ResolveProjectNameResponse response = apiClient.projectsResolve(request);
             return Optional.ofNullable(response.getProjectId()).map(Object::toString).orElse(null);
         } catch (Exception e) {
-            Logger.error(
-                    "Failed to resolve project ID for project '" + name + "': " + e.getMessage());
             return null;
         }
     }
@@ -338,6 +410,22 @@ public final class Tracer {
         evaluationRun.setTraceId(traceId);
         evaluationRun.setTraceSpanId(spanId);
         return evaluationRun;
+    }
+
+    private TraceEvaluationRun createTraceEvaluationRun(
+            BaseScorer scorer, String model, String traceId, String spanId) {
+        String evalName =
+                "async_trace_evaluate_" + (spanId != null ? spanId : System.currentTimeMillis());
+        String modelName = model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL;
+
+        return TraceEvaluationRun.builder()
+                .projectName(configuration.projectName())
+                .evalName(evalName)
+                .scorer(scorer.toTransport())
+                .model(modelName)
+                .organizationId(configuration.organizationId())
+                .traceAndSpanId(traceId, spanId)
+                .build();
     }
 
     private void enqueueEvaluation(ExampleEvaluationRun evaluationRun) {

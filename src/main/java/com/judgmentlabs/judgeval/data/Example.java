@@ -2,6 +2,7 @@ package com.judgmentlabs.judgeval.data;
 
 import java.time.Instant;
 import java.util.Map;
+import java.util.UUID;
 
 public class Example extends com.judgmentlabs.judgeval.internal.api.models.Example {
 
@@ -28,7 +29,7 @@ public class Example extends com.judgmentlabs.judgeval.internal.api.models.Examp
 
     public Example() {
         super();
-        setExampleId("");
+        setExampleId(UUID.randomUUID().toString());
         setCreatedAt(Instant.now().toString());
         setName(null);
     }

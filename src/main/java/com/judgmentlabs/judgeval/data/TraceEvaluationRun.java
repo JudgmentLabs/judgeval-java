@@ -9,35 +9,50 @@ import java.util.UUID;
 
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
-public class ExampleEvaluationRun
-        extends com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun {
+public class TraceEvaluationRun
+        extends com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun {
 
     private String organizationId;
 
-    public ExampleEvaluationRun() {
+    public TraceEvaluationRun() {
         super();
         setId(UUID.randomUUID().toString());
         setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
+        setIsOffline(false);
     }
 
-    public ExampleEvaluationRun(
+    public TraceEvaluationRun(
             String projectName,
             String evalName,
-            List<Example> examples,
             List<ScorerConfig> scorers,
             String model,
-            String organizationId) {
+            String organizationId,
+            List<List<String>> traceAndSpanIds) {
         this();
         setProjectName(projectName);
         setEvalName(evalName);
-        @SuppressWarnings("unchecked")
-        List<com.judgmentlabs.judgeval.internal.api.models.Example> internalExamples =
-                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples;
-        setExamples(internalExamples);
         setModel(model);
         setOrganizationId(organizationId);
+        setTraceAndSpanIds(convertTraceAndSpanIds(traceAndSpanIds));
         setCustomScorers(new java.util.ArrayList<>());
         setJudgmentScorers(scorers);
+    }
+
+    private static List<List<Object>> convertTraceAndSpanIds(List<List<String>> traceAndSpanIds) {
+        if (traceAndSpanIds == null || traceAndSpanIds.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Trace and span IDs are required for trace evaluations.");
+        }
+
+        List<List<Object>> converted = new java.util.ArrayList<>();
+        for (List<String> pair : traceAndSpanIds) {
+            if (pair == null || pair.size() != 2) {
+                throw new IllegalArgumentException(
+                        "Each trace and span ID pair must contain exactly 2 elements.");
+            }
+            converted.add(List.of(pair.get(0), pair.get(1)));
+        }
+        return converted;
     }
 
     public void setOrganizationId(String organizationId) {
@@ -50,10 +65,13 @@ public class ExampleEvaluationRun
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        if (!super.equals(obj)) return false;
-        ExampleEvaluationRun other = (ExampleEvaluationRun) obj;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        if (!super.equals(obj))
+            return false;
+        TraceEvaluationRun other = (TraceEvaluationRun) obj;
         return Objects.equals(organizationId, other.organizationId);
     }
 
@@ -73,12 +91,13 @@ public class ExampleEvaluationRun
     public static final class Builder {
         private String projectName;
         private String evalName;
-        private List<Example> examples;
         private List<ScorerConfig> scorers;
         private String model;
         private String organizationId;
+        private List<List<String>> traceAndSpanIds;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         private Builder(String projectName, String evalName) {
             this.projectName = projectName;
@@ -92,19 +111,6 @@ public class ExampleEvaluationRun
 
         public Builder evalName(String evalName) {
             this.evalName = evalName;
-            return this;
-        }
-
-        public Builder examples(List<Example> examples) {
-            this.examples = examples;
-            return this;
-        }
-
-        public Builder example(Example example) {
-            if (this.examples == null) {
-                this.examples = new java.util.ArrayList<>();
-            }
-            this.examples.add(example);
             return this;
         }
 
@@ -131,22 +137,36 @@ public class ExampleEvaluationRun
             return this;
         }
 
-        public ExampleEvaluationRun build() {
+        public Builder traceAndSpanIds(List<List<String>> traceAndSpanIds) {
+            this.traceAndSpanIds = traceAndSpanIds;
+            return this;
+        }
+
+        public Builder traceAndSpanId(String traceId, String spanId) {
+            if (this.traceAndSpanIds == null) {
+                this.traceAndSpanIds = new java.util.ArrayList<>();
+            }
+            this.traceAndSpanIds.add(List.of(traceId, spanId));
+            return this;
+        }
+
+        public TraceEvaluationRun build() {
             if (projectName == null || projectName.trim().isEmpty()) {
                 throw new IllegalArgumentException("Project name is required");
             }
             if (evalName == null || evalName.trim().isEmpty()) {
                 throw new IllegalArgumentException("Evaluation name is required");
             }
-            if (examples == null || examples.isEmpty()) {
-                throw new IllegalArgumentException("At least one example is required");
-            }
             if (scorers == null || scorers.isEmpty()) {
                 throw new IllegalArgumentException("At least one scorer is required");
             }
+            if (traceAndSpanIds == null || traceAndSpanIds.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "At least one trace and span ID pair is required");
+            }
 
-            return new ExampleEvaluationRun(
-                    projectName, evalName, examples, scorers, model, organizationId);
+            return new TraceEvaluationRun(
+                    projectName, evalName, scorers, model, organizationId, traceAndSpanIds);
         }
     }
 }

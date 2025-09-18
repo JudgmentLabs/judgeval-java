@@ -16,6 +16,7 @@ public final class OpenTelemetryKeys {
         public static final String JUDGMENT_CUMULATIVE_LLM_COST = "judgment.cumulative_llm_cost";
         public static final String JUDGMENT_STATE_BEFORE = "judgment.state_before";
         public static final String JUDGMENT_STATE_AFTER = "judgment.state_after";
+        public static final String PENDING_TRACE_EVAL = "judgment.pending_trace_eval";
 
         private AttributeKeys() {}
     }
