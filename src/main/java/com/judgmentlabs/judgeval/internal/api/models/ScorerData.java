@@ -9,6 +9,9 @@ import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerData {
+    @JsonProperty("id")
+    private String id;
+
     @JsonProperty("name")
     private String name;
 
@@ -28,7 +31,7 @@ public class ScorerData {
     private Boolean strictMode;
 
     @JsonProperty("evaluation_model")
-    private Object evaluationModel;
+    private String evaluationModel;
 
     @JsonProperty("error")
     private String error;
@@ -46,6 +49,10 @@ public class ScorerData {
     @JsonAnySetter
     public void setAdditionalProperty(String name, Object value) {
         additionalProperties.put(name, value);
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {
@@ -72,7 +79,7 @@ public class ScorerData {
         return strictMode;
     }
 
-    public Object getEvaluationModel() {
+    public String getEvaluationModel() {
         return evaluationModel;
     }
 
@@ -82,6 +89,10 @@ public class ScorerData {
 
     public Object getAdditionalMetadata() {
         return additionalMetadata;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setName(String name) {
@@ -108,7 +119,7 @@ public class ScorerData {
         this.strictMode = strictMode;
     }
 
-    public void setEvaluationModel(Object evaluationModel) {
+    public void setEvaluationModel(String evaluationModel) {
         this.evaluationModel = evaluationModel;
     }
 
@@ -125,7 +136,8 @@ public class ScorerData {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         ScorerData other = (ScorerData) obj;
-        return Objects.equals(name, other.name)
+        return Objects.equals(id, other.id)
+                && Objects.equals(name, other.name)
                 && Objects.equals(threshold, other.threshold)
                 && Objects.equals(success, other.success)
                 && Objects.equals(score, other.score)
@@ -140,6 +152,7 @@ public class ScorerData {
     @Override
     public int hashCode() {
         return Objects.hash(
+                id,
                 name,
                 threshold,
                 success,

@@ -1,6 +1,7 @@
 package com.judgmentlabs.judgeval.scorers.api_scorers;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,8 +11,8 @@ import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.exceptions.JudgmentAPIError;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
-import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorerRequest;
-import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorerResponse;
+import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersRequest;
+import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersResponse;
 import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerRequest;
 import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerResponse;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
@@ -76,12 +77,12 @@ public class PromptScorer extends APIScorer {
         try {
             JudgmentSyncClient client =
                     new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
-            FetchPromptScorerRequest request = new FetchPromptScorerRequest();
-            request.setName(name);
+            FetchPromptScorersRequest request = new FetchPromptScorersRequest();
+            request.setNames(Collections.singletonList(name));
 
-            FetchPromptScorerResponse response = client.fetchScorer(request);
+            FetchPromptScorersResponse response = client.fetchScorers(request);
             com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorerConfig =
-                    response.getScorer();
+                    response.getScorers().get(0);
 
             return new PromptScorer(
                     client,

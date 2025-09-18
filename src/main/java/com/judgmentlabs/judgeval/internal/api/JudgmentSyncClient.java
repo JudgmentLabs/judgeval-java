@@ -151,9 +151,9 @@ public class JudgmentSyncClient {
         return mapper.readValue(response.body(), SavePromptScorerResponse.class);
     }
 
-    public FetchPromptScorerResponse fetchScorer(FetchPromptScorerRequest payload)
+    public FetchPromptScorersResponse fetchScorers(FetchPromptScorersRequest payload)
             throws IOException, InterruptedException {
-        String url = buildUrl("/fetch_scorer/");
+        String url = buildUrl("/fetch_scorers/");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request =
                 HttpRequest.newBuilder()
@@ -162,7 +162,7 @@ public class JudgmentSyncClient {
                         .headers(buildHeaders())
                         .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return mapper.readValue(response.body(), FetchPromptScorerResponse.class);
+        return mapper.readValue(response.body(), FetchPromptScorersResponse.class);
     }
 
     public ResolveProjectNameResponse projectsResolve(ResolveProjectNameRequest payload)

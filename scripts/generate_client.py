@@ -13,7 +13,7 @@ JUDGEVAL_PATHS = [
     "/add_to_run_eval_queue/",
     "/get_evaluation_status/",
     "/save_scorer/",
-    "/fetch_scorer/",
+    "/fetch_scorers/",
     "/scorer_exists/",
     "/projects/resolve/",
 ]
