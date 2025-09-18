@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
+
 public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer {
 
     public BaseScorer() {
@@ -17,7 +19,7 @@ public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.
         }
     }
 
-    public abstract Object toTransport();
+    public abstract ScorerConfig toTransport();
 
     public void addModel(String model) {
         setModel(model);

@@ -42,7 +42,7 @@ public class APIScorer extends BaseScorer {
     }
 
     @Override
-    public Object toTransport() {
+    public ScorerConfig toTransport() {
         ScorerConfig cfg = new ScorerConfig();
         cfg.setScoreType(getScoreType());
         cfg.setThreshold(getThreshold());

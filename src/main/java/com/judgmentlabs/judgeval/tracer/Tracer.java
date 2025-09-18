@@ -248,7 +248,6 @@ public final class Tracer {
             String traceId = spanContext.getTraceId();
             String spanId = spanContext.getSpanId();
 
-            Object transport = scorer.toTransport();
             Logger.info(
                     "asyncEvaluate: project="
                             + configuration.projectName()
@@ -256,8 +255,8 @@ public final class Tracer {
                             + traceId
                             + ", spanId="
                             + spanId
-                            + ", scorerTransport="
-                            + (transport != null ? transport.getClass().getSimpleName() : "null"));
+                            + ", scorer="
+                            + scorer.getName());
 
             ExampleEvaluationRun evaluationRun =
                     createEvaluationRun(scorer, example, model, traceId, spanId);
@@ -299,7 +298,6 @@ public final class Tracer {
             String traceId = spanContext.getTraceId();
             String spanId = spanContext.getSpanId();
 
-            Object transport = scorer.toTransport();
             Logger.info(
                     "asyncTraceEvaluate: project="
                             + configuration.projectName()
@@ -307,8 +305,8 @@ public final class Tracer {
                             + traceId
                             + ", spanId="
                             + spanId
-                            + ", scorerTransport="
-                            + (transport != null ? transport.getClass().getSimpleName() : "null"));
+                            + ", scorer="
+                            + scorer.getName());
 
             TraceEvaluationRun evaluationRun =
                     createTraceEvaluationRun(scorer, model, traceId, spanId);

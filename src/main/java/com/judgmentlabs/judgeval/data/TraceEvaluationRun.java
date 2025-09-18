@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.judgmentlabs.judgeval.internal.api.models.BaseScorer;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
 public class TraceEvaluationRun
@@ -21,60 +20,10 @@ public class TraceEvaluationRun
         setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
     }
 
-    public static TraceEvaluationRun createWithLocalScorers(
-            String projectName,
-            String evalName,
-            List<BaseScorer> localScorers,
-            String model,
-            String organizationId,
-            List<List<String>> traceAndSpanIds) {
-        TraceEvaluationRun eval = new TraceEvaluationRun();
-        eval.setProjectName(projectName);
-        eval.setEvalName(evalName);
-        eval.setModel(model);
-        eval.setOrganizationId(organizationId);
-        eval.setTraceAndSpanIds(convertTraceAndSpanIds(traceAndSpanIds));
-
-        if (localScorers != null) {
-            List<BaseScorer> customScorers = new java.util.ArrayList<>();
-            for (BaseScorer scorer : localScorers) {
-                customScorers.add(scorer);
-            }
-            eval.setCustomScorers(customScorers);
-            eval.setJudgmentScorers(new java.util.ArrayList<>());
-        }
-
-        eval.validateScorerLists();
-        return eval;
-    }
-
-    public static TraceEvaluationRun createWithApiScorers(
-            String projectName,
-            String evalName,
-            List<ScorerConfig> apiScorers,
-            String model,
-            String organizationId,
-            List<List<String>> traceAndSpanIds) {
-        TraceEvaluationRun eval = new TraceEvaluationRun();
-        eval.setProjectName(projectName);
-        eval.setEvalName(evalName);
-        eval.setModel(model);
-        eval.setOrganizationId(organizationId);
-        eval.setTraceAndSpanIds(convertTraceAndSpanIds(traceAndSpanIds));
-
-        if (apiScorers != null) {
-            eval.setCustomScorers(new java.util.ArrayList<>());
-            eval.setJudgmentScorers(apiScorers);
-        }
-
-        eval.validateScorerLists();
-        return eval;
-    }
-
     public TraceEvaluationRun(
             String projectName,
             String evalName,
-            List<Object> scorers,
+            List<ScorerConfig> scorers,
             String model,
             String organizationId,
             List<List<String>> traceAndSpanIds) {
@@ -84,24 +33,7 @@ public class TraceEvaluationRun
         setModel(model);
         setOrganizationId(organizationId);
         setTraceAndSpanIds(convertTraceAndSpanIds(traceAndSpanIds));
-
-        if (scorers != null) {
-            List<BaseScorer> customScorers = new java.util.ArrayList<>();
-            List<ScorerConfig> judgmentScorers = new java.util.ArrayList<>();
-
-            for (Object scorer : scorers) {
-                if (scorer instanceof com.judgmentlabs.judgeval.scorers.BaseScorer) {
-                    customScorers.add((BaseScorer) scorer);
-                } else if (scorer instanceof ScorerConfig) {
-                    judgmentScorers.add((ScorerConfig) scorer);
-                }
-            }
-
-            setCustomScorers(customScorers);
-            setJudgmentScorers(judgmentScorers);
-        }
-
-        validateScorerLists();
+        setJudgmentScorers(scorers);
     }
 
     private static List<List<Object>> convertTraceAndSpanIds(List<List<String>> traceAndSpanIds) {
@@ -121,25 +53,6 @@ public class TraceEvaluationRun
         return converted;
     }
 
-    private void validateScorerLists() {
-        List<BaseScorer> customScorers = getCustomScorers();
-        List<ScorerConfig> judgmentScorers = getJudgmentScorers();
-
-        if ((customScorers == null || customScorers.isEmpty())
-                && (judgmentScorers == null || judgmentScorers.isEmpty())) {
-            throw new IllegalArgumentException(
-                    "At least one of custom_scorers or judgment_scorers must be provided.");
-        }
-
-        if (customScorers != null
-                && !customScorers.isEmpty()
-                && judgmentScorers != null
-                && !judgmentScorers.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Only one of custom_scorers or judgment_scorers can be provided, not both.");
-        }
-    }
-
     public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
@@ -150,9 +63,12 @@ public class TraceEvaluationRun
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        if (!super.equals(obj)) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        if (!super.equals(obj))
+            return false;
         TraceEvaluationRun other = (TraceEvaluationRun) obj;
         return Objects.equals(organizationId, other.organizationId);
     }
@@ -173,14 +89,13 @@ public class TraceEvaluationRun
     public static final class Builder {
         private String projectName;
         private String evalName;
-        private List<BaseScorer> localScorers;
-        private List<ScorerConfig> apiScorers;
-        private List<Object> mixedScorers;
+        private List<ScorerConfig> scorers;
         private String model;
         private String organizationId;
         private List<List<String>> traceAndSpanIds;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         private Builder(String projectName, String evalName) {
             this.projectName = projectName;
@@ -197,42 +112,16 @@ public class TraceEvaluationRun
             return this;
         }
 
-        public Builder localScorers(List<BaseScorer> localScorers) {
-            this.localScorers = localScorers;
+        public Builder scorers(List<ScorerConfig> scorers) {
+            this.scorers = scorers;
             return this;
         }
 
-        public Builder localScorer(BaseScorer scorer) {
-            if (this.localScorers == null) {
-                this.localScorers = new java.util.ArrayList<>();
+        public Builder scorer(ScorerConfig scorer) {
+            if (this.scorers == null) {
+                this.scorers = new java.util.ArrayList<>();
             }
-            this.localScorers.add(scorer);
-            return this;
-        }
-
-        public Builder apiScorers(List<ScorerConfig> apiScorers) {
-            this.apiScorers = apiScorers;
-            return this;
-        }
-
-        public Builder apiScorer(ScorerConfig scorer) {
-            if (this.apiScorers == null) {
-                this.apiScorers = new java.util.ArrayList<>();
-            }
-            this.apiScorers.add(scorer);
-            return this;
-        }
-
-        public Builder scorers(List<Object> scorers) {
-            this.mixedScorers = scorers;
-            return this;
-        }
-
-        public Builder scorer(Object scorer) {
-            if (this.mixedScorers == null) {
-                this.mixedScorers = new java.util.ArrayList<>();
-            }
-            this.mixedScorers.add(scorer);
+            this.scorers.add(scorer);
             return this;
         }
 
@@ -266,33 +155,16 @@ public class TraceEvaluationRun
             if (evalName == null || evalName.trim().isEmpty()) {
                 throw new IllegalArgumentException("Evaluation name is required");
             }
+            if (scorers == null || scorers.isEmpty()) {
+                throw new IllegalArgumentException("At least one scorer is required");
+            }
             if (traceAndSpanIds == null || traceAndSpanIds.isEmpty()) {
                 throw new IllegalArgumentException(
                         "At least one trace and span ID pair is required");
             }
 
-            if (localScorers != null && !localScorers.isEmpty()) {
-                return createWithLocalScorers(
-                        projectName,
-                        evalName,
-                        localScorers,
-                        model,
-                        organizationId,
-                        traceAndSpanIds);
-            } else if (apiScorers != null && !apiScorers.isEmpty()) {
-                return createWithApiScorers(
-                        projectName, evalName, apiScorers, model, organizationId, traceAndSpanIds);
-            } else if (mixedScorers != null && !mixedScorers.isEmpty()) {
-                return new TraceEvaluationRun(
-                        projectName,
-                        evalName,
-                        mixedScorers,
-                        model,
-                        organizationId,
-                        traceAndSpanIds);
-            } else {
-                throw new IllegalArgumentException("At least one scorer is required");
-            }
+            return new TraceEvaluationRun(
+                    projectName, evalName, scorers, model, organizationId, traceAndSpanIds);
         }
     }
 }
