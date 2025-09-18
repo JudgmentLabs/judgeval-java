@@ -13,6 +13,7 @@ import com.judgmentlabs.judgeval.data.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
+import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
 import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;
@@ -267,6 +268,59 @@ public final class Tracer {
         asyncEvaluate(scorer, example, null);
     }
 
+    /**
+     * Asynchronously evaluates a scorer with trace and span context.
+     *
+     * <p>This method creates a trace evaluation run and sets it as an attribute on the current
+     * span. The evaluation will be processed when the span is exported.
+     *
+     * <p>If evaluation is disabled in the configuration, this method does nothing. The method
+     * respects OpenTelemetry's internal sampler - evaluation only runs if the current span is
+     * recording.
+     *
+     * @param scorer the scorer to use for evaluation (must not be null)
+     * @param model the model used for generation (can be null, will use default)
+     */
+    public void asyncTraceEvaluate(BaseScorer scorer, String model) {
+        try {
+            if (!configuration.enableEvaluation()) {
+                return;
+            }
+
+            Span currentSpan = Span.current();
+            if (currentSpan == null || !currentSpan.getSpanContext().isSampled()) {
+                return;
+            }
+
+            SpanContext spanContext = currentSpan.getSpanContext();
+            String traceId = spanContext.getTraceId();
+            String spanId = spanContext.getSpanId();
+
+            Object transport = scorer.toTransport();
+            Logger.info(
+                    "asyncTraceEvaluate: project="
+                            + configuration.projectName()
+                            + ", traceId="
+                            + traceId
+                            + ", spanId="
+                            + spanId
+                            + ", scorerTransport="
+                            + (transport != null ? transport.getClass().getSimpleName() : "null"));
+
+            TraceEvaluationRun evaluationRun =
+                    createTraceEvaluationRun(scorer, model, traceId, spanId);
+            currentSpan.setAttribute(
+                    OpenTelemetryKeys.AttributeKeys.PENDING_TRACE_EVAL,
+                    serializer.serialize(evaluationRun));
+        } catch (Exception e) {
+            Logger.error("Failed to evaluate trace scorer: " + e.getMessage());
+        }
+    }
+
+    public void asyncTraceEvaluate(BaseScorer scorer) {
+        asyncTraceEvaluate(scorer, null);
+    }
+
     public void setAttributes(Map<String, Object> attributes) {
         if (attributes == null) {
             return;
@@ -347,6 +401,24 @@ public final class Tracer {
                         configuration.organizationId());
         evaluationRun.setTraceId(traceId);
         evaluationRun.setTraceSpanId(spanId);
+        return evaluationRun;
+    }
+
+    private TraceEvaluationRun createTraceEvaluationRun(
+            BaseScorer scorer, String model, String traceId, String spanId) {
+        String evalName =
+                "async_trace_evaluate_" + (spanId != null ? spanId : System.currentTimeMillis());
+        String modelName = model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL;
+
+        TraceEvaluationRun evaluationRun = new TraceEvaluationRun();
+        evaluationRun.setProjectName(configuration.projectName());
+        evaluationRun.setEvalName(evalName);
+        evaluationRun.setJudgmentScorers(
+                List.of(
+                        (com.judgmentlabs.judgeval.internal.api.models.ScorerConfig)
+                                scorer.toTransport()));
+        evaluationRun.setModel(modelName);
+        evaluationRun.setTraceAndSpanIds(List.of(List.of(traceId, spanId)));
         return evaluationRun;
     }
 
