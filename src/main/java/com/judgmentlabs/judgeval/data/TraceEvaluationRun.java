@@ -18,6 +18,7 @@ public class TraceEvaluationRun
         super();
         setId(UUID.randomUUID().toString());
         setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
+        setIsOffline(false);
     }
 
     public TraceEvaluationRun(
@@ -64,9 +65,12 @@ public class TraceEvaluationRun
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        if (!super.equals(obj)) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        if (!super.equals(obj))
+            return false;
         TraceEvaluationRun other = (TraceEvaluationRun) obj;
         return Objects.equals(organizationId, other.organizationId);
     }
@@ -92,7 +96,8 @@ public class TraceEvaluationRun
         private String organizationId;
         private List<List<String>> traceAndSpanIds;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         private Builder(String projectName, String evalName) {
             this.projectName = projectName;
