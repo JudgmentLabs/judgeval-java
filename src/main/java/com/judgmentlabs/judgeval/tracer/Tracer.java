@@ -102,6 +102,14 @@ public final class Tracer {
         this.apiClient = Objects.requireNonNull(apiClient, "API client cannot be null");
         this.serializer = Objects.requireNonNull(serializer, "Serializer cannot be null");
         this.projectId = resolveProjectId(configuration.projectName());
+        if (this.projectId == null) {
+            Logger.error(
+                    "Failed to resolve project "
+                            + configuration.projectName()
+                            + ", please create it first at https://app.judgmentlabs.ai/org/"
+                            + configuration.organizationId()
+                            + "/projects. Skipping Judgment export.");
+        }
     }
 
     public static TracerBuilder builder() {
@@ -222,33 +230,37 @@ public final class Tracer {
      * @param model the model used for generation (can be null, will use default)
      */
     public void asyncEvaluate(BaseScorer scorer, Example example, String model) {
-        if (!configuration.enableEvaluation()) {
-            return;
+        try {
+            if (!configuration.enableEvaluation()) {
+                return;
+            }
+
+            Span currentSpan = Span.current();
+            if (currentSpan == null || !currentSpan.getSpanContext().isSampled()) {
+                return;
+            }
+
+            SpanContext spanContext = currentSpan.getSpanContext();
+            String traceId = spanContext.getTraceId();
+            String spanId = spanContext.getSpanId();
+
+            Object transport = scorer.toTransport();
+            Logger.info(
+                    "asyncEvaluate: project="
+                            + configuration.projectName()
+                            + ", traceId="
+                            + traceId
+                            + ", spanId="
+                            + spanId
+                            + ", scorerTransport="
+                            + (transport != null ? transport.getClass().getSimpleName() : "null"));
+
+            ExampleEvaluationRun evaluationRun =
+                    createEvaluationRun(scorer, example, model, traceId, spanId);
+            enqueueEvaluation(evaluationRun);
+        } catch (Exception e) {
+            Logger.error("Failed to evaluate scorer: " + e.getMessage());
         }
-
-        Span currentSpan = Span.current();
-        if (currentSpan == null || !currentSpan.getSpanContext().isSampled()) {
-            return;
-        }
-
-        SpanContext spanContext = currentSpan.getSpanContext();
-        String traceId = spanContext.getTraceId();
-        String spanId = spanContext.getSpanId();
-
-        Object transport = scorer.toTransport();
-        Logger.info(
-                "asyncEvaluate: project="
-                        + configuration.projectName()
-                        + ", traceId="
-                        + traceId
-                        + ", spanId="
-                        + spanId
-                        + ", scorerTransport="
-                        + (transport != null ? transport.getClass().getSimpleName() : "null"));
-
-        ExampleEvaluationRun evaluationRun =
-                createEvaluationRun(scorer, example, model, traceId, spanId);
-        enqueueEvaluation(evaluationRun);
     }
 
     public void asyncEvaluate(BaseScorer scorer, Example example) {
@@ -303,8 +315,6 @@ public final class Tracer {
             ResolveProjectNameResponse response = apiClient.projectsResolve(request);
             return Optional.ofNullable(response.getProjectId()).map(Object::toString).orElse(null);
         } catch (Exception e) {
-            Logger.error(
-                    "Failed to resolve project ID for project '" + name + "': " + e.getMessage());
             return null;
         }
     }
