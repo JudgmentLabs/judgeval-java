@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.data.Example;
@@ -96,6 +97,7 @@ public final class Tracer {
     private final TracerConfiguration configuration;
     private final JudgmentSyncClient apiClient;
     private final ISerializer serializer;
+    private final ObjectMapper jacksonMapper;
     private final String projectId;
 
     private Tracer(
@@ -105,6 +107,7 @@ public final class Tracer {
         this.configuration = Objects.requireNonNull(configuration, "Configuration cannot be null");
         this.apiClient = Objects.requireNonNull(apiClient, "API client cannot be null");
         this.serializer = Objects.requireNonNull(serializer, "Serializer cannot be null");
+        this.jacksonMapper = new ObjectMapper();
         this.projectId = resolveProjectId(configuration.projectName());
         if (this.projectId == null) {
             Logger.error(
@@ -310,9 +313,13 @@ public final class Tracer {
 
             TraceEvaluationRun evaluationRun =
                     createTraceEvaluationRun(scorer, model, traceId, spanId);
-            currentSpan.setAttribute(
-                    OpenTelemetryKeys.AttributeKeys.PENDING_TRACE_EVAL,
-                    serializer.serialize(evaluationRun));
+            try {
+                String traceEvalJson = jacksonMapper.writeValueAsString(evaluationRun);
+                currentSpan.setAttribute(
+                        OpenTelemetryKeys.AttributeKeys.PENDING_TRACE_EVAL, traceEvalJson);
+            } catch (Exception e) {
+                Logger.error("Failed to serialize trace evaluation: " + e.getMessage());
+            }
         } catch (Exception e) {
             Logger.error("Failed to evaluate trace scorer: " + e.getMessage());
         }
