@@ -33,6 +33,7 @@ public class TraceEvaluationRun
         setModel(model);
         setOrganizationId(organizationId);
         setTraceAndSpanIds(convertTraceAndSpanIds(traceAndSpanIds));
+        setCustomScorers(new java.util.ArrayList<>());
         setJudgmentScorers(scorers);
     }
 

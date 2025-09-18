@@ -35,6 +35,7 @@ public class ExampleEvaluationRun
         setExamples(internalExamples);
         setModel(model);
         setOrganizationId(organizationId);
+        setCustomScorers(new java.util.ArrayList<>());
         setJudgmentScorers(scorers);
     }
 
