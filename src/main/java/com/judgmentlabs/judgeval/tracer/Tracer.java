@@ -10,10 +10,10 @@ import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.data.ExampleEvaluationRun;
+import com.judgmentlabs.judgeval.data.TraceEvaluationRun;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
-import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
 import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;
@@ -53,7 +53,10 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
  * example.setAdditionalProperty("output", "model output");
  *
  * BaseScorer scorer = new AnswerRelevancyScorer();
- * tracer.asyncEvaluate(scorer, example, "gpt-4", 1.0);
+ * tracer.asyncEvaluate(scorer, example, "gpt-4");
+ *
+ * // Evaluate a scorer with trace context
+ * tracer.asyncTraceEvaluate(scorer, "gpt-4");
  * }</pre>
  *
  * <h2>Advanced Configuration</h2>
@@ -410,16 +413,14 @@ public final class Tracer {
                 "async_trace_evaluate_" + (spanId != null ? spanId : System.currentTimeMillis());
         String modelName = model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL;
 
-        TraceEvaluationRun evaluationRun = new TraceEvaluationRun();
-        evaluationRun.setProjectName(configuration.projectName());
-        evaluationRun.setEvalName(evalName);
-        evaluationRun.setJudgmentScorers(
-                List.of(
-                        (com.judgmentlabs.judgeval.internal.api.models.ScorerConfig)
-                                scorer.toTransport()));
-        evaluationRun.setModel(modelName);
-        evaluationRun.setTraceAndSpanIds(List.of(List.of(traceId, spanId)));
-        return evaluationRun;
+        return TraceEvaluationRun.builder()
+                .projectName(configuration.projectName())
+                .evalName(evalName)
+                .scorer(scorer.toTransport())
+                .model(modelName)
+                .organizationId(configuration.organizationId())
+                .traceAndSpanId(traceId, spanId)
+                .build();
     }
 
     private void enqueueEvaluation(ExampleEvaluationRun evaluationRun) {
