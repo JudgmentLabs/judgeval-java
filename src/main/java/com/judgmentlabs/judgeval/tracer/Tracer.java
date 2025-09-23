@@ -404,7 +404,7 @@ public final class Tracer {
                         configuration.projectName(),
                         runId,
                         List.of(example),
-                        List.of(scorer.toTransport()),
+                        List.of(scorer.getScorerConfig()),
                         modelName,
                         configuration.organizationId());
         evaluationRun.setTraceId(traceId);
@@ -421,7 +421,7 @@ public final class Tracer {
         return TraceEvaluationRun.builder()
                 .projectName(configuration.projectName())
                 .evalName(evalName)
-                .scorer(scorer.toTransport())
+                .scorer(scorer.getScorerConfig())
                 .model(modelName)
                 .organizationId(configuration.organizationId())
                 .traceAndSpanId(traceId, spanId)

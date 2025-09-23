@@ -19,7 +19,7 @@ public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.
         }
     }
 
-    public abstract ScorerConfig toTransport();
+    public abstract ScorerConfig getScorerConfig();
 
     public void addModel(String model) {
         setModel(model);

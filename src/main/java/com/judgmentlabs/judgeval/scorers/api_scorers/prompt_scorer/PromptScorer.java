@@ -108,7 +108,7 @@ public class PromptScorer extends BasePromptScorer {
     }
 
     @Override
-    public ScorerConfig toTransport() {
+    public ScorerConfig getScorerConfig() {
         ScorerConfig cfg = new ScorerConfig();
         cfg.setScoreType(getScoreType());
         cfg.setThreshold(getThreshold());
