@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.judgmentlabs.judgeval.Env;
+
 public class Logger {
     private static final String RESET = "\033[0m";
     private static final String RED = "\033[31m";
@@ -39,14 +41,43 @@ public class Logger {
     }
 
     private static final AtomicBoolean initialized = new AtomicBoolean(false);
-    private static Level currentLevel = Level.INFO;
+    private static Level currentLevel = Level.WARNING;
     private static boolean useColor = true;
     private static PrintStream output = System.out;
 
     private static void initialize() {
         if (initialized.compareAndSet(false, true)) {
-            String noColor = System.getenv("JUDGMENT_NO_COLOR");
+            String noColor = Env.JUDGMENT_NO_COLOR;
             useColor = noColor == null && System.console() != null;
+
+            String logLevel = Env.JUDGMENT_LOG_LEVEL;
+            if (logLevel != null) {
+                loadLogLevel(logLevel.toLowerCase());
+            }
+        }
+    }
+
+    private static void loadLogLevel(String logLevel) {
+        switch (logLevel) {
+            case "debug":
+                currentLevel = Level.DEBUG;
+                break;
+            case "info":
+                currentLevel = Level.INFO;
+                break;
+            case "warning":
+            case "warn":
+                currentLevel = Level.WARNING;
+                break;
+            case "error":
+                currentLevel = Level.ERROR;
+                break;
+            case "critical":
+                currentLevel = Level.CRITICAL;
+                break;
+            default:
+                currentLevel = Level.WARNING;
+                break;
         }
     }
 
