@@ -5,9 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Callable;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -25,13 +22,16 @@ import com.judgmentlabs.judgeval.utils.Logger;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanContext;
-import io.opentelemetry.api.trace.StatusCode;
+import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 
 /** Base tracer providing core functionality for distributed tracing and evaluation. */
 public abstract class BaseTracer {
+    public static final String TRACER_NAME = "judgeval";
+
     protected final TracerConfiguration configuration;
     protected final JudgmentSyncClient apiClient;
     protected final ISerializer serializer;
@@ -224,108 +224,34 @@ public abstract class BaseTracer {
         setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output, type);
     }
 
-    /** Wraps a Callable with an OpenTelemetry span for observability. */
-    public <T> Callable<T> observe(Callable<T> callable, String spanName) {
-        Objects.requireNonNull(callable, "Callable cannot be null");
-        String finalSpanName = spanName != null ? spanName : "span";
-
-        return () -> {
-            io.opentelemetry.api.trace.Tracer otelTracer =
-                    GlobalOpenTelemetry.get().getTracer("judgeval");
-            Span span = otelTracer.spanBuilder(finalSpanName).startSpan();
-
-            try (Scope scope = span.makeCurrent()) {
-                T result = callable.call();
-
-                if (result != null) {
-                    setOutput(result);
-                }
-
-                span.setStatus(StatusCode.OK);
-                return result;
-            } catch (Throwable throwable) {
-                span.recordException(throwable);
-                span.setStatus(StatusCode.ERROR, "Exception occurred: " + throwable.getMessage());
-                throw throwable;
-            } finally {
-                span.end();
-            }
-        };
+    public Tracer getTracer() {
+        return GlobalOpenTelemetry.get().getTracer(TRACER_NAME);
     }
 
-    /** Wraps a Callable with an OpenTelemetry span using default span name "span". */
-    public <T> Callable<T> observe(Callable<T> callable) {
-        return observe(callable, "span");
+    public Span getCurrentSpan() {
+        return Span.current();
     }
 
-    /** Wraps a Function with an OpenTelemetry span with automatic input/output capture. */
-    public <T, R> Function<T, R> observe(Function<T, R> function, String spanName) {
-        Objects.requireNonNull(function, "Function cannot be null");
-        String finalSpanName = spanName != null ? spanName : "span";
-
-        return input -> {
-            io.opentelemetry.api.trace.Tracer otelTracer =
-                    GlobalOpenTelemetry.get().getTracer("com.judgmentlabs.judgeval");
-            Span span = otelTracer.spanBuilder(finalSpanName).startSpan();
-
-            try (Scope scope = span.makeCurrent()) {
-                setInput(input);
-
-                R result = function.apply(input);
-
-                if (result != null) {
-                    setOutput(result);
-                }
-
-                span.setStatus(StatusCode.OK);
-                return result;
-            } catch (Throwable throwable) {
-                span.recordException(throwable);
-                span.setStatus(StatusCode.ERROR, "Exception occurred: " + throwable.getMessage());
-                throw throwable;
-            } finally {
-                span.end();
-            }
-        };
+    public SpanBuilder spanBuilder(String spanName) {
+        return getTracer().spanBuilder(spanName);
     }
 
-    /** Wraps a Function with an OpenTelemetry span using default span name "span". */
-    public <T, R> Function<T, R> observe(Function<T, R> function) {
-        return observe(function, "span");
+    public Span startSpan(String spanName) {
+        return spanBuilder(spanName).startSpan();
     }
 
-    /** Wraps a Supplier with an OpenTelemetry span for observability. */
-    public <T> Supplier<T> observe(Supplier<T> supplier, String spanName) {
-        Objects.requireNonNull(supplier, "Supplier cannot be null");
-        String finalSpanName = spanName != null ? spanName : "span";
-
-        return () -> {
-            io.opentelemetry.api.trace.Tracer otelTracer =
-                    GlobalOpenTelemetry.get().getTracer("com.judgmentlabs.judgeval");
-            Span span = otelTracer.spanBuilder(finalSpanName).startSpan();
-
-            try (Scope scope = span.makeCurrent()) {
-                T result = supplier.get();
-
-                if (result != null) {
-                    setOutput(result);
-                }
-
-                span.setStatus(StatusCode.OK);
-                return result;
-            } catch (Throwable throwable) {
-                span.recordException(throwable);
-                span.setStatus(StatusCode.ERROR, "Exception occurred: " + throwable.getMessage());
-                throw throwable;
-            } finally {
-                span.end();
-            }
-        };
+    public Scope makeCurrent(Span span) {
+        return span.makeCurrent();
     }
 
-    /** Wraps a Supplier with an OpenTelemetry span using default span name "span". */
-    public <T> Supplier<T> observe(Supplier<T> supplier) {
-        return observe(supplier, "span");
+    public SpanContext getCurrentSpanContext() {
+        Span current = getCurrentSpan();
+        return current != null ? current.getSpanContext() : null;
+    }
+
+    public boolean isCurrentSpanSampled() {
+        SpanContext context = getCurrentSpanContext();
+        return context != null && context.isSampled();
     }
 
     private String resolveProjectId(String name) {
