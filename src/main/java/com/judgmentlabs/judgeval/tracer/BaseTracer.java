@@ -28,7 +28,6 @@ import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 
-/** Base tracer providing core functionality for distributed tracing and evaluation. */
 public abstract class BaseTracer {
     public static final String TRACER_NAME = "judgeval";
 
@@ -63,7 +62,6 @@ public abstract class BaseTracer {
         }
     }
 
-    /** Initializes the OpenTelemetry SDK with span processors and exporters. */
     public abstract void initialize();
 
     /**
