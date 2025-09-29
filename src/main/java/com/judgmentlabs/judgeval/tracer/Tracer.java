@@ -1,8 +1,12 @@
 package com.judgmentlabs.judgeval.tracer;
 
+import com.judgmentlabs.judgeval.Version;
+
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
@@ -39,8 +43,19 @@ public final class Tracer extends BaseTracer {
     public void initialize() {
         SpanExporter spanExporter = getSpanExporter();
 
+        var resource =
+                Resource.getDefault()
+                        .merge(
+                                Resource.create(
+                                        Attributes.builder()
+                                                .put("service.name", "SqlAgent")
+                                                .put("telemetry.sdk.name", TRACER_NAME)
+                                                .put("telemetry.sdk.version", Version.getVersion())
+                                                .build()));
+
         SdkTracerProvider tracerProvider =
                 SdkTracerProvider.builder()
+                        .setResource(resource)
                         .addSpanProcessor(BatchSpanProcessor.builder(spanExporter).build())
                         .build();
 
