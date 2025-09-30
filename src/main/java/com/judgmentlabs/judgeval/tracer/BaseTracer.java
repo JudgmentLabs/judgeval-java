@@ -22,7 +22,6 @@ import com.judgmentlabs.judgeval.utils.Logger;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
@@ -222,37 +221,43 @@ public abstract class BaseTracer {
         setAttribute(OpenTelemetryKeys.AttributeKeys.JUDGMENT_OUTPUT, output, type);
     }
 
-    public Tracer getTracer() {
-        return GlobalOpenTelemetry.get().getTracer(TRACER_NAME);
+    /**
+     * Creates a new span with the given name and executes the provided runnable within its scope.
+     * The span is automatically ended when the runnable completes.
+     */
+    public void span(String spanName, Runnable runnable) {
+        Span span = span(spanName);
+        try (Scope scope = span.makeCurrent()) {
+            runnable.run();
+        } finally {
+            span.end();
+        }
     }
 
-    public Span getCurrentSpan() {
-        return Span.current();
+    /**
+     * Creates a new span with the given name and executes the provided callable within its scope.
+     * The span is automatically ended when the callable completes. Returns the result of the
+     * callable.
+     */
+    public <T> T span(String spanName, java.util.concurrent.Callable<T> callable) throws Exception {
+        Span span = span(spanName);
+        try (Scope scope = span.makeCurrent()) {
+            return callable.call();
+        } finally {
+            span.end();
+        }
     }
 
-    public SpanBuilder spanBuilder(String spanName) {
-        return getTracer().spanBuilder(spanName);
+    /**
+     * Creates a new span with the given name. The caller is responsible for ending the span
+     * manually.
+     */
+    public static Span span(String spanName) {
+        Tracer tracer = GlobalOpenTelemetry.get().getTracer(TRACER_NAME);
+        return tracer.spanBuilder(spanName).startSpan();
     }
 
-    public Span startSpan(String spanName) {
-        return spanBuilder(spanName).startSpan();
-    }
-
-    public Scope makeCurrent(Span span) {
-        return span.makeCurrent();
-    }
-
-    public SpanContext getCurrentSpanContext() {
-        Span current = getCurrentSpan();
-        return current != null ? current.getSpanContext() : null;
-    }
-
-    public boolean isCurrentSpanSampled() {
-        SpanContext context = getCurrentSpanContext();
-        return context != null && context.isSampled();
-    }
-
-    private String resolveProjectId(String name) {
+    protected String resolveProjectId(String name) {
         try {
             ResolveProjectNameRequest request = new ResolveProjectNameRequest();
             request.setProjectName(name);
