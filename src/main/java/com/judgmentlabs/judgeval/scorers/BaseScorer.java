@@ -2,7 +2,6 @@ package com.judgmentlabs.judgeval.scorers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
@@ -10,9 +9,8 @@ public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.
 
     public BaseScorer() {
         super();
-        setClassName(this.getClass().getSimpleName());
         if (getName() == null) {
-            setName(getClassName());
+            setName(this.getClass().getSimpleName());
         }
         if (Boolean.TRUE.equals(getStrictMode())) {
             setThreshold(1.0);
@@ -20,10 +18,6 @@ public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.
     }
 
     public abstract ScorerConfig getScorerConfig();
-
-    public void addModel(String model) {
-        setModel(model);
-    }
 
     public boolean successCheck() {
         if (getError() != null) {
@@ -68,15 +62,6 @@ public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.
         super.setName(name);
     }
 
-    public String getClassName() {
-        Object className = super.getClassName();
-        return className != null ? className.toString() : null;
-    }
-
-    public void setClassName(String className) {
-        super.setClassName(className);
-    }
-
     public Double getScore() {
         Object score = super.getScore();
         if (score instanceof Number) {
@@ -89,53 +74,6 @@ public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.
         super.setScore(score);
     }
 
-    public Map<String, Object> getScoreBreakdown() {
-        Object breakdown = super.getScoreBreakdown();
-        if (breakdown instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) breakdown;
-            return map;
-        }
-        return null;
-    }
-
-    public void setScoreBreakdown(Map<String, Object> scoreBreakdown) {
-        super.setScoreBreakdown(scoreBreakdown);
-    }
-
-    public String getReason() {
-        Object reason = super.getReason();
-        return reason != null ? reason.toString() : "";
-    }
-
-    public void setReason(String reason) {
-        super.setReason(reason);
-    }
-
-    public Boolean getUsingNativeModel() {
-        Object usingNativeModel = super.getUsingNativeModel();
-        if (usingNativeModel instanceof Boolean) {
-            return (Boolean) usingNativeModel;
-        }
-        return null;
-    }
-
-    public void setUsingNativeModel(Boolean usingNativeModel) {
-        super.setUsingNativeModel(usingNativeModel);
-    }
-
-    public Boolean getSuccess() {
-        Object success = super.getSuccess();
-        if (success instanceof Boolean) {
-            return (Boolean) success;
-        }
-        return null;
-    }
-
-    public void setSuccess(Boolean success) {
-        super.setSuccess(success);
-    }
-
     public String getModel() {
         Object model = super.getModel();
         return model != null ? model.toString() : null;
@@ -143,14 +81,6 @@ public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.
 
     public void setModel(String model) {
         super.setModel(model);
-    }
-
-    public Object getModelClient() {
-        return super.getModelClient();
-    }
-
-    public void setModelClient(Object modelClient) {
-        super.setModelClient(modelClient);
     }
 
     public boolean isStrictMode() {
@@ -169,37 +99,5 @@ public abstract class BaseScorer extends com.judgmentlabs.judgeval.internal.api.
 
     public void setError(String error) {
         super.setError(error);
-    }
-
-    public Map<String, Object> getAdditionalMetadata() {
-        Object metadata = super.getAdditionalMetadata();
-        if (metadata instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> map = (Map<String, Object>) metadata;
-            return map;
-        }
-        return null;
-    }
-
-    public void setAdditionalMetadata(Map<String, Object> additionalMetadata) {
-        super.setAdditionalMetadata(additionalMetadata);
-    }
-
-    public String getUser() {
-        Object user = super.getUser();
-        return user != null ? user.toString() : null;
-    }
-
-    public void setUser(String user) {
-        super.setUser(user);
-    }
-
-    public boolean isServerHosted() {
-        Boolean serverHosted = super.getServerHosted();
-        return serverHosted != null ? serverHosted : false;
-    }
-
-    public void setServerHosted(boolean serverHosted) {
-        super.setServerHosted(serverHosted);
     }
 }
