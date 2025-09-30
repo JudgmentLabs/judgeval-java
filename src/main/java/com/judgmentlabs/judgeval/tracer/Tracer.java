@@ -48,7 +48,7 @@ public final class Tracer extends BaseTracer {
                         .merge(
                                 Resource.create(
                                         Attributes.builder()
-                                                .put("service.name", "SqlAgent")
+                                                .put("service.name", configuration.projectName())
                                                 .put("telemetry.sdk.name", TRACER_NAME)
                                                 .put("telemetry.sdk.version", Version.getVersion())
                                                 .build()));

@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
-public class APIScorer extends BaseScorer {
+public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer
+        implements BaseScorer {
     private APIScorerType scoreType;
 
     @JsonIgnore private List<String> requiredParams;
@@ -19,6 +20,9 @@ public class APIScorer extends BaseScorer {
         setName(scoreType.toString());
         setScoreType(scoreType.toString());
         this.requiredParams = new java.util.ArrayList<>();
+        if (Boolean.TRUE.equals(getStrictMode())) {
+            setThreshold(1.0);
+        }
     }
 
     public void setThreshold(double threshold) {
@@ -39,6 +43,22 @@ public class APIScorer extends BaseScorer {
 
     public void setRequiredParams(List<String> requiredParams) {
         this.requiredParams = requiredParams;
+    }
+
+    // Convenience methods for type safety
+    public Double getThreshold() {
+        Double threshold = super.getThreshold();
+        return threshold != null ? threshold : 0.5;
+    }
+
+    public String getName() {
+        Object name = super.getName();
+        return name != null ? name.toString() : null;
+    }
+
+    public boolean isStrictMode() {
+        Boolean strictMode = super.getStrictMode();
+        return strictMode != null ? strictMode : false;
     }
 
     @Override
