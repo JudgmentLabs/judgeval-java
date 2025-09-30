@@ -2,6 +2,8 @@ package com.judgmentlabs.judgeval.tracer.exporters;
 
 import java.util.Collection;
 
+import com.judgmentlabs.judgeval.utils.Logger;
+
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.data.SpanData;
@@ -50,6 +52,7 @@ public class JudgmentSpanExporter implements SpanExporter {
 
     @Override
     public CompletableResultCode export(Collection<SpanData> spans) {
+        Logger.info("Exported " + spans.size() + " spans");
         return delegate.export(spans);
     }
 
