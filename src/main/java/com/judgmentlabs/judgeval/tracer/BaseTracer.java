@@ -226,7 +226,7 @@ public abstract class BaseTracer {
      * The span is automatically ended when the runnable completes.
      */
     public void span(String spanName, Runnable runnable) {
-        Span span = span(spanName);
+        Span span = getTracer().spanBuilder(spanName).startSpan();
         try (Scope scope = span.makeCurrent()) {
             runnable.run();
         } finally {
@@ -240,7 +240,7 @@ public abstract class BaseTracer {
      * callable.
      */
     public <T> T span(String spanName, java.util.concurrent.Callable<T> callable) throws Exception {
-        Span span = span(spanName);
+        Span span = getTracer().spanBuilder(spanName).startSpan();
         try (Scope scope = span.makeCurrent()) {
             return callable.call();
         } finally {
@@ -248,13 +248,17 @@ public abstract class BaseTracer {
         }
     }
 
+    /** Gets the OpenTelemetry tracer instance. */
+    public Tracer getTracer() {
+        return GlobalOpenTelemetry.get().getTracer(TRACER_NAME);
+    }
+
     /**
      * Creates a new span with the given name. The caller is responsible for ending the span
      * manually.
      */
     public static Span span(String spanName) {
-        Tracer tracer = GlobalOpenTelemetry.get().getTracer(TRACER_NAME);
-        return tracer.spanBuilder(spanName).startSpan();
+        return GlobalOpenTelemetry.get().getTracer(TRACER_NAME).spanBuilder(spanName).startSpan();
     }
 
     protected String resolveProjectId(String name) {
