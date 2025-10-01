@@ -115,7 +115,7 @@ public class TracePromptScorer extends BasePromptScorer {
         cfg.setScoreType(getScoreType());
         cfg.setThreshold(getThreshold());
         cfg.setName(getName());
-        cfg.setStrictMode(isStrictMode());
+        cfg.setStrictMode(getStrictMode());
         cfg.setRequiredParams(getRequiredParams());
         Map<String, Object> kwargs = new HashMap<>();
         kwargs.put("prompt", prompt);

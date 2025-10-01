@@ -45,29 +45,13 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
         this.requiredParams = requiredParams;
     }
 
-    // Convenience methods for type safety
-    public Double getThreshold() {
-        Double threshold = super.getThreshold();
-        return threshold != null ? threshold : 0.5;
-    }
-
-    public String getName() {
-        Object name = super.getName();
-        return name != null ? name.toString() : null;
-    }
-
-    public boolean isStrictMode() {
-        Boolean strictMode = super.getStrictMode();
-        return strictMode != null ? strictMode : false;
-    }
-
     @Override
     public ScorerConfig getScorerConfig() {
         ScorerConfig cfg = new ScorerConfig();
         cfg.setScoreType(getScoreType());
         cfg.setThreshold(getThreshold());
         cfg.setName(getName());
-        cfg.setStrictMode(isStrictMode());
+        cfg.setStrictMode(getStrictMode());
         cfg.setRequiredParams(getRequiredParams());
         Map<String, Object> kwargs = new HashMap<>();
         if (getAdditionalProperties() != null) kwargs.putAll(getAdditionalProperties());
