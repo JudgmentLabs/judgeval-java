@@ -10,6 +10,7 @@ public final class Env {
     public static final String JUDGMENT_DEFAULT_GPT_MODEL =
             getEnvVar("JUDGMENT_DEFAULT_GPT_MODEL", "gpt-4.1");
     public static final String JUDGMENT_NO_COLOR = getEnvVar("JUDGMENT_NO_COLOR");
+    public static final String JUDGMENT_LOG_LEVEL = getEnvVar("JUDGMENT_LOG_LEVEL", "warn");
 
     private static String getEnvVar(String varName) {
         return getEnvVar(varName, null);

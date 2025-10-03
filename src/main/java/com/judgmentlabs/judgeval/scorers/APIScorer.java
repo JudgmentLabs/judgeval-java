@@ -8,7 +8,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
-public class APIScorer extends BaseScorer {
+public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer
+        implements BaseScorer {
     private APIScorerType scoreType;
 
     @JsonIgnore private List<String> requiredParams;
@@ -19,6 +20,9 @@ public class APIScorer extends BaseScorer {
         setName(scoreType.toString());
         setScoreType(scoreType.toString());
         this.requiredParams = new java.util.ArrayList<>();
+        if (Boolean.TRUE.equals(getStrictMode())) {
+            setThreshold(1.0);
+        }
     }
 
     public void setThreshold(double threshold) {
@@ -42,12 +46,30 @@ public class APIScorer extends BaseScorer {
     }
 
     @Override
-    public ScorerConfig toTransport() {
+    public Double getThreshold() {
+        Double threshold = super.getThreshold();
+        return threshold != null ? threshold : 0.5;
+    }
+
+    @Override
+    public String getName() {
+        Object name = super.getName();
+        return name != null ? name.toString() : null;
+    }
+
+    @Override
+    public Boolean getStrictMode() {
+        Boolean strictMode = super.getStrictMode();
+        return strictMode != null ? strictMode : false;
+    }
+
+    @Override
+    public ScorerConfig getScorerConfig() {
         ScorerConfig cfg = new ScorerConfig();
         cfg.setScoreType(getScoreType());
         cfg.setThreshold(getThreshold());
         cfg.setName(getName());
-        cfg.setStrictMode(isStrictMode());
+        cfg.setStrictMode(getStrictMode());
         cfg.setRequiredParams(getRequiredParams());
         Map<String, Object> kwargs = new HashMap<>();
         if (getAdditionalProperties() != null) kwargs.putAll(getAdditionalProperties());
