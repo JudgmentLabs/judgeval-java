@@ -2,7 +2,9 @@ package com.judgmentlabs.judgeval.scorers.api_scorers.prompt_scorer;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.data.APIScorerType;
@@ -15,10 +17,12 @@ import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsResponse;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
 public abstract class BasePromptScorer extends APIScorer {
-    protected String              prompt;
-    protected Map<String, Double> options;
-    protected String              judgmentApiKey;
-    protected String              organizationId;
+    private static final Map<CacheKey, com.judgmentlabs.judgeval.internal.api.models.PromptScorer> cache = new ConcurrentHashMap<>();
+
+    protected String                                                                               prompt;
+    protected Map<String, Double>                                                                  options;
+    protected String                                                                               judgmentApiKey;
+    protected String                                                                               organizationId;
 
     protected BasePromptScorer(APIScorerType scoreType, String name, String prompt, double threshold,
             Map<String, Double> options, String judgmentApiKey, String organizationId) {
@@ -45,6 +49,12 @@ public abstract class BasePromptScorer extends APIScorer {
 
     public static com.judgmentlabs.judgeval.internal.api.models.PromptScorer fetchPromptScorer(String name,
             String judgmentApiKey, String organizationId) {
+        CacheKey key = new CacheKey(name, judgmentApiKey, organizationId);
+        com.judgmentlabs.judgeval.internal.api.models.PromptScorer cached = cache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+
         try {
             JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             FetchPromptScorersRequest request = new FetchPromptScorersRequest();
@@ -52,12 +62,17 @@ public abstract class BasePromptScorer extends APIScorer {
 
             FetchPromptScorersResponse response = client.fetchScorers(request);
 
-            return Optional.ofNullable(response)
+            com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorer = Optional.ofNullable(response)
                     .map(FetchPromptScorersResponse::getScorers)
                     .filter(scorers -> scorers != null && !scorers.isEmpty())
                     .map(scorers -> scorers.get(0))
                     .orElseThrow(
                             () -> new JudgmentAPIError(404, "Failed to fetch prompt scorer '" + name + "': not found"));
+
+            cache.put(key, scorer);
+            return scorer;
+        } catch (JudgmentAPIError e) {
+            throw e;
         } catch (Exception e) {
             throw new JudgmentAPIError(500, "Failed to fetch prompt scorer '" + name + "': " + e.getMessage());
         }
@@ -91,6 +106,34 @@ public abstract class BasePromptScorer extends APIScorer {
     }
 
     protected abstract boolean isTrace();
+
+    private static final class CacheKey {
+        private final String name;
+        private final String apiKey;
+        private final String organizationId;
+
+        CacheKey(String name, String apiKey, String organizationId) {
+            this.name = name;
+            this.apiKey = apiKey;
+            this.organizationId = organizationId;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null || getClass() != obj.getClass())
+                return false;
+            CacheKey that = (CacheKey) obj;
+            return Objects.equals(name, that.name) && Objects.equals(apiKey, that.apiKey)
+                    && Objects.equals(organizationId, that.organizationId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, apiKey, organizationId);
+        }
+    }
 
     @Override
     public String toString() {
