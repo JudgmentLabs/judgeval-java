@@ -10,13 +10,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SavePromptScorerRequest {
     @JsonProperty("name")
-
     private String              name;
     @JsonProperty("prompt")
-
     private String              prompt;
     @JsonProperty("threshold")
-
     private Double              threshold;
     @JsonProperty("model")
     private String              model;
@@ -26,6 +23,7 @@ public class SavePromptScorerRequest {
     private Object              options;
     @JsonProperty("description")
     private String              description;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

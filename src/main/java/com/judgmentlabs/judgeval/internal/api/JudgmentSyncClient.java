@@ -11,17 +11,7 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.judgmentlabs.judgeval.internal.api.models.EvalResults;
-import com.judgmentlabs.judgeval.internal.api.models.EvalResultsFetch;
-import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
-import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersRequest;
-import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersResponse;
-import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
-import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
-import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerRequest;
-import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerResponse;
-import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsRequest;
-import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsResponse;
+import com.judgmentlabs.judgeval.internal.api.models.*;
 
 public class JudgmentSyncClient {
     private final HttpClient   client;
@@ -44,8 +34,7 @@ public class JudgmentSyncClient {
         StringBuilder url = new StringBuilder(baseUrl).append(path);
         if (!queryParams.isEmpty()) {
             url.append("?");
-            String queryString = queryParams.entrySet()
-                    .stream()
+            String queryString = queryParams.entrySet().stream()
                     .map(entry -> entry.getKey() + "=" + entry.getValue())
                     .reduce("", (a, b) -> a.isEmpty() ? b : a + "&" + b);
             url.append(queryString);
@@ -58,8 +47,14 @@ public class JudgmentSyncClient {
     }
 
     private String[] buildHeaders() {
-        return new String[] { "Content-Type", "application/json", "Authorization", "Bearer " + apiKey,
-                "X-Organization-Id", organizationId };
+        return new String[] {
+                "Content-Type",
+                "application/json",
+                "Authorization",
+                "Bearer " + apiKey,
+                "X-Organization-Id",
+                organizationId
+        };
     }
 
     private <T> T handleResponse(HttpResponse<String> response) throws IOException {
@@ -110,8 +105,7 @@ public class JudgmentSyncClient {
         return handleResponse(response);
     }
 
-    public ScorerExistsResponse scorerExists(ScorerExistsRequest payload)
-            throws IOException, InterruptedException {
+    public ScorerExistsResponse scorerExists(ScorerExistsRequest payload) throws IOException, InterruptedException {
         String url = buildUrl("/scorer_exists/");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request = HttpRequest.newBuilder()
@@ -161,4 +155,5 @@ public class JudgmentSyncClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return mapper.readValue(response.body(), ResolveProjectNameResponse.class);
     }
+
 }

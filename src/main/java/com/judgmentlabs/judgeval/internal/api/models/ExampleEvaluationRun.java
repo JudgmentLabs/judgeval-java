@@ -13,10 +13,8 @@ public class ExampleEvaluationRun {
     @JsonProperty("id")
     private String              id;
     @JsonProperty("project_name")
-
     private String              projectName;
     @JsonProperty("eval_name")
-
     private String              evalName;
     @JsonProperty("custom_scorers")
     private List<BaseScorer>    customScorers;
@@ -27,12 +25,12 @@ public class ExampleEvaluationRun {
     @JsonProperty("created_at")
     private String              createdAt;
     @JsonProperty("examples")
-
     private List<Example>       examples;
     @JsonProperty("trace_span_id")
     private String              traceSpanId;
     @JsonProperty("trace_id")
     private String              traceId;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

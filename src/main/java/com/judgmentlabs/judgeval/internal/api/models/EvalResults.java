@@ -11,11 +11,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EvalResults {
     @JsonProperty("results")
-
     private List<ScoringResult> results;
     @JsonProperty("run")
-
     private Object              run;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

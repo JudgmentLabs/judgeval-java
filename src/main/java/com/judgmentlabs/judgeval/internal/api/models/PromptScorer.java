@@ -10,22 +10,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PromptScorer {
     @JsonProperty("id")
-
     private String              id;
     @JsonProperty("user_id")
-
     private String              userId;
     @JsonProperty("organization_id")
-
     private String              organizationId;
     @JsonProperty("name")
-
     private String              name;
     @JsonProperty("prompt")
-
     private String              prompt;
     @JsonProperty("threshold")
-
     private Double              threshold;
     @JsonProperty("model")
     private String              model;
@@ -41,6 +35,7 @@ public class PromptScorer {
     private Boolean             isTrace;
     @JsonProperty("is_bucket_rubric")
     private Boolean             isBucketRubric;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -176,7 +171,7 @@ public class PromptScorer {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, organizationId, name, prompt, threshold, model, options, description,
-                createdAt, updatedAt, isTrace, isBucketRubric, Objects.hashCode(additionalProperties));
+        return Objects.hash(id, userId, organizationId, name, prompt, threshold, model, options, description, createdAt,
+                updatedAt, isTrace, isBucketRubric, Objects.hashCode(additionalProperties));
     }
 }

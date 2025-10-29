@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerExistsRequest {
     @JsonProperty("name")
-
     private String              name;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

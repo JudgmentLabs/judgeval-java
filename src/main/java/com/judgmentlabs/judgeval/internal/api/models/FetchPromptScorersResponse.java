@@ -11,8 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FetchPromptScorersResponse {
     @JsonProperty("scorers")
-
     private List<PromptScorer>  scorers;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

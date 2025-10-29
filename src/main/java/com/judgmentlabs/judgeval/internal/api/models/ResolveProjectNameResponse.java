@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ResolveProjectNameResponse {
     @JsonProperty("project_id")
-
     private String              projectId;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

@@ -10,11 +10,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EvalResultsFetch {
     @JsonProperty("experiment_run_id")
-
     private String              experimentRunId;
     @JsonProperty("project_name")
-
     private String              projectName;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -50,8 +49,7 @@ public class EvalResultsFetch {
         if (obj == null || getClass() != obj.getClass())
             return false;
         EvalResultsFetch other = (EvalResultsFetch) obj;
-        return Objects.equals(experimentRunId, other.experimentRunId)
-                && Objects.equals(projectName, other.projectName)
+        return Objects.equals(experimentRunId, other.experimentRunId) && Objects.equals(projectName, other.projectName)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 

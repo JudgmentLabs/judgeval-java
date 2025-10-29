@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BaseScorer {
     @JsonProperty("score_type")
-
     private String              scoreType;
     @JsonProperty("threshold")
     private Double              threshold;
@@ -42,6 +41,7 @@ public class BaseScorer {
     private String              user;
     @JsonProperty("server_hosted")
     private Boolean             serverHosted;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

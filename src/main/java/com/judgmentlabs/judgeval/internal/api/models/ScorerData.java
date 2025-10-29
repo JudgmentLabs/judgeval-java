@@ -12,13 +12,10 @@ public class ScorerData {
     @JsonProperty("id")
     private String              id;
     @JsonProperty("name")
-
     private String              name;
     @JsonProperty("threshold")
-
     private Double              threshold;
     @JsonProperty("success")
-
     private Boolean             success;
     @JsonProperty("score")
     private Double              score;
@@ -32,6 +29,7 @@ public class ScorerData {
     private String              error;
     @JsonProperty("additional_metadata")
     private Object              additionalMetadata;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -135,8 +133,8 @@ public class ScorerData {
                 && Objects.equals(threshold, other.threshold) && Objects.equals(success, other.success)
                 && Objects.equals(score, other.score) && Objects.equals(reason, other.reason)
                 && Objects.equals(strictMode, other.strictMode)
-                && Objects.equals(evaluationModel, other.evaluationModel)
-                && Objects.equals(error, other.error) && Objects.equals(additionalMetadata, other.additionalMetadata)
+                && Objects.equals(evaluationModel, other.evaluationModel) && Objects.equals(error, other.error)
+                && Objects.equals(additionalMetadata, other.additionalMetadata)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 

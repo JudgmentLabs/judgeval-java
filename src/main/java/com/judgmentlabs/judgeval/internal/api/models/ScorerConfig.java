@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerConfig {
     @JsonProperty("score_type")
-
     private String              scoreType;
     @JsonProperty("name")
     private String              name;
@@ -25,6 +24,7 @@ public class ScorerConfig {
     private List<String>        requiredParams;
     @JsonProperty("kwargs")
     private Object              kwargs;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

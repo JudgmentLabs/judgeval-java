@@ -13,10 +13,8 @@ public class TraceEvaluationRun {
     @JsonProperty("id")
     private String              id;
     @JsonProperty("project_name")
-
     private String              projectName;
     @JsonProperty("eval_name")
-
     private String              evalName;
     @JsonProperty("custom_scorers")
     private List<BaseScorer>    customScorers;
@@ -27,12 +25,12 @@ public class TraceEvaluationRun {
     @JsonProperty("created_at")
     private String              createdAt;
     @JsonProperty("trace_and_span_ids")
-
     private List<List<Object>>  traceAndSpanIds;
     @JsonProperty("is_offline")
     private Boolean             isOffline;
     @JsonProperty("is_bucket_run")
     private Boolean             isBucketRun;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

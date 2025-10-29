@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SavePromptScorerResponse {
     @JsonProperty("scorer_response")
-
     private PromptScorer        scorerResponse;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

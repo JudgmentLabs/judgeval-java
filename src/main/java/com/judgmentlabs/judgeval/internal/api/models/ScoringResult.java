@@ -11,10 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScoringResult {
     @JsonProperty("success")
-
     private Boolean             success;
     @JsonProperty("scorers_data")
-
     private List<ScorerData>    scorersData;
     @JsonProperty("name")
     private String              name;
@@ -26,6 +24,7 @@ public class ScoringResult {
     private Double              runDuration;
     @JsonProperty("evaluation_cost")
     private Double              evaluationCost;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

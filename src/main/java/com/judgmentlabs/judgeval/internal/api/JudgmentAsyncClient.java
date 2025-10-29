@@ -34,8 +34,7 @@ public class JudgmentAsyncClient {
         StringBuilder url = new StringBuilder(baseUrl).append(path);
         if (!queryParams.isEmpty()) {
             url.append("?");
-            String queryString = queryParams.entrySet()
-                    .stream()
+            String queryString = queryParams.entrySet().stream()
                     .map(entry -> entry.getKey() + "=" + entry.getValue())
                     .reduce("", (a, b) -> a.isEmpty() ? b : a + "&" + b);
             url.append(queryString);
@@ -48,8 +47,14 @@ public class JudgmentAsyncClient {
     }
 
     private String[] buildHeaders() {
-        return new String[] { "Content-Type", "application/json", "Authorization", "Bearer " + apiKey,
-                "X-Organization-Id", organizationId };
+        return new String[] {
+                "Content-Type",
+                "application/json",
+                "Authorization",
+                "Bearer " + apiKey,
+                "X-Organization-Id",
+                organizationId
+        };
     }
 
     private <T> T handleResponse(HttpResponse<String> response) {
@@ -182,4 +187,5 @@ public class JudgmentAsyncClient {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
+
 }

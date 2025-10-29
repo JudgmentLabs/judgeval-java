@@ -11,21 +11,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class OtelTraceSpan {
     @JsonProperty("organization_id")
-
     private String              organizationId;
     @JsonProperty("project_id")
     private String              projectId;
     @JsonProperty("user_id")
-
     private String              userId;
     @JsonProperty("timestamp")
-
     private String              timestamp;
     @JsonProperty("trace_id")
-
     private String              traceId;
     @JsonProperty("span_id")
-
     private String              spanId;
     @JsonProperty("parent_span_id")
     private String              parentSpanId;
@@ -51,6 +46,7 @@ public class OtelTraceSpan {
     private List<Object>        events;
     @JsonProperty("links")
     private List<Object>        links;
+
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -231,7 +227,6 @@ public class OtelTraceSpan {
     public int hashCode() {
         return Objects.hash(organizationId, projectId, userId, timestamp, traceId, spanId, parentSpanId, traceState,
                 spanName, spanKind, serviceName, resourceAttributes, spanAttributes, duration, statusCode,
-                statusMessage,
-                events, links, Objects.hashCode(additionalProperties));
+                statusMessage, events, links, Objects.hashCode(additionalProperties));
     }
 }
