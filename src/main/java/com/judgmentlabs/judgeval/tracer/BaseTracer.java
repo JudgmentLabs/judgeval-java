@@ -90,46 +90,63 @@ public abstract class BaseTracer {
                 .ifPresent(action);
     }
 
+    private static boolean isValidKey(String key) {
+        return key != null && !key.isEmpty();
+    }
+
     /**
      * Sets an attribute on the current span by serializing the object value.
+     * Empty strings and null are valid attribute values, but not valid keys.
      *
      * @param key
      *            the attribute key
      * @param value
-     *            the attribute value, ignored if null
+     *            the attribute value (null and empty strings are valid)
      */
     public void setAttribute(String key, Object value) {
-        Optional.ofNullable(value)
-                .ifPresent(v -> setAttribute(key, v, v.getClass()));
+        if (!isValidKey(key)) {
+            return;
+        }
+        if (value != null) {
+            setAttribute(key, value, value.getClass());
+        }
     }
 
     /**
      * Sets an attribute on the current span by serializing the object value with
-     * the specified type.
+     * the specified type. Empty strings and null are valid attribute values, but
+     * not valid keys.
      *
      * @param key
      *            the attribute key
      * @param value
-     *            the attribute value, ignored if null
+     *            the attribute value (null and empty strings are valid)
      * @param type
      *            the type to use for serialization
      */
     public void setAttribute(String key, Object value, Type type) {
-        Optional.ofNullable(value)
-                .ifPresent(v -> withCurrentSpan(span -> span.setAttribute(key, serializer.serialize(v, type))));
+        if (!isValidKey(key)) {
+            return;
+        }
+        if (value != null) {
+            withCurrentSpan(span -> span.setAttribute(key, serializer.serialize(value, type)));
+        }
     }
 
     /**
-     * Sets a string attribute on the current span.
+     * Sets a string attribute on the current span. Empty strings and null are valid
+     * attribute values, but not valid keys.
      *
      * @param key
      *            the attribute key
      * @param value
-     *            the string value, ignored if null
+     *            the string value (null and empty strings are valid)
      */
     public void setAttribute(String key, String value) {
-        Optional.ofNullable(value)
-                .ifPresent(v -> withCurrentSpan(span -> span.setAttribute(key, v)));
+        if (!isValidKey(key)) {
+            return;
+        }
+        withCurrentSpan(span -> span.setAttribute(key, value));
     }
 
     /**
@@ -141,6 +158,9 @@ public abstract class BaseTracer {
      *            the long value
      */
     public void setAttribute(String key, long value) {
+        if (!isValidKey(key)) {
+            return;
+        }
         withCurrentSpan(span -> span.setAttribute(key, value));
     }
 
@@ -153,6 +173,9 @@ public abstract class BaseTracer {
      *            the double value
      */
     public void setAttribute(String key, double value) {
+        if (!isValidKey(key)) {
+            return;
+        }
         withCurrentSpan(span -> span.setAttribute(key, value));
     }
 
@@ -165,6 +188,9 @@ public abstract class BaseTracer {
      *            the boolean value
      */
     public void setAttribute(String key, boolean value) {
+        if (!isValidKey(key)) {
+            return;
+        }
         withCurrentSpan(span -> span.setAttribute(key, value));
     }
 
@@ -291,7 +317,7 @@ public abstract class BaseTracer {
      */
     public void setAttributes(Map<String, Object> attributes) {
         Optional.ofNullable(attributes)
-                .ifPresent(attrs -> withCurrentSpan(span -> attrs.forEach(this::setAttribute)));
+                .ifPresent(attrs -> attrs.forEach(this::setAttribute));
     }
 
     /**
