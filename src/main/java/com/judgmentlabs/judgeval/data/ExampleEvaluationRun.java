@@ -20,13 +20,8 @@ public class ExampleEvaluationRun
         setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
     }
 
-    public ExampleEvaluationRun(
-            String projectName,
-            String evalName,
-            List<Example> examples,
-            List<ScorerConfig> scorers,
-            String model,
-            String organizationId) {
+    public ExampleEvaluationRun(String projectName, String evalName, List<Example> examples,
+            List<ScorerConfig> scorers, String model, String organizationId) {
         this();
         setProjectName(projectName);
         setEvalName(evalName);
@@ -50,9 +45,12 @@ public class ExampleEvaluationRun
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        if (!super.equals(obj)) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        if (!super.equals(obj))
+            return false;
         ExampleEvaluationRun other = (ExampleEvaluationRun) obj;
         return Objects.equals(organizationId, other.organizationId);
     }
@@ -145,8 +143,8 @@ public class ExampleEvaluationRun
                 throw new IllegalArgumentException("At least one scorer is required");
             }
 
-            return new ExampleEvaluationRun(
-                    projectName, evalName, examples, scorers, model, organizationId);
+            return new ExampleEvaluationRun(projectName, evalName, examples, scorers, model,
+                    organizationId);
         }
     }
 }

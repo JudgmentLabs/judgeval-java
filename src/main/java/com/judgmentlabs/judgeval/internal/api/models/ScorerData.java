@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,31 +13,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ScorerData {
     @JsonProperty("id")
     private String id;
-
     @JsonProperty("name")
+    @NotNull
     private String name;
-
     @JsonProperty("threshold")
+    @NotNull
     private Double threshold;
-
     @JsonProperty("success")
+    @NotNull
     private Boolean success;
-
     @JsonProperty("score")
     private Double score;
-
     @JsonProperty("reason")
     private String reason;
-
     @JsonProperty("strict_mode")
     private Boolean strictMode;
-
     @JsonProperty("evaluation_model")
     private String evaluationModel;
-
     @JsonProperty("error")
     private String error;
-
     @JsonProperty("additional_metadata")
     private Object additionalMetadata;
 
@@ -95,15 +91,15 @@ public class ScorerData {
         this.id = id;
     }
 
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 
-    public void setThreshold(Double threshold) {
+    public void setThreshold(@NotNull Double threshold) {
         this.threshold = threshold;
     }
 
-    public void setSuccess(Boolean success) {
+    public void setSuccess(@NotNull Boolean success) {
         this.success = success;
     }
 
@@ -133,15 +129,15 @@ public class ScorerData {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         ScorerData other = (ScorerData) obj;
-        return Objects.equals(id, other.id)
-                && Objects.equals(name, other.name)
+        return Objects.equals(id, other.id) && Objects.equals(name, other.name)
                 && Objects.equals(threshold, other.threshold)
                 && Objects.equals(success, other.success)
-                && Objects.equals(score, other.score)
-                && Objects.equals(reason, other.reason)
+                && Objects.equals(score, other.score) && Objects.equals(reason, other.reason)
                 && Objects.equals(strictMode, other.strictMode)
                 && Objects.equals(evaluationModel, other.evaluationModel)
                 && Objects.equals(error, other.error)
@@ -151,17 +147,8 @@ public class ScorerData {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                id,
-                name,
-                threshold,
-                success,
-                score,
-                reason,
-                strictMode,
+        return Objects.hash(id, name, threshold, success, score, reason, strictMode,
                 evaluationModel,
-                error,
-                additionalMetadata,
-                Objects.hashCode(additionalProperties));
+                error, additionalMetadata, Objects.hashCode(additionalProperties));
     }
 }

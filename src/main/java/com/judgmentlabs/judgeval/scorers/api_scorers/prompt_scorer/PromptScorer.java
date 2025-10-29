@@ -11,30 +11,13 @@ import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 public class PromptScorer extends BasePromptScorer {
 
     public PromptScorer(String name, String prompt, double threshold, Map<String, Double> options) {
-        super(
-                APIScorerType.PROMPT_SCORER,
-                name,
-                prompt,
-                threshold,
-                options,
-                Env.JUDGMENT_API_KEY,
+        super(APIScorerType.PROMPT_SCORER, name, prompt, threshold, options, Env.JUDGMENT_API_KEY,
                 Env.JUDGMENT_ORG_ID);
     }
 
-    public PromptScorer(
-            String name,
-            String prompt,
-            double threshold,
-            Map<String, Double> options,
-            String judgmentApiKey,
-            String organizationId) {
-        super(
-                APIScorerType.PROMPT_SCORER,
-                name,
-                prompt,
-                threshold,
-                options,
-                judgmentApiKey,
+    public PromptScorer(String name, String prompt, double threshold, Map<String, Double> options,
+            String judgmentApiKey, String organizationId) {
+        super(APIScorerType.PROMPT_SCORER, name, prompt, threshold, options, judgmentApiKey,
                 organizationId);
     }
 
@@ -64,13 +47,9 @@ public class PromptScorer extends BasePromptScorer {
             }
         }
 
-        return new PromptScorer(
-                name,
-                scorerConfig.getPrompt(),
-                scorerConfig.getThreshold() != null ? scorerConfig.getThreshold() : 0.5,
-                options,
-                judgmentApiKey,
-                organizationId);
+        return new PromptScorer(name, scorerConfig.getPrompt(),
+                scorerConfig.getThreshold() != null ? scorerConfig.getThreshold() : 0.5, options,
+                judgmentApiKey, organizationId);
     }
 
     public static PromptScorer create(String name, String prompt) {
@@ -81,29 +60,21 @@ public class PromptScorer extends BasePromptScorer {
         return create(name, prompt, threshold, null);
     }
 
-    public static PromptScorer create(
-            String name, String prompt, double threshold, Map<String, Double> options) {
+    public static PromptScorer create(String name, String prompt, double threshold,
+            Map<String, Double> options) {
         return create(name, prompt, threshold, options, Env.JUDGMENT_API_KEY, Env.JUDGMENT_ORG_ID);
     }
 
-    public static PromptScorer create(
-            String name,
-            String prompt,
-            double threshold,
-            Map<String, Double> options,
-            String judgmentApiKey,
-            String organizationId) {
+    public static PromptScorer create(String name, String prompt, double threshold,
+            Map<String, Double> options, String judgmentApiKey, String organizationId) {
         if (!scorerExists(name, judgmentApiKey, organizationId)) {
-            pushPromptScorer(
-                    name, prompt, threshold, options, judgmentApiKey, organizationId, false);
-            return new PromptScorer(
-                    name, prompt, threshold, options, judgmentApiKey, organizationId);
+            pushPromptScorer(name, prompt, threshold, options, judgmentApiKey, organizationId,
+                    false);
+            return new PromptScorer(name, prompt, threshold, options, judgmentApiKey,
+                    organizationId);
         } else {
-            throw new JudgmentAPIError(
-                    400,
-                    "Scorer with name "
-                            + name
-                            + " already exists. Either use the existing scorer with the get() method or use a new name.");
+            throw new JudgmentAPIError(400, "Scorer with name " + name
+                    + " already exists. Either use the existing scorer with the get() method or use a new name.");
         }
     }
 
@@ -197,8 +168,8 @@ public class PromptScorer extends BasePromptScorer {
             if (name == null || prompt == null) {
                 throw new IllegalArgumentException("Name and prompt are required");
             }
-            return new PromptScorer(
-                    name, prompt, threshold, options, judgmentApiKey, organizationId);
+            return new PromptScorer(name, prompt, threshold, options, judgmentApiKey,
+                    organizationId);
         }
     }
 }

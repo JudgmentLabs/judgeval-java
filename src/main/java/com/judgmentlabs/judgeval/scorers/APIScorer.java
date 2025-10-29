@@ -12,7 +12,8 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
         implements BaseScorer {
     private APIScorerType scoreType;
 
-    @JsonIgnore private List<String> requiredParams;
+    @JsonIgnore
+    private List<String> requiredParams;
 
     public APIScorer(APIScorerType scoreType) {
         super();
@@ -72,7 +73,8 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
         cfg.setStrictMode(getStrictMode());
         cfg.setRequiredParams(getRequiredParams());
         Map<String, Object> kwargs = new HashMap<>();
-        if (getAdditionalProperties() != null) kwargs.putAll(getAdditionalProperties());
+        if (getAdditionalProperties() != null)
+            kwargs.putAll(getAdditionalProperties());
         cfg.setKwargs(kwargs);
         return cfg;
     }

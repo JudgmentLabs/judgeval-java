@@ -23,14 +23,9 @@ public abstract class BasePromptScorer extends APIScorer {
     protected String judgmentApiKey;
     protected String organizationId;
 
-    protected BasePromptScorer(
-            APIScorerType scoreType,
-            String name,
-            String prompt,
+    protected BasePromptScorer(APIScorerType scoreType, String name, String prompt,
             double threshold,
-            Map<String, Double> options,
-            String judgmentApiKey,
-            String organizationId) {
+            Map<String, Double> options, String judgmentApiKey, String organizationId) {
         super(scoreType);
         this.prompt = prompt;
         this.options = options;
@@ -50,16 +45,14 @@ public abstract class BasePromptScorer extends APIScorer {
             return Boolean.TRUE.equals(response.getExists());
         } catch (JudgmentAPIError e) {
             if (e.getStatusCode() == 500) {
-                throw new JudgmentAPIError(
-                        e.getStatusCode(),
+                throw new JudgmentAPIError(e.getStatusCode(),
                         "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
                                 + e.getMessage());
             }
-            throw new JudgmentAPIError(
-                    e.getStatusCode(), "Failed to check if scorer exists: " + e.getMessage());
+            throw new JudgmentAPIError(e.getStatusCode(),
+                    "Failed to check if scorer exists: " + e.getMessage());
         } catch (IOException | InterruptedException e) {
-            throw new JudgmentAPIError(
-                    500,
+            throw new JudgmentAPIError(500,
                     "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
                             + e.getMessage());
         }
@@ -76,36 +69,28 @@ public abstract class BasePromptScorer extends APIScorer {
             FetchPromptScorersResponse response = client.fetchScorers(request);
 
             if (response.getScorers() == null || response.getScorers().isEmpty()) {
-                throw new JudgmentAPIError(
-                        404, "Failed to fetch prompt scorer '" + name + "': not found");
+                throw new JudgmentAPIError(404,
+                        "Failed to fetch prompt scorer '" + name + "': not found");
             }
 
             return response.getScorers().get(0);
         } catch (JudgmentAPIError e) {
             if (e.getStatusCode() == 500) {
-                throw new JudgmentAPIError(
-                        e.getStatusCode(),
+                throw new JudgmentAPIError(e.getStatusCode(),
                         "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
                                 + e.getMessage());
             }
-            throw new JudgmentAPIError(
-                    e.getStatusCode(),
+            throw new JudgmentAPIError(e.getStatusCode(),
                     "Failed to fetch prompt scorer '" + name + "': " + e.getMessage());
         } catch (IOException | InterruptedException e) {
-            throw new JudgmentAPIError(
-                    500,
+            throw new JudgmentAPIError(500,
                     "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
                             + e.getMessage());
         }
     }
 
-    public static String pushPromptScorer(
-            String name,
-            String prompt,
-            double threshold,
-            Map<String, Double> options,
-            String judgmentApiKey,
-            String organizationId,
+    public static String pushPromptScorer(String name, String prompt, double threshold,
+            Map<String, Double> options, String judgmentApiKey, String organizationId,
             Boolean isTrace) {
         try {
             JudgmentSyncClient client =
@@ -125,19 +110,17 @@ public abstract class BasePromptScorer extends APIScorer {
             request.setIsTrace(isTrace);
 
             SavePromptScorerResponse response = client.saveScorer(request);
-            return response != null ? response.getName() : null;
+            return response != null ? response.getScorerResponse().getName() : null;
         } catch (JudgmentAPIError e) {
             if (e.getStatusCode() == 500) {
-                throw new JudgmentAPIError(
-                        e.getStatusCode(),
+                throw new JudgmentAPIError(e.getStatusCode(),
                         "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
                                 + e.getMessage());
             }
-            throw new JudgmentAPIError(
-                    e.getStatusCode(), "Failed to save prompt scorer: " + e.getMessage());
+            throw new JudgmentAPIError(e.getStatusCode(),
+                    "Failed to save prompt scorer: " + e.getMessage());
         } catch (IOException | InterruptedException e) {
-            throw new JudgmentAPIError(
-                    500,
+            throw new JudgmentAPIError(500,
                     "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
                             + e.getMessage());
         }
@@ -192,13 +175,7 @@ public abstract class BasePromptScorer extends APIScorer {
     }
 
     protected void pushPromptScorer() {
-        pushPromptScorer(
-                getName(),
-                prompt,
-                getThreshold(),
-                options,
-                judgmentApiKey,
-                organizationId,
+        pushPromptScorer(getName(), prompt, getThreshold(), options, judgmentApiKey, organizationId,
                 isTrace());
     }
 
@@ -206,14 +183,8 @@ public abstract class BasePromptScorer extends APIScorer {
 
     @Override
     public String toString() {
-        return "PromptScorer(name="
-                + getName()
-                + ", prompt="
-                + prompt
-                + ", threshold="
+        return "PromptScorer(name=" + getName() + ", prompt=" + prompt + ", threshold="
                 + getThreshold()
-                + ", options="
-                + options
-                + ")";
+                + ", options=" + options + ")";
     }
 }

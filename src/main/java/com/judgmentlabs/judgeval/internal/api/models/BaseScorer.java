@@ -4,56 +4,44 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BaseScorer {
     @JsonProperty("score_type")
+    @NotNull
     private String scoreType;
-
     @JsonProperty("threshold")
     private Double threshold;
-
     @JsonProperty("name")
     private String name;
-
     @JsonProperty("class_name")
     private String className;
-
     @JsonProperty("score")
     private Double score;
-
     @JsonProperty("score_breakdown")
     private Object scoreBreakdown;
-
     @JsonProperty("reason")
     private String reason;
-
     @JsonProperty("using_native_model")
     private Boolean usingNativeModel;
-
     @JsonProperty("success")
     private Boolean success;
-
     @JsonProperty("model")
     private String model;
-
     @JsonProperty("model_client")
     private Object modelClient;
-
     @JsonProperty("strict_mode")
     private Boolean strictMode;
-
     @JsonProperty("error")
     private String error;
-
     @JsonProperty("additional_metadata")
     private Object additionalMetadata;
-
     @JsonProperty("user")
     private String user;
-
     @JsonProperty("server_hosted")
     private Boolean serverHosted;
 
@@ -133,7 +121,7 @@ public class BaseScorer {
         return serverHosted;
     }
 
-    public void setScoreType(String scoreType) {
+    public void setScoreType(@NotNull String scoreType) {
         this.scoreType = scoreType;
     }
 
@@ -199,19 +187,19 @@ public class BaseScorer {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         BaseScorer other = (BaseScorer) obj;
         return Objects.equals(scoreType, other.scoreType)
                 && Objects.equals(threshold, other.threshold)
-                && Objects.equals(name, other.name)
-                && Objects.equals(className, other.className)
+                && Objects.equals(name, other.name) && Objects.equals(className, other.className)
                 && Objects.equals(score, other.score)
                 && Objects.equals(scoreBreakdown, other.scoreBreakdown)
                 && Objects.equals(reason, other.reason)
                 && Objects.equals(usingNativeModel, other.usingNativeModel)
-                && Objects.equals(success, other.success)
-                && Objects.equals(model, other.model)
+                && Objects.equals(success, other.success) && Objects.equals(model, other.model)
                 && Objects.equals(modelClient, other.modelClient)
                 && Objects.equals(strictMode, other.strictMode)
                 && Objects.equals(error, other.error)
@@ -223,23 +211,9 @@ public class BaseScorer {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                scoreType,
-                threshold,
-                name,
-                className,
-                score,
-                scoreBreakdown,
-                reason,
-                usingNativeModel,
-                success,
-                model,
-                modelClient,
-                strictMode,
-                error,
-                additionalMetadata,
-                user,
-                serverHosted,
-                Objects.hashCode(additionalProperties));
+        return Objects.hash(scoreType, threshold, name, className, score, scoreBreakdown, reason,
+                usingNativeModel, success, model, modelClient, strictMode, error,
+                additionalMetadata, user,
+                serverHosted, Objects.hashCode(additionalProperties));
     }
 }

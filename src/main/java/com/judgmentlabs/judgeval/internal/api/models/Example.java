@@ -11,10 +11,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Example {
     @JsonProperty("example_id")
     private String exampleId;
-
     @JsonProperty("created_at")
     private String createdAt;
-
     @JsonProperty("name")
     private String name;
 
@@ -56,8 +54,10 @@ public class Example {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         Example other = (Example) obj;
         return Objects.equals(exampleId, other.exampleId)
                 && Objects.equals(createdAt, other.createdAt)

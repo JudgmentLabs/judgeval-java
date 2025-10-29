@@ -17,11 +17,7 @@ public class Logger {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public enum Level {
-        DEBUG(0, GRAY),
-        INFO(1, GRAY),
-        WARNING(2, YELLOW),
-        ERROR(3, RED),
-        CRITICAL(4, RED);
+        DEBUG(0, GRAY), INFO(1, GRAY), WARNING(2, YELLOW), ERROR(3, RED), CRITICAL(4, RED);
 
         private final int value;
         private final String color;

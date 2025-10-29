@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,30 +14,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TraceEvaluationRun {
     @JsonProperty("id")
     private String id;
-
     @JsonProperty("project_name")
+    @NotNull
     private String projectName;
-
     @JsonProperty("eval_name")
+    @NotNull
     private String evalName;
-
     @JsonProperty("custom_scorers")
     private List<BaseScorer> customScorers;
-
     @JsonProperty("judgment_scorers")
     private List<ScorerConfig> judgmentScorers;
-
     @JsonProperty("model")
     private String model;
-
     @JsonProperty("created_at")
     private String createdAt;
-
     @JsonProperty("trace_and_span_ids")
+    @NotNull
     private List<List<Object>> traceAndSpanIds;
-
     @JsonProperty("is_offline")
     private Boolean isOffline;
+    @JsonProperty("is_bucket_run")
+    private Boolean isBucketRun;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -85,15 +84,19 @@ public class TraceEvaluationRun {
         return isOffline;
     }
 
+    public Boolean getIsBucketRun() {
+        return isBucketRun;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
 
-    public void setProjectName(String projectName) {
+    public void setProjectName(@NotNull String projectName) {
         this.projectName = projectName;
     }
 
-    public void setEvalName(String evalName) {
+    public void setEvalName(@NotNull String evalName) {
         this.evalName = evalName;
     }
 
@@ -113,7 +116,7 @@ public class TraceEvaluationRun {
         this.createdAt = createdAt;
     }
 
-    public void setTraceAndSpanIds(List<List<Object>> traceAndSpanIds) {
+    public void setTraceAndSpanIds(@NotNull List<List<Object>> traceAndSpanIds) {
         this.traceAndSpanIds = traceAndSpanIds;
     }
 
@@ -121,35 +124,32 @@ public class TraceEvaluationRun {
         this.isOffline = isOffline;
     }
 
+    public void setIsBucketRun(Boolean isBucketRun) {
+        this.isBucketRun = isBucketRun;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         TraceEvaluationRun other = (TraceEvaluationRun) obj;
-        return Objects.equals(id, other.id)
-                && Objects.equals(projectName, other.projectName)
+        return Objects.equals(id, other.id) && Objects.equals(projectName, other.projectName)
                 && Objects.equals(evalName, other.evalName)
                 && Objects.equals(customScorers, other.customScorers)
                 && Objects.equals(judgmentScorers, other.judgmentScorers)
-                && Objects.equals(model, other.model)
-                && Objects.equals(createdAt, other.createdAt)
+                && Objects.equals(model, other.model) && Objects.equals(createdAt, other.createdAt)
                 && Objects.equals(traceAndSpanIds, other.traceAndSpanIds)
                 && Objects.equals(isOffline, other.isOffline)
+                && Objects.equals(isBucketRun, other.isBucketRun)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                id,
-                projectName,
-                evalName,
-                customScorers,
-                judgmentScorers,
-                model,
+        return Objects.hash(id, projectName, evalName, customScorers, judgmentScorers, model,
                 createdAt,
-                traceAndSpanIds,
-                isOffline,
-                Objects.hashCode(additionalProperties));
+                traceAndSpanIds, isOffline, isBucketRun, Objects.hashCode(additionalProperties));
     }
 }

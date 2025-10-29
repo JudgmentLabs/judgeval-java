@@ -21,13 +21,8 @@ public class TraceEvaluationRun
         setIsOffline(false);
     }
 
-    public TraceEvaluationRun(
-            String projectName,
-            String evalName,
-            List<ScorerConfig> scorers,
-            String model,
-            String organizationId,
-            List<List<String>> traceAndSpanIds) {
+    public TraceEvaluationRun(String projectName, String evalName, List<ScorerConfig> scorers,
+            String model, String organizationId, List<List<String>> traceAndSpanIds) {
         this();
         setProjectName(projectName);
         setEvalName(evalName);
@@ -65,9 +60,12 @@ public class TraceEvaluationRun
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        if (!super.equals(obj)) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
+        if (!super.equals(obj))
+            return false;
         TraceEvaluationRun other = (TraceEvaluationRun) obj;
         return Objects.equals(organizationId, other.organizationId);
     }
@@ -161,8 +159,8 @@ public class TraceEvaluationRun
                         "At least one trace and span ID pair is required");
             }
 
-            return new TraceEvaluationRun(
-                    projectName, evalName, scorers, model, organizationId, traceAndSpanIds);
+            return new TraceEvaluationRun(projectName, evalName, scorers, model, organizationId,
+                    traceAndSpanIds);
         }
     }
 }

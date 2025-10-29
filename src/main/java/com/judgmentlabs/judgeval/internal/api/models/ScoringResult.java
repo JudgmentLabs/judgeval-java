@@ -5,29 +5,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScoringResult {
     @JsonProperty("success")
+    @NotNull
     private Boolean success;
-
     @JsonProperty("scorers_data")
+    @NotNull
     private List<ScorerData> scorersData;
-
     @JsonProperty("name")
     private String name;
-
     @JsonProperty("data_object")
     private Object dataObject;
-
     @JsonProperty("trace_id")
     private String traceId;
-
     @JsonProperty("run_duration")
     private Double runDuration;
-
     @JsonProperty("evaluation_cost")
     private Double evaluationCost;
 
@@ -71,11 +69,11 @@ public class ScoringResult {
         return evaluationCost;
     }
 
-    public void setSuccess(Boolean success) {
+    public void setSuccess(@NotNull Boolean success) {
         this.success = success;
     }
 
-    public void setScorersData(List<ScorerData> scorersData) {
+    public void setScorersData(@NotNull List<ScorerData> scorersData) {
         this.scorersData = scorersData;
     }
 
@@ -101,13 +99,14 @@ public class ScoringResult {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         ScoringResult other = (ScoringResult) obj;
         return Objects.equals(success, other.success)
                 && Objects.equals(scorersData, other.scorersData)
-                && Objects.equals(name, other.name)
-                && Objects.equals(dataObject, other.dataObject)
+                && Objects.equals(name, other.name) && Objects.equals(dataObject, other.dataObject)
                 && Objects.equals(traceId, other.traceId)
                 && Objects.equals(runDuration, other.runDuration)
                 && Objects.equals(evaluationCost, other.evaluationCost)
@@ -116,14 +115,7 @@ public class ScoringResult {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                success,
-                scorersData,
-                name,
-                dataObject,
-                traceId,
-                runDuration,
-                evaluationCost,
-                Objects.hashCode(additionalProperties));
+        return Objects.hash(success, scorersData, name, dataObject, traceId, runDuration,
+                evaluationCost, Objects.hashCode(additionalProperties));
     }
 }

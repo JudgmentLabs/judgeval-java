@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ResolveProjectNameResponse {
     @JsonProperty("project_id")
+    @NotNull
     private String projectId;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -28,14 +31,16 @@ public class ResolveProjectNameResponse {
         return projectId;
     }
 
-    public void setProjectId(String projectId) {
+    public void setProjectId(@NotNull String projectId) {
         this.projectId = projectId;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         ResolveProjectNameResponse other = (ResolveProjectNameResponse) obj;
         return Objects.equals(projectId, other.projectId)
                 && Objects.equals(additionalProperties, other.additionalProperties);

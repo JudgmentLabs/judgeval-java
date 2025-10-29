@@ -1,21 +1,19 @@
 package com.judgmentlabs.judgeval.tracer;
 
-import java.util.Objects;
+import java.util.Optional;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Configuration for the Judgment Tracer that controls how tracing and evaluation behave.
- *
- * <p>This class encapsulates all configuration parameters needed to initialize a {@link Tracer}.
- *
- * <p>Example usage:
+ * <p>
+ * This class encapsulates all configuration parameters needed to initialize a {@link Tracer}.
+ * <p>
+ * Example usage:
  *
  * <pre>{@code
- * TracerConfiguration config = TracerConfiguration.builder()
- *         .projectName("my-project")
- *         .apiKey("your-api-key")
- *         .organizationId("your-org-id")
- *         .enableEvaluation(true)
- *         .build();
+ * TracerConfiguration config = TracerConfiguration.builder().projectName("my-project")
+ *         .apiKey("your-api-key").organizationId("your-org-id").enableEvaluation(true).build();
  *
  * Tracer tracer = Tracer.createWithConfiguration(config);
  * }</pre>
@@ -29,18 +27,18 @@ public final class TracerConfiguration {
     private final String apiUrl;
     private final boolean enableEvaluation;
 
-    private TracerConfiguration(Builder builder) {
-        this.projectName =
-                Objects.requireNonNull(builder.projectName, "Project name cannot be null").trim();
-        this.apiKey = Objects.requireNonNull(builder.apiKey, "API key cannot be null");
-        this.organizationId =
-                Objects.requireNonNull(builder.organizationId, "Organization ID cannot be null");
-        this.apiUrl = Objects.requireNonNull(builder.apiUrl, "API URL cannot be null");
+    private TracerConfiguration(@NotNull Builder builder) {
+        this.projectName = Optional.ofNullable(builder.projectName).map(String::trim)
+                .filter(name -> !name.isEmpty())
+                .orElseThrow(
+                        () -> new IllegalArgumentException("Project name cannot be null or empty"));
+        this.apiKey = Optional.ofNullable(builder.apiKey)
+                .orElseThrow(() -> new IllegalArgumentException("API key cannot be null"));
+        this.organizationId = Optional.ofNullable(builder.organizationId)
+                .orElseThrow(() -> new IllegalArgumentException("Organization ID cannot be null"));
+        this.apiUrl = Optional.ofNullable(builder.apiUrl)
+                .orElseThrow(() -> new IllegalArgumentException("API URL cannot be null"));
         this.enableEvaluation = builder.enableEvaluation;
-
-        if (this.projectName.isEmpty()) {
-            throw new IllegalArgumentException("Project name cannot be empty");
-        }
     }
 
     public String projectName() {
@@ -69,14 +67,13 @@ public final class TracerConfiguration {
 
     /**
      * Creates a default configuration with the given project name.
-     *
-     * <p>This method uses default values from environment variables:
-     *
+     * <p>
+     * This method uses default values from environment variables:
      * <ul>
-     *   <li>API Key: {@code Env.JUDGMENT_API_KEY}
-     *   <li>Organization ID: {@code Env.JUDGMENT_ORG_ID}
-     *   <li>API URL: {@code Env.JUDGMENT_API_URL}
-     *   <li>Evaluation: enabled
+     * <li>API Key: {@code Env.JUDGMENT_API_KEY}
+     * <li>Organization ID: {@code Env.JUDGMENT_ORG_ID}
+     * <li>API URL: {@code Env.JUDGMENT_API_URL}
+     * <li>Evaluation: enabled
      * </ul>
      *
      * @param projectName the name of the project
@@ -89,17 +86,13 @@ public final class TracerConfiguration {
 
     /**
      * Builder for creating TracerConfiguration instances.
-     *
-     * <p>Example usage:
+     * <p>
+     * Example usage:
      *
      * <pre>{@code
-     * TracerConfiguration config = TracerConfiguration.builder()
-     *         .projectName("my-project")
-     *         .apiKey("custom-api-key")
-     *         .organizationId("custom-org-id")
-     *         .apiUrl("https://custom-api.judgmentlabs.ai")
-     *         .enableEvaluation(false)
-     *         .build();
+     * TracerConfiguration config = TracerConfiguration.builder().projectName("my-project")
+     *         .apiKey("custom-api-key").organizationId("custom-org-id")
+     *         .apiUrl("https://custom-api.judgmentlabs.ai").enableEvaluation(false).build();
      * }</pre>
      */
     public static final class Builder {
@@ -109,22 +102,22 @@ public final class TracerConfiguration {
         private String apiUrl = com.judgmentlabs.judgeval.Env.JUDGMENT_API_URL;
         private boolean enableEvaluation = true;
 
-        public Builder projectName(String projectName) {
+        public Builder projectName(@NotNull String projectName) {
             this.projectName = projectName;
             return this;
         }
 
-        public Builder apiKey(String apiKey) {
+        public Builder apiKey(@NotNull String apiKey) {
             this.apiKey = apiKey;
             return this;
         }
 
-        public Builder organizationId(String organizationId) {
+        public Builder organizationId(@NotNull String organizationId) {
             this.organizationId = organizationId;
             return this;
         }
 
-        public Builder apiUrl(String apiUrl) {
+        public Builder apiUrl(@NotNull String apiUrl) {
             this.apiUrl = apiUrl;
             return this;
         }

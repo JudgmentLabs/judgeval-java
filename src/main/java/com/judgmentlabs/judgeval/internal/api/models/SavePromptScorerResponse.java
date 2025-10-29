@@ -4,16 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SavePromptScorerResponse {
-    @JsonProperty("message")
-    private String message;
-
-    @JsonProperty("name")
-    private String name;
+    @JsonProperty("scorer_response")
+    @NotNull
+    private PromptScorer scorerResponse;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -27,34 +27,27 @@ public class SavePromptScorerResponse {
         additionalProperties.put(name, value);
     }
 
-    public String getMessage() {
-        return message;
+    public PromptScorer getScorerResponse() {
+        return scorerResponse;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setScorerResponse(@NotNull PromptScorer scorerResponse) {
+        this.scorerResponse = scorerResponse;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         SavePromptScorerResponse other = (SavePromptScorerResponse) obj;
-        return Objects.equals(message, other.message)
-                && Objects.equals(name, other.name)
+        return Objects.equals(scorerResponse, other.scorerResponse)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(message, name, Objects.hashCode(additionalProperties));
+        return Objects.hash(scorerResponse, Objects.hashCode(additionalProperties));
     }
 }

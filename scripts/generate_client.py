@@ -193,19 +193,25 @@ def get_java_type(schema: Dict[str, Any]) -> str:
 
 
 def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
+    required_fields = set(schema.get("required", []))
+    has_required = bool(required_fields)
+    
     lines = [
         "package com.judgmentlabs.judgeval.internal.api.models;",
         "",
-        "import com.fasterxml.jackson.annotation.JsonProperty;",
-        "import com.fasterxml.jackson.annotation.JsonAnySetter;",
         "import com.fasterxml.jackson.annotation.JsonAnyGetter;",
+        "import com.fasterxml.jackson.annotation.JsonAnySetter;",
+        "import com.fasterxml.jackson.annotation.JsonProperty;",
+        "import java.util.HashMap;",
         "import java.util.List;",
         "import java.util.Map;",
-        "import java.util.HashMap;",
         "import java.util.Objects;",
-        "",
-        f"public class {className} {{",
     ]
+    
+    if has_required:
+        lines.append("import org.jetbrains.annotations.NotNull;")
+    
+    lines.extend(["", f"public class {className} {{"])
 
     fields = []
     getters = []
@@ -217,13 +223,14 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
         for field_name, property_schema in schema["properties"].items():
             java_type = get_java_type(property_schema)
             camel_case_name = to_camel_case(field_name)
+            is_required = field_name in required_fields
 
-            fields.extend(
-                [
-                    f'    @JsonProperty("{field_name}")',
-                    f"    private {java_type} {camel_case_name};",
-                ]
-            )
+            field_lines = [f'    @JsonProperty("{field_name}")']
+            if is_required:
+                field_lines.append("    @NotNull")
+            field_lines.append(f"    private {java_type} {camel_case_name};")
+            
+            fields.extend(field_lines)
 
             getters.extend(
                 [
@@ -233,9 +240,10 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
                 ]
             )
 
+            setter_param = f"@NotNull {java_type} {camel_case_name}" if is_required else f"{java_type} {camel_case_name}"
             setters.extend(
                 [
-                    f"    public void set{to_class_name(camel_case_name)}({java_type} {camel_case_name}) {{",
+                    f"    public void set{to_class_name(camel_case_name)}({setter_param}) {{",
                     f"        this.{camel_case_name} = {camel_case_name};",
                     "    }",
                 ]
@@ -309,10 +317,10 @@ def generate_method_signature(
 
     for param in query_params:
         if param["required"]:
-            params.append(f"String {param['name']}")
+            params.append(f"@NotNull String {param['name']}")
 
     if request_type:
-        params.append(f"{request_type} payload")
+        params.append(f"@NotNull {request_type} payload")
 
     for param in query_params:
         if not param["required"]:
@@ -344,12 +352,9 @@ def generate_method_body(
             if param["required"]:
                 lines.append(f'        queryParams.put("{param_name}", {param_name});')
             else:
-                lines.extend(
-                    [
-                        f"        if ({param_name} != null) {{",
-                        f'            queryParams.put("{param_name}", {param_name});',
-                        "        }",
-                    ]
+                param_key = param["name"]
+                lines.append(
+                    f'        Optional.ofNullable({param_name}).ifPresent(v -> queryParams.put("{param_key}", v));'
                 )
 
     lines.append(
@@ -422,8 +427,8 @@ def generate_client_class(
     imports = [
         "package com.judgmentlabs.judgeval.internal.api;",
         "",
-        "import com.fasterxml.jackson.databind.ObjectMapper;",
         "import com.fasterxml.jackson.core.type.TypeReference;",
+        "import com.fasterxml.jackson.databind.ObjectMapper;",
         "import java.io.IOException;",
         "import java.net.URI;",
         "import java.net.http.HttpClient;",
@@ -431,6 +436,9 @@ def generate_client_class(
         "import java.net.http.HttpResponse;",
         "import java.util.HashMap;",
         "import java.util.Map;",
+        "import java.util.Objects;",
+        "import java.util.Optional;",
+        "import org.jetbrains.annotations.NotNull;",
         "import com.judgmentlabs.judgeval.internal.api.models.*;",
     ]
 
@@ -446,10 +454,10 @@ def generate_client_class(
         "    private final String apiKey;",
         "    private final String organizationId;",
         "",
-        f"    public {className}(String baseUrl, String apiKey, String organizationId) {{",
-        "        this.baseUrl = baseUrl;",
-        "        this.apiKey = apiKey;",
-        "        this.organizationId = organizationId;",
+        f"    public {className}(@NotNull String baseUrl, @NotNull String apiKey, @NotNull String organizationId) {{",
+        "        this.baseUrl = Objects.requireNonNull(baseUrl, \"Base URL cannot be null\");",
+        "        this.apiKey = Objects.requireNonNull(apiKey, \"API key cannot be null\");",
+        "        this.organizationId = Objects.requireNonNull(organizationId, \"Organization ID cannot be null\");",
         "        this.client = HttpClient.newBuilder()",
         "                .version(HttpClient.Version.HTTP_1_1)",
         "                .build();",
@@ -473,9 +481,6 @@ def generate_client_class(
         "    }",
         "",
         "    private String[] buildHeaders() {",
-        "        if (apiKey == null || organizationId == null) {",
-        '            throw new IllegalArgumentException("API key and organization ID cannot be null");',
-        "        }",
         "        return new String[] {",
         '            "Content-Type",',
         '            "application/json",',
@@ -489,42 +494,39 @@ def generate_client_class(
     ]
 
     throws_clause = "" if is_async else " throws IOException"
-    lines.extend(
-        [
-            f"    private <T> T handleResponse(HttpResponse<String> response){throws_clause} {{",
-            "        if (response.statusCode() >= 400) {",
-            '            throw new RuntimeException("HTTP Error: " + response.statusCode() + " - " + response.body());',
-            "        }",
-            "        try {",
-            "            return mapper.readValue(response.body(), new TypeReference<T>() {});",
-            "        } catch (Exception e) {",
-            '            throw new RuntimeException("Failed to parse response", e);',
-            "        }",
-            "    }",
-            "",
-        ]
-    )
+    lines.append(f"    private <T> T handleResponse(HttpResponse<String> response){throws_clause} {{")
+    lines.append("        if (response.statusCode() >= 400) {")
+    lines.append(f'            throw new RuntimeException("HTTP Error: " + response.statusCode() + " - " + response.body());')
+    lines.append("        }")
+    lines.append("        try {")
+    lines.append("            return mapper.readValue(response.body(), new TypeReference<T>() {});")
+    lines.append("        } catch (Exception e) {")
+    lines.append('            throw new RuntimeException("Failed to parse response", e);')
+    lines.append("        }")
+    lines.append("    }")
+    lines.append("")
 
     for method_info in methods:
-        signature = generate_method_signature(
-            method_info["name"],
-            method_info["request_type"],
-            method_info["query_params"],
-            method_info["response_type"],
-            is_async,
+        lines.append(
+            generate_method_signature(
+                method_info["name"],
+                method_info["request_type"],
+                method_info["query_params"],
+                method_info["response_type"],
+                is_async,
+            )
         )
-        lines.append(signature)
-
-        body = generate_method_body(
-            method_info["name"],
-            method_info["path"],
-            method_info["method"],
-            method_info["request_type"],
-            method_info["query_params"],
-            method_info["response_type"],
-            is_async,
+        lines.append(
+            generate_method_body(
+                method_info["name"],
+                method_info["path"],
+                method_info["method"],
+                method_info["request_type"],
+                method_info["query_params"],
+                method_info["response_type"],
+                is_async,
+            )
         )
-        lines.append(body)
         lines.append("    }")
         lines.append("")
 

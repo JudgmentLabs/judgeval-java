@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerExistsRequest {
     @JsonProperty("name")
+    @NotNull
     private String name;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
@@ -28,14 +31,16 @@ public class ScorerExistsRequest {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         this.name = name;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         ScorerExistsRequest other = (ScorerExistsRequest) obj;
         return Objects.equals(name, other.name)
                 && Objects.equals(additionalProperties, other.additionalProperties);
