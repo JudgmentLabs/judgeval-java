@@ -13,10 +13,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class EvalResultsFetch {
     @JsonProperty("experiment_run_id")
     @NotNull
-    private String experimentRunId;
+    private String              experimentRunId;
     @JsonProperty("project_name")
     @NotNull
-    private String projectName;
+    private String              projectName;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 

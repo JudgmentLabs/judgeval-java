@@ -1,7 +1,7 @@
 package com.judgmentlabs.judgeval.exceptions;
 
 public class JudgmentAPIError extends RuntimeException {
-    private final int statusCode;
+    private final int    statusCode;
     private final String detail;
 
     public JudgmentAPIError(int statusCode, String detail) {

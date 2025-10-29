@@ -13,28 +13,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ExampleEvaluationRun {
     @JsonProperty("id")
-    private String id;
+    private String              id;
     @JsonProperty("project_name")
     @NotNull
-    private String projectName;
+    private String              projectName;
     @JsonProperty("eval_name")
     @NotNull
-    private String evalName;
+    private String              evalName;
     @JsonProperty("custom_scorers")
-    private List<BaseScorer> customScorers;
+    private List<BaseScorer>    customScorers;
     @JsonProperty("judgment_scorers")
-    private List<ScorerConfig> judgmentScorers;
+    private List<ScorerConfig>  judgmentScorers;
     @JsonProperty("model")
-    private String model;
+    private String              model;
     @JsonProperty("created_at")
-    private String createdAt;
+    private String              createdAt;
     @JsonProperty("examples")
     @NotNull
-    private List<Example> examples;
+    private List<Example>       examples;
     @JsonProperty("trace_span_id")
-    private String traceSpanId;
+    private String              traceSpanId;
     @JsonProperty("trace_id")
-    private String traceId;
+    private String              traceId;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -136,20 +136,16 @@ public class ExampleEvaluationRun {
             return false;
         ExampleEvaluationRun other = (ExampleEvaluationRun) obj;
         return Objects.equals(id, other.id) && Objects.equals(projectName, other.projectName)
-                && Objects.equals(evalName, other.evalName)
-                && Objects.equals(customScorers, other.customScorers)
-                && Objects.equals(judgmentScorers, other.judgmentScorers)
-                && Objects.equals(model, other.model) && Objects.equals(createdAt, other.createdAt)
-                && Objects.equals(examples, other.examples)
-                && Objects.equals(traceSpanId, other.traceSpanId)
-                && Objects.equals(traceId, other.traceId)
+                && Objects.equals(evalName, other.evalName) && Objects.equals(customScorers, other.customScorers)
+                && Objects.equals(judgmentScorers, other.judgmentScorers) && Objects.equals(model, other.model)
+                && Objects.equals(createdAt, other.createdAt) && Objects.equals(examples, other.examples)
+                && Objects.equals(traceSpanId, other.traceSpanId) && Objects.equals(traceId, other.traceId)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, projectName, evalName, customScorers, judgmentScorers, model,
-                createdAt,
-                examples, traceSpanId, traceId, Objects.hashCode(additionalProperties));
+        return Objects.hash(id, projectName, evalName, customScorers, judgmentScorers, model, createdAt, examples,
+                traceSpanId, traceId, Objects.hashCode(additionalProperties));
     }
 }

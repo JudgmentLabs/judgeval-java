@@ -14,19 +14,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ScorerConfig {
     @JsonProperty("score_type")
     @NotNull
-    private String scoreType;
+    private String              scoreType;
     @JsonProperty("name")
-    private String name;
+    private String              name;
     @JsonProperty("threshold")
-    private Double threshold;
+    private Double              threshold;
     @JsonProperty("model")
-    private String model;
+    private String              model;
     @JsonProperty("strict_mode")
-    private Boolean strictMode;
+    private Boolean             strictMode;
     @JsonProperty("required_params")
-    private List<String> requiredParams;
+    private List<String>        requiredParams;
     @JsonProperty("kwargs")
-    private Object kwargs;
+    private Object              kwargs;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -105,8 +105,7 @@ public class ScorerConfig {
         ScorerConfig other = (ScorerConfig) obj;
         return Objects.equals(scoreType, other.scoreType) && Objects.equals(name, other.name)
                 && Objects.equals(threshold, other.threshold) && Objects.equals(model, other.model)
-                && Objects.equals(strictMode, other.strictMode)
-                && Objects.equals(requiredParams, other.requiredParams)
+                && Objects.equals(strictMode, other.strictMode) && Objects.equals(requiredParams, other.requiredParams)
                 && Objects.equals(kwargs, other.kwargs)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }

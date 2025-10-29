@@ -11,9 +11,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FetchPromptScorersRequest {
     @JsonProperty("names")
-    private List<String> names;
+    private List<String>        names;
     @JsonProperty("is_trace")
-    private Boolean isTrace;
+    private Boolean             isTrace;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 

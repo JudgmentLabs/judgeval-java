@@ -7,8 +7,10 @@ public class Example extends com.judgmentlabs.judgeval.internal.api.models.Examp
 
     public Example() {
         super();
-        setExampleId(UUID.randomUUID().toString());
-        setCreatedAt(Instant.now().toString());
+        setExampleId(UUID.randomUUID()
+                .toString());
+        setCreatedAt(Instant.now()
+                .toString());
         setName(null);
     }
 

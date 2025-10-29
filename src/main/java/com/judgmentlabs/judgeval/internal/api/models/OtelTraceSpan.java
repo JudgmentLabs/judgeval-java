@@ -14,45 +14,45 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class OtelTraceSpan {
     @JsonProperty("organization_id")
     @NotNull
-    private String organizationId;
+    private String              organizationId;
     @JsonProperty("project_id")
-    private String projectId;
+    private String              projectId;
     @JsonProperty("user_id")
     @NotNull
-    private String userId;
+    private String              userId;
     @JsonProperty("timestamp")
     @NotNull
-    private String timestamp;
+    private String              timestamp;
     @JsonProperty("trace_id")
     @NotNull
-    private String traceId;
+    private String              traceId;
     @JsonProperty("span_id")
     @NotNull
-    private String spanId;
+    private String              spanId;
     @JsonProperty("parent_span_id")
-    private String parentSpanId;
+    private String              parentSpanId;
     @JsonProperty("trace_state")
-    private String traceState;
+    private String              traceState;
     @JsonProperty("span_name")
-    private String spanName;
+    private String              spanName;
     @JsonProperty("span_kind")
-    private String spanKind;
+    private String              spanKind;
     @JsonProperty("service_name")
-    private String serviceName;
+    private String              serviceName;
     @JsonProperty("resource_attributes")
-    private Object resourceAttributes;
+    private Object              resourceAttributes;
     @JsonProperty("span_attributes")
-    private Object spanAttributes;
+    private Object              spanAttributes;
     @JsonProperty("duration")
-    private Integer duration;
+    private Integer             duration;
     @JsonProperty("status_code")
-    private Integer statusCode;
+    private Integer             statusCode;
     @JsonProperty("status_message")
-    private String statusMessage;
+    private String              statusMessage;
     @JsonProperty("events")
-    private List<Object> events;
+    private List<Object>        events;
     @JsonProperty("links")
-    private List<Object> links;
+    private List<Object>        links;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -217,32 +217,24 @@ public class OtelTraceSpan {
         if (obj == null || getClass() != obj.getClass())
             return false;
         OtelTraceSpan other = (OtelTraceSpan) obj;
-        return Objects.equals(organizationId, other.organizationId)
-                && Objects.equals(projectId, other.projectId)
-                && Objects.equals(userId, other.userId)
-                && Objects.equals(timestamp, other.timestamp)
-                && Objects.equals(traceId, other.traceId)
-                && Objects.equals(spanId, other.spanId)
-                && Objects.equals(parentSpanId, other.parentSpanId)
-                && Objects.equals(traceState, other.traceState)
-                && Objects.equals(spanName, other.spanName)
-                && Objects.equals(spanKind, other.spanKind)
+        return Objects.equals(organizationId, other.organizationId) && Objects.equals(projectId, other.projectId)
+                && Objects.equals(userId, other.userId) && Objects.equals(timestamp, other.timestamp)
+                && Objects.equals(traceId, other.traceId) && Objects.equals(spanId, other.spanId)
+                && Objects.equals(parentSpanId, other.parentSpanId) && Objects.equals(traceState, other.traceState)
+                && Objects.equals(spanName, other.spanName) && Objects.equals(spanKind, other.spanKind)
                 && Objects.equals(serviceName, other.serviceName)
                 && Objects.equals(resourceAttributes, other.resourceAttributes)
-                && Objects.equals(spanAttributes, other.spanAttributes)
-                && Objects.equals(duration, other.duration)
-                && Objects.equals(statusCode, other.statusCode)
-                && Objects.equals(statusMessage, other.statusMessage)
+                && Objects.equals(spanAttributes, other.spanAttributes) && Objects.equals(duration, other.duration)
+                && Objects.equals(statusCode, other.statusCode) && Objects.equals(statusMessage, other.statusMessage)
                 && Objects.equals(events, other.events) && Objects.equals(links, other.links)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(organizationId, projectId, userId, timestamp, traceId, spanId,
-                parentSpanId,
-                traceState, spanName, spanKind, serviceName, resourceAttributes, spanAttributes,
-                duration,
-                statusCode, statusMessage, events, links, Objects.hashCode(additionalProperties));
+        return Objects.hash(organizationId, projectId, userId, timestamp, traceId, spanId, parentSpanId, traceState,
+                spanName, spanKind, serviceName, resourceAttributes, spanAttributes, duration, statusCode,
+                statusMessage,
+                events, links, Objects.hashCode(additionalProperties));
     }
 }

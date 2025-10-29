@@ -14,20 +14,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ScoringResult {
     @JsonProperty("success")
     @NotNull
-    private Boolean success;
+    private Boolean             success;
     @JsonProperty("scorers_data")
     @NotNull
-    private List<ScorerData> scorersData;
+    private List<ScorerData>    scorersData;
     @JsonProperty("name")
-    private String name;
+    private String              name;
     @JsonProperty("data_object")
-    private Object dataObject;
+    private Object              dataObject;
     @JsonProperty("trace_id")
-    private String traceId;
+    private String              traceId;
     @JsonProperty("run_duration")
-    private Double runDuration;
+    private Double              runDuration;
     @JsonProperty("evaluation_cost")
-    private Double evaluationCost;
+    private Double              evaluationCost;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -104,18 +104,16 @@ public class ScoringResult {
         if (obj == null || getClass() != obj.getClass())
             return false;
         ScoringResult other = (ScoringResult) obj;
-        return Objects.equals(success, other.success)
-                && Objects.equals(scorersData, other.scorersData)
+        return Objects.equals(success, other.success) && Objects.equals(scorersData, other.scorersData)
                 && Objects.equals(name, other.name) && Objects.equals(dataObject, other.dataObject)
-                && Objects.equals(traceId, other.traceId)
-                && Objects.equals(runDuration, other.runDuration)
+                && Objects.equals(traceId, other.traceId) && Objects.equals(runDuration, other.runDuration)
                 && Objects.equals(evaluationCost, other.evaluationCost)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(success, scorersData, name, dataObject, traceId, runDuration,
-                evaluationCost, Objects.hashCode(additionalProperties));
+        return Objects.hash(success, scorersData, name, dataObject, traceId, runDuration, evaluationCost,
+                Objects.hashCode(additionalProperties));
     }
 }

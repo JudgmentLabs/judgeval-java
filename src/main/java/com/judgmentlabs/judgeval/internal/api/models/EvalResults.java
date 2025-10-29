@@ -17,7 +17,7 @@ public class EvalResults {
     private List<ScoringResult> results;
     @JsonProperty("run")
     @NotNull
-    private Object run;
+    private Object              run;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 

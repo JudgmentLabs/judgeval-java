@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ScorerExistsResponse {
     @JsonProperty("exists")
     @NotNull
-    private Boolean exists;
+    private Boolean             exists;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 

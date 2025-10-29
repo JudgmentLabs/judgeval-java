@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ScorerExistsRequest {
     @JsonProperty("name")
     @NotNull
-    private String name;
+    private String              name;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -42,8 +42,7 @@ public class ScorerExistsRequest {
         if (obj == null || getClass() != obj.getClass())
             return false;
         ScorerExistsRequest other = (ScorerExistsRequest) obj;
-        return Objects.equals(name, other.name)
-                && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(name, other.name) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override

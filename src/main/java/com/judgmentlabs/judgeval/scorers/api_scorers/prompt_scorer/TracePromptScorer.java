@@ -11,17 +11,14 @@ import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
 public class TracePromptScorer extends BasePromptScorer {
 
-    public TracePromptScorer(String name, String prompt, double threshold,
-            Map<String, Double> options) {
-        super(APIScorerType.TRACE_PROMPT_SCORER, name, prompt, threshold, options,
-                Env.JUDGMENT_API_KEY,
+    public TracePromptScorer(String name, String prompt, double threshold, Map<String, Double> options) {
+        super(APIScorerType.TRACE_PROMPT_SCORER, name, prompt, threshold, options, Env.JUDGMENT_API_KEY,
                 Env.JUDGMENT_ORG_ID);
     }
 
-    public TracePromptScorer(String name, String prompt, double threshold,
-            Map<String, Double> options, String judgmentApiKey, String organizationId) {
-        super(APIScorerType.TRACE_PROMPT_SCORER, name, prompt, threshold, options, judgmentApiKey,
-                organizationId);
+    public TracePromptScorer(String name, String prompt, double threshold, Map<String, Double> options,
+            String judgmentApiKey, String organizationId) {
+        super(APIScorerType.TRACE_PROMPT_SCORER, name, prompt, threshold, options, judgmentApiKey, organizationId);
     }
 
     public static TracePromptScorer get(String name) {
@@ -29,12 +26,11 @@ public class TracePromptScorer extends BasePromptScorer {
     }
 
     public static TracePromptScorer get(String name, String judgmentApiKey, String organizationId) {
-        com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorerConfig =
-                fetchPromptScorer(name, judgmentApiKey, organizationId);
+        com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorerConfig = fetchPromptScorer(name,
+                judgmentApiKey, organizationId);
 
         if (!Boolean.TRUE.equals(scorerConfig.getIsTrace())) {
-            throw new JudgmentAPIError(400,
-                    "Scorer with name " + name + " is not a TracePromptScorer");
+            throw new JudgmentAPIError(400, "Scorer with name " + name + " is not a TracePromptScorer");
         }
 
         Map<String, Double> options = null;
@@ -52,8 +48,9 @@ public class TracePromptScorer extends BasePromptScorer {
         }
 
         return new TracePromptScorer(name, scorerConfig.getPrompt(),
-                Optional.ofNullable(scorerConfig.getThreshold()).orElse(0.5), options,
-                judgmentApiKey, organizationId);
+                Optional.ofNullable(scorerConfig.getThreshold())
+                        .orElse(0.5),
+                options, judgmentApiKey, organizationId);
     }
 
     @Override

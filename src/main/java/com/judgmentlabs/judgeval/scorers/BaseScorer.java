@@ -3,8 +3,8 @@ package com.judgmentlabs.judgeval.scorers;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
 /**
- * Minimal interface for scorers used by BaseTracer. Only requires the essential methods needed for
- * evaluation.
+ * Minimal interface for scorers used by BaseTracer. Only requires the essential
+ * methods needed for evaluation.
  */
 public interface BaseScorer {
     /**

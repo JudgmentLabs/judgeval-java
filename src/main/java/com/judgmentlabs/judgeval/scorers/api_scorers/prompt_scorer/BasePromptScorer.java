@@ -15,13 +15,12 @@ import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsResponse;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
 public abstract class BasePromptScorer extends APIScorer {
-    protected String prompt;
+    protected String              prompt;
     protected Map<String, Double> options;
-    protected String judgmentApiKey;
-    protected String organizationId;
+    protected String              judgmentApiKey;
+    protected String              organizationId;
 
-    protected BasePromptScorer(APIScorerType scoreType, String name, String prompt,
-            double threshold,
+    protected BasePromptScorer(APIScorerType scoreType, String name, String prompt, double threshold,
             Map<String, Double> options, String judgmentApiKey, String organizationId) {
         super(scoreType);
         this.prompt = prompt;
@@ -34,8 +33,7 @@ public abstract class BasePromptScorer extends APIScorer {
 
     public static boolean scorerExists(String name, String judgmentApiKey, String organizationId) {
         try {
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             ScorerExistsRequest request = new ScorerExistsRequest();
             request.setName(name);
             ScorerExistsResponse response = client.scorerExists(request);
@@ -45,11 +43,10 @@ public abstract class BasePromptScorer extends APIScorer {
         }
     }
 
-    public static com.judgmentlabs.judgeval.internal.api.models.PromptScorer fetchPromptScorer(
-            String name, String judgmentApiKey, String organizationId) {
+    public static com.judgmentlabs.judgeval.internal.api.models.PromptScorer fetchPromptScorer(String name,
+            String judgmentApiKey, String organizationId) {
         try {
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             FetchPromptScorersRequest request = new FetchPromptScorersRequest();
             request.setNames(java.util.Collections.singletonList(name));
 
@@ -59,11 +56,10 @@ public abstract class BasePromptScorer extends APIScorer {
                     .map(FetchPromptScorersResponse::getScorers)
                     .filter(scorers -> scorers != null && !scorers.isEmpty())
                     .map(scorers -> scorers.get(0))
-                    .orElseThrow(() -> new JudgmentAPIError(404,
-                            "Failed to fetch prompt scorer '" + name + "': not found"));
+                    .orElseThrow(
+                            () -> new JudgmentAPIError(404, "Failed to fetch prompt scorer '" + name + "': not found"));
         } catch (Exception e) {
-            throw new JudgmentAPIError(500,
-                    "Failed to fetch prompt scorer '" + name + "': " + e.getMessage());
+            throw new JudgmentAPIError(500, "Failed to fetch prompt scorer '" + name + "': " + e.getMessage());
         }
     }
 
@@ -76,7 +72,9 @@ public abstract class BasePromptScorer extends APIScorer {
     }
 
     public Map<String, Double> getOptions() {
-        return Optional.ofNullable(options).map(HashMap::new).orElse(null);
+        return Optional.ofNullable(options)
+                .map(HashMap::new)
+                .orElse(null);
     }
 
     public String getScorerName() {
@@ -96,8 +94,7 @@ public abstract class BasePromptScorer extends APIScorer {
 
     @Override
     public String toString() {
-        return "PromptScorer(name=" + getName() + ", prompt=" + prompt + ", threshold="
-                + getThreshold()
+        return "PromptScorer(name=" + getName() + ", prompt=" + prompt + ", threshold=" + getThreshold()
                 + ", options=" + options + ")";
     }
 }

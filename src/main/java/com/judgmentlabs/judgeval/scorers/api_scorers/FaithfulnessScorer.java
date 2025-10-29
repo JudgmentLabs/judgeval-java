@@ -20,6 +20,7 @@ public class FaithfulnessScorer extends APIScorer {
     }
 
     public static FaithfulnessScorer create(double threshold) {
-        return builder().threshold(threshold).build();
+        return builder().threshold(threshold)
+                .build();
     }
 }

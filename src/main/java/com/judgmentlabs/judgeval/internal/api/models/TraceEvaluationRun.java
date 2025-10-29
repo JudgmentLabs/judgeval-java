@@ -13,28 +13,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TraceEvaluationRun {
     @JsonProperty("id")
-    private String id;
+    private String              id;
     @JsonProperty("project_name")
     @NotNull
-    private String projectName;
+    private String              projectName;
     @JsonProperty("eval_name")
     @NotNull
-    private String evalName;
+    private String              evalName;
     @JsonProperty("custom_scorers")
-    private List<BaseScorer> customScorers;
+    private List<BaseScorer>    customScorers;
     @JsonProperty("judgment_scorers")
-    private List<ScorerConfig> judgmentScorers;
+    private List<ScorerConfig>  judgmentScorers;
     @JsonProperty("model")
-    private String model;
+    private String              model;
     @JsonProperty("created_at")
-    private String createdAt;
+    private String              createdAt;
     @JsonProperty("trace_and_span_ids")
     @NotNull
-    private List<List<Object>> traceAndSpanIds;
+    private List<List<Object>>  traceAndSpanIds;
     @JsonProperty("is_offline")
-    private Boolean isOffline;
+    private Boolean             isOffline;
     @JsonProperty("is_bucket_run")
-    private Boolean isBucketRun;
+    private Boolean             isBucketRun;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -136,20 +136,16 @@ public class TraceEvaluationRun {
             return false;
         TraceEvaluationRun other = (TraceEvaluationRun) obj;
         return Objects.equals(id, other.id) && Objects.equals(projectName, other.projectName)
-                && Objects.equals(evalName, other.evalName)
-                && Objects.equals(customScorers, other.customScorers)
-                && Objects.equals(judgmentScorers, other.judgmentScorers)
-                && Objects.equals(model, other.model) && Objects.equals(createdAt, other.createdAt)
-                && Objects.equals(traceAndSpanIds, other.traceAndSpanIds)
-                && Objects.equals(isOffline, other.isOffline)
-                && Objects.equals(isBucketRun, other.isBucketRun)
+                && Objects.equals(evalName, other.evalName) && Objects.equals(customScorers, other.customScorers)
+                && Objects.equals(judgmentScorers, other.judgmentScorers) && Objects.equals(model, other.model)
+                && Objects.equals(createdAt, other.createdAt) && Objects.equals(traceAndSpanIds, other.traceAndSpanIds)
+                && Objects.equals(isOffline, other.isOffline) && Objects.equals(isBucketRun, other.isBucketRun)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, projectName, evalName, customScorers, judgmentScorers, model,
-                createdAt,
+        return Objects.hash(id, projectName, evalName, customScorers, judgmentScorers, model, createdAt,
                 traceAndSpanIds, isOffline, isBucketRun, Objects.hashCode(additionalProperties));
     }
 }

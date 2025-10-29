@@ -2,7 +2,8 @@ package com.judgmentlabs.judgeval;
 
 public final class Version {
 
-    private Version() {}
+    private Version() {
+    }
 
     /**
      * Gets the current SDK version.
@@ -11,8 +12,6 @@ public final class Version {
      */
     public static String getVersion() {
         Package pkg = Version.class.getPackage();
-        return (pkg != null && pkg.getImplementationVersion() != null)
-                ? pkg.getImplementationVersion()
-                : "unknown";
+        return (pkg != null && pkg.getImplementationVersion() != null) ? pkg.getImplementationVersion() : "unknown";
     }
 }

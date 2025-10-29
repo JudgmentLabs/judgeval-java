@@ -10,11 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Example {
     @JsonProperty("example_id")
-    private String exampleId;
+    private String              exampleId;
     @JsonProperty("created_at")
-    private String createdAt;
+    private String              createdAt;
     @JsonProperty("name")
-    private String name;
+    private String              name;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -59,10 +59,8 @@ public class Example {
         if (obj == null || getClass() != obj.getClass())
             return false;
         Example other = (Example) obj;
-        return Objects.equals(exampleId, other.exampleId)
-                && Objects.equals(createdAt, other.createdAt)
-                && Objects.equals(name, other.name)
-                && Objects.equals(additionalProperties, other.additionalProperties);
+        return Objects.equals(exampleId, other.exampleId) && Objects.equals(createdAt, other.createdAt)
+                && Objects.equals(name, other.name) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override

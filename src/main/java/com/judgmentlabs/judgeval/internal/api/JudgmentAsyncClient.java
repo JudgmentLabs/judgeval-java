@@ -16,19 +16,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.judgmentlabs.judgeval.internal.api.models.*;
 
 public class JudgmentAsyncClient {
-    private final HttpClient client;
+    private final HttpClient   client;
     private final ObjectMapper mapper;
-    private final String baseUrl;
-    private final String apiKey;
-    private final String organizationId;
+    private final String       baseUrl;
+    private final String       apiKey;
+    private final String       organizationId;
 
-    public JudgmentAsyncClient(@NotNull String baseUrl, @NotNull String apiKey,
-            @NotNull String organizationId) {
+    public JudgmentAsyncClient(@NotNull String baseUrl, @NotNull String apiKey, @NotNull String organizationId) {
         this.baseUrl = Objects.requireNonNull(baseUrl, "Base URL cannot be null");
         this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");
-        this.organizationId =
-                Objects.requireNonNull(organizationId, "Organization ID cannot be null");
-        this.client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+        this.organizationId = Objects.requireNonNull(organizationId, "Organization ID cannot be null");
+        this.client = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .build();
         this.mapper = new ObjectMapper();
     }
 
@@ -36,10 +36,10 @@ public class JudgmentAsyncClient {
         StringBuilder url = new StringBuilder(baseUrl).append(path);
         if (!queryParams.isEmpty()) {
             url.append("?");
-            String queryString =
-                    queryParams.entrySet().stream()
-                            .map(entry -> entry.getKey() + "=" + entry.getValue())
-                            .reduce("", (a, b) -> a.isEmpty() ? b : a + "&" + b);
+            String queryString = queryParams.entrySet()
+                    .stream()
+                    .map(entry -> entry.getKey() + "=" + entry.getValue())
+                    .reduce("", (a, b) -> a.isEmpty() ? b : a + "&" + b);
             url.append(queryString);
         }
         return url.toString();
@@ -50,18 +50,17 @@ public class JudgmentAsyncClient {
     }
 
     private String[] buildHeaders() {
-        return new String[] {"Content-Type", "application/json", "Authorization",
-                "Bearer " + apiKey,
-                "X-Organization-Id", organizationId};
+        return new String[] { "Content-Type", "application/json", "Authorization", "Bearer " + apiKey,
+                "X-Organization-Id", organizationId };
     }
 
     private <T> T handleResponse(HttpResponse<String> response) {
         if (response.statusCode() >= 400) {
-            throw new RuntimeException(
-                    "HTTP Error: " + response.statusCode() + " - " + response.body());
+            throw new RuntimeException("HTTP Error: " + response.statusCode() + " - " + response.body());
         }
         try {
-            return mapper.readValue(response.body(), new TypeReference<T>() {});
+            return mapper.readValue(response.body(), new TypeReference<T>() {
+            });
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse response", e);
         }
@@ -75,9 +74,11 @@ public class JudgmentAsyncClient {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize payload", e);
         }
-        HttpRequest request =
-                HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                        .uri(URI.create(url)).headers(buildHeaders()).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
@@ -90,9 +91,11 @@ public class JudgmentAsyncClient {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize payload", e);
         }
-        HttpRequest request =
-                HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                        .uri(URI.create(url)).headers(buildHeaders()).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
@@ -105,15 +108,16 @@ public class JudgmentAsyncClient {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize payload", e);
         }
-        HttpRequest request =
-                HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                        .uri(URI.create(url)).headers(buildHeaders()).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<ScorerExistsResponse> scorerExists(
-            @NotNull ScorerExistsRequest payload) {
+    public CompletableFuture<ScorerExistsResponse> scorerExists(@NotNull ScorerExistsRequest payload) {
         String url = buildUrl("/scorer_exists/");
         String jsonPayload;
         try {
@@ -121,15 +125,16 @@ public class JudgmentAsyncClient {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize payload", e);
         }
-        HttpRequest request =
-                HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                        .uri(URI.create(url)).headers(buildHeaders()).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<SavePromptScorerResponse> saveScorer(
-            @NotNull SavePromptScorerRequest payload) {
+    public CompletableFuture<SavePromptScorerResponse> saveScorer(@NotNull SavePromptScorerRequest payload) {
         String url = buildUrl("/save_scorer/");
         String jsonPayload;
         try {
@@ -137,15 +142,16 @@ public class JudgmentAsyncClient {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize payload", e);
         }
-        HttpRequest request =
-                HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                        .uri(URI.create(url)).headers(buildHeaders()).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<FetchPromptScorersResponse> fetchScorers(
-            @NotNull FetchPromptScorersRequest payload) {
+    public CompletableFuture<FetchPromptScorersResponse> fetchScorers(@NotNull FetchPromptScorersRequest payload) {
         String url = buildUrl("/fetch_scorers/");
         String jsonPayload;
         try {
@@ -153,15 +159,16 @@ public class JudgmentAsyncClient {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize payload", e);
         }
-        HttpRequest request =
-                HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                        .uri(URI.create(url)).headers(buildHeaders()).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<ResolveProjectNameResponse> projectsResolve(
-            @NotNull ResolveProjectNameRequest payload) {
+    public CompletableFuture<ResolveProjectNameResponse> projectsResolve(@NotNull ResolveProjectNameRequest payload) {
         String url = buildUrl("/projects/resolve/");
         String jsonPayload;
         try {
@@ -169,9 +176,11 @@ public class JudgmentAsyncClient {
         } catch (Exception e) {
             throw new RuntimeException("Failed to serialize payload", e);
         }
-        HttpRequest request =
-                HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                        .uri(URI.create(url)).headers(buildHeaders()).build();
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }

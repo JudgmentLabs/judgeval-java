@@ -18,8 +18,7 @@ public class PromptScorer extends BasePromptScorer {
 
     public PromptScorer(String name, String prompt, double threshold, Map<String, Double> options,
             String judgmentApiKey, String organizationId) {
-        super(APIScorerType.PROMPT_SCORER, name, prompt, threshold, options, judgmentApiKey,
-                organizationId);
+        super(APIScorerType.PROMPT_SCORER, name, prompt, threshold, options, judgmentApiKey, organizationId);
     }
 
     public static PromptScorer get(String name) {
@@ -27,8 +26,8 @@ public class PromptScorer extends BasePromptScorer {
     }
 
     public static PromptScorer get(String name, String judgmentApiKey, String organizationId) {
-        com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorerConfig =
-                fetchPromptScorer(name, judgmentApiKey, organizationId);
+        com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorerConfig = fetchPromptScorer(name,
+                judgmentApiKey, organizationId);
 
         if (Boolean.TRUE.equals(scorerConfig.getIsTrace())) {
             throw new JudgmentAPIError(400, "Scorer with name " + name + " is not a PromptScorer");
@@ -48,11 +47,9 @@ public class PromptScorer extends BasePromptScorer {
             }
         }
 
-        return new PromptScorer(name, scorerConfig.getPrompt(),
-                Optional.ofNullable(scorerConfig.getThreshold()).orElse(0.5), options,
-                judgmentApiKey, organizationId);
+        return new PromptScorer(name, scorerConfig.getPrompt(), Optional.ofNullable(scorerConfig.getThreshold())
+                .orElse(0.5), options, judgmentApiKey, organizationId);
     }
-
 
     @Override
     public ScorerConfig getScorerConfig() {

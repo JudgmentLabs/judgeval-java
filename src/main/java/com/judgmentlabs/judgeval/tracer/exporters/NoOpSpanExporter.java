@@ -7,14 +7,15 @@ import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 
 /**
- * A no-op implementation of SpanExporter that discards all spans. Used as a fallback when project
- * resolution fails or when spans should not be exported.
+ * A no-op implementation of SpanExporter that discards all spans. Used as a
+ * fallback when project resolution fails or when spans should not be exported.
  */
 public class NoOpSpanExporter implements SpanExporter {
     /**
      * Discards the collection of spans without exporting.
      *
-     * @param spans the collection of spans (ignored)
+     * @param spans
+     *            the collection of spans (ignored)
      * @return a successful CompletableResultCode
      */
     @Override

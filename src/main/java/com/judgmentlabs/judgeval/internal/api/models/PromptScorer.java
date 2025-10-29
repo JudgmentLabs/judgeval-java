@@ -13,36 +13,36 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class PromptScorer {
     @JsonProperty("id")
     @NotNull
-    private String id;
+    private String              id;
     @JsonProperty("user_id")
     @NotNull
-    private String userId;
+    private String              userId;
     @JsonProperty("organization_id")
     @NotNull
-    private String organizationId;
+    private String              organizationId;
     @JsonProperty("name")
     @NotNull
-    private String name;
+    private String              name;
     @JsonProperty("prompt")
     @NotNull
-    private String prompt;
+    private String              prompt;
     @JsonProperty("threshold")
     @NotNull
-    private Double threshold;
+    private Double              threshold;
     @JsonProperty("model")
-    private String model;
+    private String              model;
     @JsonProperty("options")
-    private Object options;
+    private Object              options;
     @JsonProperty("description")
-    private String description;
+    private String              description;
     @JsonProperty("created_at")
-    private String createdAt;
+    private String              createdAt;
     @JsonProperty("updated_at")
-    private String updatedAt;
+    private String              updatedAt;
     @JsonProperty("is_trace")
-    private Boolean isTrace;
+    private Boolean             isTrace;
     @JsonProperty("is_bucket_rubric")
-    private Boolean isBucketRubric;
+    private Boolean             isBucketRubric;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -168,23 +168,18 @@ public class PromptScorer {
             return false;
         PromptScorer other = (PromptScorer) obj;
         return Objects.equals(id, other.id) && Objects.equals(userId, other.userId)
-                && Objects.equals(organizationId, other.organizationId)
-                && Objects.equals(name, other.name)
-                && Objects.equals(prompt, other.prompt)
-                && Objects.equals(threshold, other.threshold)
+                && Objects.equals(organizationId, other.organizationId) && Objects.equals(name, other.name)
+                && Objects.equals(prompt, other.prompt) && Objects.equals(threshold, other.threshold)
                 && Objects.equals(model, other.model) && Objects.equals(options, other.options)
-                && Objects.equals(description, other.description)
-                && Objects.equals(createdAt, other.createdAt)
-                && Objects.equals(updatedAt, other.updatedAt)
-                && Objects.equals(isTrace, other.isTrace)
+                && Objects.equals(description, other.description) && Objects.equals(createdAt, other.createdAt)
+                && Objects.equals(updatedAt, other.updatedAt) && Objects.equals(isTrace, other.isTrace)
                 && Objects.equals(isBucketRubric, other.isBucketRubric)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userId, organizationId, name, prompt, threshold, model, options,
-                description, createdAt, updatedAt, isTrace, isBucketRubric,
-                Objects.hashCode(additionalProperties));
+        return Objects.hash(id, userId, organizationId, name, prompt, threshold, model, options, description,
+                createdAt, updatedAt, isTrace, isBucketRubric, Objects.hashCode(additionalProperties));
     }
 }

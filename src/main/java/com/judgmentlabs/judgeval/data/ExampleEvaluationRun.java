@@ -9,15 +9,17 @@ import java.util.UUID;
 
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
-public class ExampleEvaluationRun
-        extends com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun {
+public class ExampleEvaluationRun extends com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun {
 
     private String organizationId;
 
     public ExampleEvaluationRun() {
         super();
-        setId(UUID.randomUUID().toString());
-        setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
+        setId(UUID.randomUUID()
+                .toString());
+        setCreatedAt(Instant.now()
+                .atOffset(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ISO_INSTANT));
     }
 
     public ExampleEvaluationRun(String projectName, String evalName, List<Example> examples,
@@ -26,8 +28,7 @@ public class ExampleEvaluationRun
         setProjectName(projectName);
         setEvalName(evalName);
         @SuppressWarnings("unchecked")
-        List<com.judgmentlabs.judgeval.internal.api.models.Example> internalExamples =
-                (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples;
+        List<com.judgmentlabs.judgeval.internal.api.models.Example> internalExamples = (List<com.judgmentlabs.judgeval.internal.api.models.Example>) (List<?>) examples;
         setExamples(internalExamples);
         setModel(model);
         setOrganizationId(organizationId);
@@ -69,14 +70,15 @@ public class ExampleEvaluationRun
     }
 
     public static final class Builder {
-        private String projectName;
-        private String evalName;
-        private List<Example> examples;
+        private String             projectName;
+        private String             evalName;
+        private List<Example>      examples;
         private List<ScorerConfig> scorers;
-        private String model;
-        private String organizationId;
+        private String             model;
+        private String             organizationId;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         private Builder(String projectName, String evalName) {
             this.projectName = projectName;
@@ -130,10 +132,12 @@ public class ExampleEvaluationRun
         }
 
         public ExampleEvaluationRun build() {
-            if (projectName == null || projectName.trim().isEmpty()) {
+            if (projectName == null || projectName.trim()
+                    .isEmpty()) {
                 throw new IllegalArgumentException("Project name is required");
             }
-            if (evalName == null || evalName.trim().isEmpty()) {
+            if (evalName == null || evalName.trim()
+                    .isEmpty()) {
                 throw new IllegalArgumentException("Evaluation name is required");
             }
             if (examples == null || examples.isEmpty()) {
@@ -143,8 +147,7 @@ public class ExampleEvaluationRun
                 throw new IllegalArgumentException("At least one scorer is required");
             }
 
-            return new ExampleEvaluationRun(projectName, evalName, examples, scorers, model,
-                    organizationId);
+            return new ExampleEvaluationRun(projectName, evalName, examples, scorers, model, organizationId);
         }
     }
 }

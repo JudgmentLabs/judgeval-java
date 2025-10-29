@@ -21,6 +21,7 @@ public class InstructionAdherenceScorer extends APIScorer {
     }
 
     public static InstructionAdherenceScorer create(double threshold) {
-        return builder().threshold(threshold).build();
+        return builder().threshold(threshold)
+                .build();
     }
 }

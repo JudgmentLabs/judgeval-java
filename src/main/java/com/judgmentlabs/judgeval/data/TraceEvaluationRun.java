@@ -9,20 +9,22 @@ import java.util.UUID;
 
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
-public class TraceEvaluationRun
-        extends com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun {
+public class TraceEvaluationRun extends com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun {
 
     private String organizationId;
 
     public TraceEvaluationRun() {
         super();
-        setId(UUID.randomUUID().toString());
-        setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
+        setId(UUID.randomUUID()
+                .toString());
+        setCreatedAt(Instant.now()
+                .atOffset(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ISO_INSTANT));
         setIsOffline(false);
     }
 
-    public TraceEvaluationRun(String projectName, String evalName, List<ScorerConfig> scorers,
-            String model, String organizationId, List<List<String>> traceAndSpanIds) {
+    public TraceEvaluationRun(String projectName, String evalName, List<ScorerConfig> scorers, String model,
+            String organizationId, List<List<String>> traceAndSpanIds) {
         this();
         setProjectName(projectName);
         setEvalName(evalName);
@@ -35,15 +37,13 @@ public class TraceEvaluationRun
 
     private static List<List<Object>> convertTraceAndSpanIds(List<List<String>> traceAndSpanIds) {
         if (traceAndSpanIds == null || traceAndSpanIds.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "Trace and span IDs are required for trace evaluations.");
+            throw new IllegalArgumentException("Trace and span IDs are required for trace evaluations.");
         }
 
         List<List<Object>> converted = new java.util.ArrayList<>();
         for (List<String> pair : traceAndSpanIds) {
             if (pair == null || pair.size() != 2) {
-                throw new IllegalArgumentException(
-                        "Each trace and span ID pair must contain exactly 2 elements.");
+                throw new IllegalArgumentException("Each trace and span ID pair must contain exactly 2 elements.");
             }
             converted.add(List.of(pair.get(0), pair.get(1)));
         }
@@ -84,14 +84,15 @@ public class TraceEvaluationRun
     }
 
     public static final class Builder {
-        private String projectName;
-        private String evalName;
+        private String             projectName;
+        private String             evalName;
         private List<ScorerConfig> scorers;
-        private String model;
-        private String organizationId;
+        private String             model;
+        private String             organizationId;
         private List<List<String>> traceAndSpanIds;
 
-        private Builder() {}
+        private Builder() {
+        }
 
         private Builder(String projectName, String evalName) {
             this.projectName = projectName;
@@ -145,22 +146,22 @@ public class TraceEvaluationRun
         }
 
         public TraceEvaluationRun build() {
-            if (projectName == null || projectName.trim().isEmpty()) {
+            if (projectName == null || projectName.trim()
+                    .isEmpty()) {
                 throw new IllegalArgumentException("Project name is required");
             }
-            if (evalName == null || evalName.trim().isEmpty()) {
+            if (evalName == null || evalName.trim()
+                    .isEmpty()) {
                 throw new IllegalArgumentException("Evaluation name is required");
             }
             if (scorers == null || scorers.isEmpty()) {
                 throw new IllegalArgumentException("At least one scorer is required");
             }
             if (traceAndSpanIds == null || traceAndSpanIds.isEmpty()) {
-                throw new IllegalArgumentException(
-                        "At least one trace and span ID pair is required");
+                throw new IllegalArgumentException("At least one trace and span ID pair is required");
             }
 
-            return new TraceEvaluationRun(projectName, evalName, scorers, model, organizationId,
-                    traceAndSpanIds);
+            return new TraceEvaluationRun(projectName, evalName, scorers, model, organizationId, traceAndSpanIds);
         }
     }
 }

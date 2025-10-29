@@ -13,21 +13,21 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class SavePromptScorerRequest {
     @JsonProperty("name")
     @NotNull
-    private String name;
+    private String              name;
     @JsonProperty("prompt")
     @NotNull
-    private String prompt;
+    private String              prompt;
     @JsonProperty("threshold")
     @NotNull
-    private Double threshold;
+    private Double              threshold;
     @JsonProperty("model")
-    private String model;
+    private String              model;
     @JsonProperty("is_trace")
-    private Boolean isTrace;
+    private Boolean             isTrace;
     @JsonProperty("options")
-    private Object options;
+    private Object              options;
     @JsonProperty("description")
-    private String description;
+    private String              description;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
