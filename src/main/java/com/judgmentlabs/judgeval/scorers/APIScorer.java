@@ -3,6 +3,7 @@ package com.judgmentlabs.judgeval.scorers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.judgmentlabs.judgeval.data.APIScorerType;
@@ -48,20 +49,17 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
 
     @Override
     public Double getThreshold() {
-        Double threshold = super.getThreshold();
-        return threshold != null ? threshold : 0.5;
+        return Optional.ofNullable(super.getThreshold()).orElse(0.5);
     }
 
     @Override
     public String getName() {
-        Object name = super.getName();
-        return name != null ? name.toString() : null;
+        return Optional.ofNullable(super.getName()).map(Object::toString).orElse(null);
     }
 
     @Override
     public Boolean getStrictMode() {
-        Boolean strictMode = super.getStrictMode();
-        return strictMode != null ? strictMode : false;
+        return Optional.ofNullable(super.getStrictMode()).orElse(false);
     }
 
     @Override
