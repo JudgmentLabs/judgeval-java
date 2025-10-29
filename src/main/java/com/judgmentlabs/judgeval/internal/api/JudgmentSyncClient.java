@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.judgmentlabs.judgeval.internal.api.models.EvalResults;
@@ -32,7 +30,7 @@ public class JudgmentSyncClient {
     private final String       apiKey;
     private final String       organizationId;
 
-    public JudgmentSyncClient(@NotNull String baseUrl, @NotNull String apiKey, @NotNull String organizationId) {
+    public JudgmentSyncClient(String baseUrl, String apiKey, String organizationId) {
         this.baseUrl = Objects.requireNonNull(baseUrl, "Base URL cannot be null");
         this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");
         this.organizationId = Objects.requireNonNull(organizationId, "Organization ID cannot be null");
@@ -76,7 +74,7 @@ public class JudgmentSyncClient {
         }
     }
 
-    public Object addToRunEvalQueue(@NotNull ExampleEvaluationRun payload) throws IOException, InterruptedException {
+    public Object addToRunEvalQueue(ExampleEvaluationRun payload) throws IOException, InterruptedException {
         String url = buildUrl("/add_to_run_eval_queue/");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request = HttpRequest.newBuilder()
@@ -88,7 +86,7 @@ public class JudgmentSyncClient {
         return handleResponse(response);
     }
 
-    public Object logEvalResults(@NotNull EvalResults payload) throws IOException, InterruptedException {
+    public Object logEvalResults(EvalResults payload) throws IOException, InterruptedException {
         String url = buildUrl("/log_eval_results/");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request = HttpRequest.newBuilder()
@@ -100,7 +98,7 @@ public class JudgmentSyncClient {
         return handleResponse(response);
     }
 
-    public Object fetchExperimentRun(@NotNull EvalResultsFetch payload) throws IOException, InterruptedException {
+    public Object fetchExperimentRun(EvalResultsFetch payload) throws IOException, InterruptedException {
         String url = buildUrl("/fetch_experiment_run/");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request = HttpRequest.newBuilder()
@@ -112,7 +110,7 @@ public class JudgmentSyncClient {
         return handleResponse(response);
     }
 
-    public ScorerExistsResponse scorerExists(@NotNull ScorerExistsRequest payload)
+    public ScorerExistsResponse scorerExists(ScorerExistsRequest payload)
             throws IOException, InterruptedException {
         String url = buildUrl("/scorer_exists/");
         String jsonPayload = mapper.writeValueAsString(payload);
@@ -125,7 +123,7 @@ public class JudgmentSyncClient {
         return mapper.readValue(response.body(), ScorerExistsResponse.class);
     }
 
-    public SavePromptScorerResponse saveScorer(@NotNull SavePromptScorerRequest payload)
+    public SavePromptScorerResponse saveScorer(SavePromptScorerRequest payload)
             throws IOException, InterruptedException {
         String url = buildUrl("/save_scorer/");
         String jsonPayload = mapper.writeValueAsString(payload);
@@ -138,7 +136,7 @@ public class JudgmentSyncClient {
         return mapper.readValue(response.body(), SavePromptScorerResponse.class);
     }
 
-    public FetchPromptScorersResponse fetchScorers(@NotNull FetchPromptScorersRequest payload)
+    public FetchPromptScorersResponse fetchScorers(FetchPromptScorersRequest payload)
             throws IOException, InterruptedException {
         String url = buildUrl("/fetch_scorers/");
         String jsonPayload = mapper.writeValueAsString(payload);
@@ -151,7 +149,7 @@ public class JudgmentSyncClient {
         return mapper.readValue(response.body(), FetchPromptScorersResponse.class);
     }
 
-    public ResolveProjectNameResponse projectsResolve(@NotNull ResolveProjectNameRequest payload)
+    public ResolveProjectNameResponse projectsResolve(ResolveProjectNameRequest payload)
             throws IOException, InterruptedException {
         String url = buildUrl("/projects/resolve/");
         String jsonPayload = mapper.writeValueAsString(payload);
@@ -163,5 +161,4 @@ public class JudgmentSyncClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         return mapper.readValue(response.body(), ResolveProjectNameResponse.class);
     }
-
 }

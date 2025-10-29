@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.judgmentlabs.judgeval.internal.api.models.*;
@@ -22,7 +20,7 @@ public class JudgmentAsyncClient {
     private final String       apiKey;
     private final String       organizationId;
 
-    public JudgmentAsyncClient(@NotNull String baseUrl, @NotNull String apiKey, @NotNull String organizationId) {
+    public JudgmentAsyncClient(String baseUrl, String apiKey, String organizationId) {
         this.baseUrl = Objects.requireNonNull(baseUrl, "Base URL cannot be null");
         this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");
         this.organizationId = Objects.requireNonNull(organizationId, "Organization ID cannot be null");
@@ -66,7 +64,7 @@ public class JudgmentAsyncClient {
         }
     }
 
-    public CompletableFuture<Object> addToRunEvalQueue(@NotNull ExampleEvaluationRun payload) {
+    public CompletableFuture<Object> addToRunEvalQueue(ExampleEvaluationRun payload) {
         String url = buildUrl("/add_to_run_eval_queue/");
         String jsonPayload;
         try {
@@ -83,7 +81,7 @@ public class JudgmentAsyncClient {
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<Object> logEvalResults(@NotNull EvalResults payload) {
+    public CompletableFuture<Object> logEvalResults(EvalResults payload) {
         String url = buildUrl("/log_eval_results/");
         String jsonPayload;
         try {
@@ -100,7 +98,7 @@ public class JudgmentAsyncClient {
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<Object> fetchExperimentRun(@NotNull EvalResultsFetch payload) {
+    public CompletableFuture<Object> fetchExperimentRun(EvalResultsFetch payload) {
         String url = buildUrl("/fetch_experiment_run/");
         String jsonPayload;
         try {
@@ -117,7 +115,7 @@ public class JudgmentAsyncClient {
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<ScorerExistsResponse> scorerExists(@NotNull ScorerExistsRequest payload) {
+    public CompletableFuture<ScorerExistsResponse> scorerExists(ScorerExistsRequest payload) {
         String url = buildUrl("/scorer_exists/");
         String jsonPayload;
         try {
@@ -134,7 +132,7 @@ public class JudgmentAsyncClient {
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<SavePromptScorerResponse> saveScorer(@NotNull SavePromptScorerRequest payload) {
+    public CompletableFuture<SavePromptScorerResponse> saveScorer(SavePromptScorerRequest payload) {
         String url = buildUrl("/save_scorer/");
         String jsonPayload;
         try {
@@ -151,7 +149,7 @@ public class JudgmentAsyncClient {
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<FetchPromptScorersResponse> fetchScorers(@NotNull FetchPromptScorersRequest payload) {
+    public CompletableFuture<FetchPromptScorersResponse> fetchScorers(FetchPromptScorersRequest payload) {
         String url = buildUrl("/fetch_scorers/");
         String jsonPayload;
         try {
@@ -168,7 +166,7 @@ public class JudgmentAsyncClient {
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<ResolveProjectNameResponse> projectsResolve(@NotNull ResolveProjectNameRequest payload) {
+    public CompletableFuture<ResolveProjectNameResponse> projectsResolve(ResolveProjectNameRequest payload) {
         String url = buildUrl("/projects/resolve/");
         String jsonPayload;
         try {
@@ -184,5 +182,4 @@ public class JudgmentAsyncClient {
         return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(this::handleResponse);
     }
-
 }

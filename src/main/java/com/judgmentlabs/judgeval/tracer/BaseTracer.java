@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
@@ -38,8 +36,7 @@ public abstract class BaseTracer {
     protected final ObjectMapper        jacksonMapper;
     protected final Optional<String>    projectId;
 
-    protected BaseTracer(@NotNull TracerConfiguration configuration, @NotNull ISerializer serializer,
-            boolean initialize) {
+    protected BaseTracer(TracerConfiguration configuration, ISerializer serializer, boolean initialize) {
         this.configuration = Objects.requireNonNull(configuration, "Configuration cannot be null");
         this.apiClient = new JudgmentSyncClient(configuration.apiUrl(), configuration.apiKey(),
                 configuration.organizationId());
@@ -188,8 +185,7 @@ public abstract class BaseTracer {
         return configuration.enableEvaluation();
     }
 
-    private void logEvaluationInfo(String method, @NotNull String traceId, @NotNull String spanId,
-            @NotNull String scorerName) {
+    private void logEvaluationInfo(String method, String traceId, String spanId, String scorerName) {
         Logger.info(method + ": project=" + configuration.projectName() + ", traceId=" + traceId + ", spanId="
                 + spanId + ", scorer=" + scorerName);
     }
@@ -213,7 +209,7 @@ public abstract class BaseTracer {
      * @param model
      *            the model name, or null to use the default
      */
-    public void asyncEvaluate(@NotNull BaseScorer scorer, @NotNull Example example, String model) {
+    public void asyncEvaluate(BaseScorer scorer, Example example, String model) {
         safeExecute("evaluate scorer", () -> {
             if (!isEvaluationEnabled()) {
                 return;
@@ -239,7 +235,7 @@ public abstract class BaseTracer {
      * @param example
      *            the example to evaluate against
      */
-    public void asyncEvaluate(@NotNull BaseScorer scorer, @NotNull Example example) {
+    public void asyncEvaluate(BaseScorer scorer, Example example) {
         asyncEvaluate(scorer, example, null);
     }
 
@@ -252,7 +248,7 @@ public abstract class BaseTracer {
      * @param model
      *            the model name, or null to use the default
      */
-    public void asyncTraceEvaluate(@NotNull BaseScorer scorer, String model) {
+    public void asyncTraceEvaluate(BaseScorer scorer, String model) {
         safeExecute("evaluate trace scorer", () -> {
             if (!isEvaluationEnabled()) {
                 return;
@@ -283,7 +279,7 @@ public abstract class BaseTracer {
      * @param scorer
      *            the scorer to evaluate
      */
-    public void asyncTraceEvaluate(@NotNull BaseScorer scorer) {
+    public void asyncTraceEvaluate(BaseScorer scorer) {
         asyncTraceEvaluate(scorer, null);
     }
 
@@ -374,7 +370,7 @@ public abstract class BaseTracer {
      * @param runnable
      *            the code to execute within the span context
      */
-    public void span(@NotNull String spanName, @NotNull Runnable runnable) {
+    public void span(String spanName, Runnable runnable) {
         Span span = getTracer().spanBuilder(spanName)
                 .startSpan();
         try (Scope scope = span.makeCurrent()) {
@@ -398,7 +394,7 @@ public abstract class BaseTracer {
      * @throws Exception
      *             if the callable throws an exception
      */
-    public <T> T span(@NotNull String spanName, @NotNull java.util.concurrent.Callable<T> callable) throws Exception {
+    public <T> T span(String spanName, java.util.concurrent.Callable<T> callable) throws Exception {
         Span span = getTracer().spanBuilder(spanName)
                 .startSpan();
         try (Scope scope = span.makeCurrent()) {
@@ -426,14 +422,14 @@ public abstract class BaseTracer {
      *            the name of the span
      * @return the newly created span
      */
-    public static Span span(@NotNull String spanName) {
+    public static Span span(String spanName) {
         return GlobalOpenTelemetry.get()
                 .getTracer(TRACER_NAME)
                 .spanBuilder(spanName)
                 .startSpan();
     }
 
-    protected Optional<String> resolveProjectId(@NotNull String name) {
+    protected Optional<String> resolveProjectId(String name) {
         try {
             ResolveProjectNameRequest request = new ResolveProjectNameRequest();
             request.setProjectName(name);
@@ -445,11 +441,11 @@ public abstract class BaseTracer {
         }
     }
 
-    private String buildEndpoint(@NotNull String baseUrl) {
+    private String buildEndpoint(String baseUrl) {
         return baseUrl.endsWith("/") ? baseUrl + "otel/v1/traces" : baseUrl + "/otel/v1/traces";
     }
 
-    private JudgmentSpanExporter createJudgmentSpanExporter(@NotNull String projectId) {
+    private JudgmentSpanExporter createJudgmentSpanExporter(String projectId) {
         return JudgmentSpanExporter.builder()
                 .endpoint(buildEndpoint(configuration.apiUrl()))
                 .apiKey(configuration.apiKey())
@@ -468,8 +464,8 @@ public abstract class BaseTracer {
                 .orElse(Env.JUDGMENT_DEFAULT_GPT_MODEL);
     }
 
-    private ExampleEvaluationRun createEvaluationRun(@NotNull BaseScorer scorer, @NotNull Example example,
-            String model, @NotNull String traceId, String spanId) {
+    private ExampleEvaluationRun createEvaluationRun(BaseScorer scorer, Example example, String model, String traceId,
+            String spanId) {
         String runId = generateRunId("async_evaluate_", spanId);
         String modelName = getModelName(model);
 
@@ -480,8 +476,8 @@ public abstract class BaseTracer {
         return evaluationRun;
     }
 
-    private TraceEvaluationRun createTraceEvaluationRun(@NotNull BaseScorer scorer, String model,
-            @NotNull String traceId, String spanId) {
+    private TraceEvaluationRun createTraceEvaluationRun(BaseScorer scorer, String model, String traceId,
+            String spanId) {
         String evalName = generateRunId("async_trace_evaluate_", spanId);
         String modelName = getModelName(model);
 
@@ -495,7 +491,7 @@ public abstract class BaseTracer {
                 .build();
     }
 
-    private void enqueueEvaluation(@NotNull ExampleEvaluationRun evaluationRun) {
+    private void enqueueEvaluation(ExampleEvaluationRun evaluationRun) {
         try {
             apiClient.addToRunEvalQueue(evaluationRun);
         } catch (Exception e) {

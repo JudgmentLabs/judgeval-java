@@ -5,20 +5,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EvalResults {
     @JsonProperty("results")
-    @NotNull
+
     private List<ScoringResult> results;
     @JsonProperty("run")
-    @NotNull
-    private Object              run;
 
+    private Object              run;
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -39,11 +36,11 @@ public class EvalResults {
         return run;
     }
 
-    public void setResults(@NotNull List<ScoringResult> results) {
+    public void setResults(List<ScoringResult> results) {
         this.results = results;
     }
 
-    public void setRun(@NotNull Object run) {
+    public void setRun(Object run) {
         this.run = run;
     }
 

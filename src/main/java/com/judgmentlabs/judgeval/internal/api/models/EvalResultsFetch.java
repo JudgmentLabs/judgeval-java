@@ -4,20 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class EvalResultsFetch {
     @JsonProperty("experiment_run_id")
-    @NotNull
+
     private String              experimentRunId;
     @JsonProperty("project_name")
-    @NotNull
-    private String              projectName;
 
+    private String              projectName;
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -38,11 +35,11 @@ public class EvalResultsFetch {
         return projectName;
     }
 
-    public void setExperimentRunId(@NotNull String experimentRunId) {
+    public void setExperimentRunId(String experimentRunId) {
         this.experimentRunId = experimentRunId;
     }
 
-    public void setProjectName(@NotNull String projectName) {
+    public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
 

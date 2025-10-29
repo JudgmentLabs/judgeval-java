@@ -208,9 +208,6 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
         "import java.util.Objects;",
     ]
     
-    if has_required:
-        lines.append("import org.jetbrains.annotations.NotNull;")
-    
     lines.extend(["", f"public class {className} {{"])
 
     fields = []
@@ -225,10 +222,10 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
             camel_case_name = to_camel_case(field_name)
             is_required = field_name in required_fields
 
-            field_lines = [f'    @JsonProperty("{field_name}")']
-            if is_required:
-                field_lines.append("    @NotNull")
-            field_lines.append(f"    private {java_type} {camel_case_name};")
+            field_lines = [
+                f'    @JsonProperty("{field_name}")',
+                f"    private {java_type} {camel_case_name};"
+            ]
             
             fields.extend(field_lines)
 
@@ -240,7 +237,7 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
                 ]
             )
 
-            setter_param = f"@NotNull {java_type} {camel_case_name}" if is_required else f"{java_type} {camel_case_name}"
+            setter_param = f"{java_type} {camel_case_name}"
             setters.extend(
                 [
                     f"    public void set{to_class_name(camel_case_name)}({setter_param}) {{",
@@ -317,10 +314,10 @@ def generate_method_signature(
 
     for param in query_params:
         if param["required"]:
-            params.append(f"@NotNull String {param['name']}")
+            params.append(f"String {param['name']}")
 
     if request_type:
-        params.append(f"@NotNull {request_type} payload")
+        params.append(f"{request_type} payload")
 
     for param in query_params:
         if not param["required"]:
@@ -438,7 +435,6 @@ def generate_client_class(
         "import java.util.Map;",
         "import java.util.Objects;",
         "import java.util.Optional;",
-        "import org.jetbrains.annotations.NotNull;",
         "import com.judgmentlabs.judgeval.internal.api.models.*;",
     ]
 
@@ -454,7 +450,7 @@ def generate_client_class(
         "    private final String apiKey;",
         "    private final String organizationId;",
         "",
-        f"    public {className}(@NotNull String baseUrl, @NotNull String apiKey, @NotNull String organizationId) {{",
+        f"    public {className}(String baseUrl, String apiKey, String organizationId) {{",
         "        this.baseUrl = Objects.requireNonNull(baseUrl, \"Base URL cannot be null\");",
         "        this.apiKey = Objects.requireNonNull(apiKey, \"API key cannot be null\");",
         "        this.organizationId = Objects.requireNonNull(organizationId, \"Organization ID cannot be null\");",

@@ -15,7 +15,6 @@ public class Example {
     private String              createdAt;
     @JsonProperty("name")
     private String              name;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

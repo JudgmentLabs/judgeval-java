@@ -14,7 +14,6 @@ public class FetchPromptScorersRequest {
     private List<String>        names;
     @JsonProperty("is_trace")
     private Boolean             isTrace;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter

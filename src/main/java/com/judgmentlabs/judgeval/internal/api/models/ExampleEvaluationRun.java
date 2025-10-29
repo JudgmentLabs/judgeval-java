@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,10 +13,10 @@ public class ExampleEvaluationRun {
     @JsonProperty("id")
     private String              id;
     @JsonProperty("project_name")
-    @NotNull
+
     private String              projectName;
     @JsonProperty("eval_name")
-    @NotNull
+
     private String              evalName;
     @JsonProperty("custom_scorers")
     private List<BaseScorer>    customScorers;
@@ -29,13 +27,12 @@ public class ExampleEvaluationRun {
     @JsonProperty("created_at")
     private String              createdAt;
     @JsonProperty("examples")
-    @NotNull
+
     private List<Example>       examples;
     @JsonProperty("trace_span_id")
     private String              traceSpanId;
     @JsonProperty("trace_id")
     private String              traceId;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -92,11 +89,11 @@ public class ExampleEvaluationRun {
         this.id = id;
     }
 
-    public void setProjectName(@NotNull String projectName) {
+    public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
 
-    public void setEvalName(@NotNull String evalName) {
+    public void setEvalName(String evalName) {
         this.evalName = evalName;
     }
 
@@ -116,7 +113,7 @@ public class ExampleEvaluationRun {
         this.createdAt = createdAt;
     }
 
-    public void setExamples(@NotNull List<Example> examples) {
+    public void setExamples(List<Example> examples) {
         this.examples = examples;
     }
 

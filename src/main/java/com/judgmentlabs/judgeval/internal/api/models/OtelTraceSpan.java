@@ -5,29 +5,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class OtelTraceSpan {
     @JsonProperty("organization_id")
-    @NotNull
+
     private String              organizationId;
     @JsonProperty("project_id")
     private String              projectId;
     @JsonProperty("user_id")
-    @NotNull
+
     private String              userId;
     @JsonProperty("timestamp")
-    @NotNull
+
     private String              timestamp;
     @JsonProperty("trace_id")
-    @NotNull
+
     private String              traceId;
     @JsonProperty("span_id")
-    @NotNull
+
     private String              spanId;
     @JsonProperty("parent_span_id")
     private String              parentSpanId;
@@ -53,7 +51,6 @@ public class OtelTraceSpan {
     private List<Object>        events;
     @JsonProperty("links")
     private List<Object>        links;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -138,7 +135,7 @@ public class OtelTraceSpan {
         return links;
     }
 
-    public void setOrganizationId(@NotNull String organizationId) {
+    public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
 
@@ -146,19 +143,19 @@ public class OtelTraceSpan {
         this.projectId = projectId;
     }
 
-    public void setUserId(@NotNull String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public void setTimestamp(@NotNull String timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
-    public void setTraceId(@NotNull String traceId) {
+    public void setTraceId(String traceId) {
         this.traceId = traceId;
     }
 
-    public void setSpanId(@NotNull String spanId) {
+    public void setSpanId(String spanId) {
         this.spanId = spanId;
     }
 

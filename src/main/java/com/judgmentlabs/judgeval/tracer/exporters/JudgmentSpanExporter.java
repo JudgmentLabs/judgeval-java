@@ -3,8 +3,6 @@ package com.judgmentlabs.judgeval.tracer.exporters;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.judgmentlabs.judgeval.utils.Logger;
 
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
@@ -36,8 +34,7 @@ public class JudgmentSpanExporter implements SpanExporter {
      * @throws IllegalArgumentException
      *             if projectId is null or empty
      */
-    protected JudgmentSpanExporter(@NotNull String endpoint, @NotNull String apiKey, @NotNull String organizationId,
-            @NotNull String projectId) {
+    protected JudgmentSpanExporter(String endpoint, String apiKey, String organizationId, String projectId) {
         if (projectId.isEmpty()) {
             throw new IllegalArgumentException("projectId is required for JudgmentSpanExporter");
         }
@@ -110,7 +107,7 @@ public class JudgmentSpanExporter implements SpanExporter {
          *            the endpoint URL
          * @return this builder for method chaining
          */
-        public Builder endpoint(@NotNull String endpoint) {
+        public Builder endpoint(String endpoint) {
             this.endpoint = endpoint;
             return this;
         }
@@ -122,7 +119,7 @@ public class JudgmentSpanExporter implements SpanExporter {
          *            the API key
          * @return this builder for method chaining
          */
-        public Builder apiKey(@NotNull String apiKey) {
+        public Builder apiKey(String apiKey) {
             this.apiKey = apiKey;
             return this;
         }
@@ -134,7 +131,7 @@ public class JudgmentSpanExporter implements SpanExporter {
          *            the organization ID
          * @return this builder for method chaining
          */
-        public Builder organizationId(@NotNull String organizationId) {
+        public Builder organizationId(String organizationId) {
             this.organizationId = organizationId;
             return this;
         }
@@ -146,7 +143,7 @@ public class JudgmentSpanExporter implements SpanExporter {
          *            the project ID
          * @return this builder for method chaining
          */
-        public Builder projectId(@NotNull String projectId) {
+        public Builder projectId(String projectId) {
             this.projectId = projectId;
             return this;
         }

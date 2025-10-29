@@ -4,30 +4,28 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class PromptScorer {
     @JsonProperty("id")
-    @NotNull
+
     private String              id;
     @JsonProperty("user_id")
-    @NotNull
+
     private String              userId;
     @JsonProperty("organization_id")
-    @NotNull
+
     private String              organizationId;
     @JsonProperty("name")
-    @NotNull
+
     private String              name;
     @JsonProperty("prompt")
-    @NotNull
+
     private String              prompt;
     @JsonProperty("threshold")
-    @NotNull
+
     private Double              threshold;
     @JsonProperty("model")
     private String              model;
@@ -43,7 +41,6 @@ public class PromptScorer {
     private Boolean             isTrace;
     @JsonProperty("is_bucket_rubric")
     private Boolean             isBucketRubric;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -108,27 +105,27 @@ public class PromptScorer {
         return isBucketRubric;
     }
 
-    public void setId(@NotNull String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public void setUserId(@NotNull String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public void setOrganizationId(@NotNull String organizationId) {
+    public void setOrganizationId(String organizationId) {
         this.organizationId = organizationId;
     }
 
-    public void setName(@NotNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setPrompt(@NotNull String prompt) {
+    public void setPrompt(String prompt) {
         this.prompt = prompt;
     }
 
-    public void setThreshold(@NotNull Double threshold) {
+    public void setThreshold(Double threshold) {
         this.threshold = threshold;
     }
 

@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,10 +13,10 @@ public class TraceEvaluationRun {
     @JsonProperty("id")
     private String              id;
     @JsonProperty("project_name")
-    @NotNull
+
     private String              projectName;
     @JsonProperty("eval_name")
-    @NotNull
+
     private String              evalName;
     @JsonProperty("custom_scorers")
     private List<BaseScorer>    customScorers;
@@ -29,13 +27,12 @@ public class TraceEvaluationRun {
     @JsonProperty("created_at")
     private String              createdAt;
     @JsonProperty("trace_and_span_ids")
-    @NotNull
+
     private List<List<Object>>  traceAndSpanIds;
     @JsonProperty("is_offline")
     private Boolean             isOffline;
     @JsonProperty("is_bucket_run")
     private Boolean             isBucketRun;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -92,11 +89,11 @@ public class TraceEvaluationRun {
         this.id = id;
     }
 
-    public void setProjectName(@NotNull String projectName) {
+    public void setProjectName(String projectName) {
         this.projectName = projectName;
     }
 
-    public void setEvalName(@NotNull String evalName) {
+    public void setEvalName(String evalName) {
         this.evalName = evalName;
     }
 
@@ -116,7 +113,7 @@ public class TraceEvaluationRun {
         this.createdAt = createdAt;
     }
 
-    public void setTraceAndSpanIds(@NotNull List<List<Object>> traceAndSpanIds) {
+    public void setTraceAndSpanIds(List<List<Object>> traceAndSpanIds) {
         this.traceAndSpanIds = traceAndSpanIds;
     }
 

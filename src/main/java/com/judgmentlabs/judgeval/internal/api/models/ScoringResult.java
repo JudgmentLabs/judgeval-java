@@ -5,18 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScoringResult {
     @JsonProperty("success")
-    @NotNull
+
     private Boolean             success;
     @JsonProperty("scorers_data")
-    @NotNull
+
     private List<ScorerData>    scorersData;
     @JsonProperty("name")
     private String              name;
@@ -28,7 +26,6 @@ public class ScoringResult {
     private Double              runDuration;
     @JsonProperty("evaluation_cost")
     private Double              evaluationCost;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -69,11 +66,11 @@ public class ScoringResult {
         return evaluationCost;
     }
 
-    public void setSuccess(@NotNull Boolean success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 
-    public void setScorersData(@NotNull List<ScorerData> scorersData) {
+    public void setScorersData(List<ScorerData> scorersData) {
         this.scorersData = scorersData;
     }
 

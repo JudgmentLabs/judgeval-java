@@ -4,17 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SavePromptScorerResponse {
     @JsonProperty("scorer_response")
-    @NotNull
-    private PromptScorer        scorerResponse;
 
+    private PromptScorer        scorerResponse;
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -31,7 +28,7 @@ public class SavePromptScorerResponse {
         return scorerResponse;
     }
 
-    public void setScorerResponse(@NotNull PromptScorer scorerResponse) {
+    public void setScorerResponse(PromptScorer scorerResponse) {
         this.scorerResponse = scorerResponse;
     }
 

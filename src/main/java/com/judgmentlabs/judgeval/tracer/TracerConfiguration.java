@@ -2,8 +2,6 @@ package com.judgmentlabs.judgeval.tracer;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
-
 /**
  * Configuration for the Judgment Tracer that controls how tracing and
  * evaluation behave.
@@ -33,7 +31,7 @@ public final class TracerConfiguration {
     private final String  apiUrl;
     private final boolean enableEvaluation;
 
-    private TracerConfiguration(@NotNull Builder builder) {
+    private TracerConfiguration(Builder builder) {
         this.projectName = Optional.ofNullable(builder.projectName)
                 .map(String::trim)
                 .filter(name -> !name.isEmpty())
@@ -115,22 +113,22 @@ public final class TracerConfiguration {
         private String  apiUrl           = com.judgmentlabs.judgeval.Env.JUDGMENT_API_URL;
         private boolean enableEvaluation = true;
 
-        public Builder projectName(@NotNull String projectName) {
+        public Builder projectName(String projectName) {
             this.projectName = projectName;
             return this;
         }
 
-        public Builder apiKey(@NotNull String apiKey) {
+        public Builder apiKey(String apiKey) {
             this.apiKey = apiKey;
             return this;
         }
 
-        public Builder organizationId(@NotNull String organizationId) {
+        public Builder organizationId(String organizationId) {
             this.organizationId = organizationId;
             return this;
         }
 
-        public Builder apiUrl(@NotNull String apiUrl) {
+        public Builder apiUrl(String apiUrl) {
             this.apiUrl = apiUrl;
             return this;
         }

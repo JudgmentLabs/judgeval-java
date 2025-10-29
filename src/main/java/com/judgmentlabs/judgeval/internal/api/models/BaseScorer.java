@@ -4,15 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BaseScorer {
     @JsonProperty("score_type")
-    @NotNull
+
     private String              scoreType;
     @JsonProperty("threshold")
     private Double              threshold;
@@ -44,7 +42,6 @@ public class BaseScorer {
     private String              user;
     @JsonProperty("server_hosted")
     private Boolean             serverHosted;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -121,7 +118,7 @@ public class BaseScorer {
         return serverHosted;
     }
 
-    public void setScoreType(@NotNull String scoreType) {
+    public void setScoreType(String scoreType) {
         this.scoreType = scoreType;
     }
 

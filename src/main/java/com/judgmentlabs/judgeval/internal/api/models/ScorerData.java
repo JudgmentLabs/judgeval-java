@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -14,13 +12,13 @@ public class ScorerData {
     @JsonProperty("id")
     private String              id;
     @JsonProperty("name")
-    @NotNull
+
     private String              name;
     @JsonProperty("threshold")
-    @NotNull
+
     private Double              threshold;
     @JsonProperty("success")
-    @NotNull
+
     private Boolean             success;
     @JsonProperty("score")
     private Double              score;
@@ -34,7 +32,6 @@ public class ScorerData {
     private String              error;
     @JsonProperty("additional_metadata")
     private Object              additionalMetadata;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -91,15 +88,15 @@ public class ScorerData {
         this.id = id;
     }
 
-    public void setName(@NotNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setThreshold(@NotNull Double threshold) {
+    public void setThreshold(Double threshold) {
         this.threshold = threshold;
     }
 
-    public void setSuccess(@NotNull Boolean success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 

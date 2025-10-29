@@ -5,17 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FetchPromptScorersResponse {
     @JsonProperty("scorers")
-    @NotNull
-    private List<PromptScorer>  scorers;
 
+    private List<PromptScorer>  scorers;
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -32,7 +29,7 @@ public class FetchPromptScorersResponse {
         return scorers;
     }
 
-    public void setScorers(@NotNull List<PromptScorer> scorers) {
+    public void setScorers(List<PromptScorer> scorers) {
         this.scorers = scorers;
     }
 

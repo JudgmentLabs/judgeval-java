@@ -2,8 +2,6 @@ package com.judgmentlabs.judgeval.tracer;
 
 import java.util.Optional;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.judgmentlabs.judgeval.Version;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
@@ -102,7 +100,7 @@ public final class Tracer extends BaseTracer {
          *            the configuration to use
          * @return this builder for method chaining
          */
-        public TracerBuilder configuration(@NotNull TracerConfiguration configuration) {
+        public TracerBuilder configuration(TracerConfiguration configuration) {
             this.configuration = configuration;
             return this;
         }
@@ -114,7 +112,7 @@ public final class Tracer extends BaseTracer {
          *            the serializer to use
          * @return this builder for method chaining
          */
-        public TracerBuilder serializer(@NotNull ISerializer serializer) {
+        public TracerBuilder serializer(ISerializer serializer) {
             this.serializer = serializer;
             return this;
         }

@@ -5,15 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerConfig {
     @JsonProperty("score_type")
-    @NotNull
+
     private String              scoreType;
     @JsonProperty("name")
     private String              name;
@@ -27,7 +25,6 @@ public class ScorerConfig {
     private List<String>        requiredParams;
     @JsonProperty("kwargs")
     private Object              kwargs;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -68,7 +65,7 @@ public class ScorerConfig {
         return kwargs;
     }
 
-    public void setScoreType(@NotNull String scoreType) {
+    public void setScoreType(String scoreType) {
         this.scoreType = scoreType;
     }
 

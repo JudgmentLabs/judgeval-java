@@ -4,21 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SavePromptScorerRequest {
     @JsonProperty("name")
-    @NotNull
+
     private String              name;
     @JsonProperty("prompt")
-    @NotNull
+
     private String              prompt;
     @JsonProperty("threshold")
-    @NotNull
+
     private Double              threshold;
     @JsonProperty("model")
     private String              model;
@@ -28,7 +26,6 @@ public class SavePromptScorerRequest {
     private Object              options;
     @JsonProperty("description")
     private String              description;
-
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -69,15 +66,15 @@ public class SavePromptScorerRequest {
         return description;
     }
 
-    public void setName(@NotNull String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public void setPrompt(@NotNull String prompt) {
+    public void setPrompt(String prompt) {
         this.prompt = prompt;
     }
 
-    public void setThreshold(@NotNull Double threshold) {
+    public void setThreshold(Double threshold) {
         this.threshold = threshold;
     }
 

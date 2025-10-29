@@ -4,17 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jetbrains.annotations.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerExistsResponse {
     @JsonProperty("exists")
-    @NotNull
-    private Boolean             exists;
 
+    private Boolean             exists;
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
@@ -31,7 +28,7 @@ public class ScorerExistsResponse {
         return exists;
     }
 
-    public void setExists(@NotNull Boolean exists) {
+    public void setExists(Boolean exists) {
         this.exists = exists;
     }
 
