@@ -4,7 +4,6 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -76,26 +75,54 @@ public abstract class BaseTracer {
         return createJudgmentSpanExporter(projectId);
     }
 
-    /** Sets the span kind attribute on the current span. Common kinds: "span", "llm", "tool". */
     public void setSpanKind(String kind) {
-        Optional.ofNullable(Span.current())
-                .filter(span -> kind != null)
-                .ifPresent(
-                        span ->
-                                span.setAttribute(
-                                        OpenTelemetryKeys.AttributeKeys.JUDGMENT_SPAN_KIND, kind));
+        if (kind == null) {
+            return;
+        }
+        withCurrentSpan(
+                span ->
+                        span.setAttribute(
+                                OpenTelemetryKeys.AttributeKeys.JUDGMENT_SPAN_KIND, kind));
     }
 
-    /** Sets a custom attribute on the current span. Value is serialized to JSON. */
+    private static void withCurrentSpan(java.util.function.Consumer<Span> action) {
+        Span span = Span.current();
+        if (span != null) {
+            action.accept(span);
+        }
+    }
+
     public void setAttribute(String key, Object value) {
-        Optional.ofNullable(Span.current())
-                .ifPresent(span -> span.setAttribute(key, serializer.serialize(value)));
+        if (value == null) {
+            return;
+        }
+        setAttribute(key, value, value.getClass());
     }
 
-    /** Sets a custom attribute on the current span with specific type for JSON serialization. */
     public void setAttribute(String key, Object value, Type type) {
-        Optional.ofNullable(Span.current())
-                .ifPresent(span -> span.setAttribute(key, serializer.serialize(value, type)));
+        if (value == null) {
+            return;
+        }
+        withCurrentSpan(span -> span.setAttribute(key, serializer.serialize(value, type)));
+    }
+
+    public void setAttribute(String key, String value) {
+        if (value == null) {
+            return;
+        }
+        withCurrentSpan(span -> span.setAttribute(key, value));
+    }
+
+    public void setAttribute(String key, long value) {
+        withCurrentSpan(span -> span.setAttribute(key, value));
+    }
+
+    public void setAttribute(String key, double value) {
+        withCurrentSpan(span -> span.setAttribute(key, value));
+    }
+
+    public void setAttribute(String key, boolean value) {
+        withCurrentSpan(span -> span.setAttribute(key, value));
     }
 
     /** Asynchronously evaluates a scorer with an example using current trace context. */
@@ -184,13 +211,7 @@ public abstract class BaseTracer {
         if (attributes == null) {
             return;
         }
-        Optional.ofNullable(Span.current())
-                .ifPresent(
-                        span ->
-                                attributes.forEach(
-                                        (key, value) ->
-                                                span.setAttribute(
-                                                        key, serializer.serialize(value))));
+        withCurrentSpan(span -> attributes.forEach(this::setAttribute));
     }
 
     public void setLLMSpan() {
@@ -266,7 +287,8 @@ public abstract class BaseTracer {
             ResolveProjectNameRequest request = new ResolveProjectNameRequest();
             request.setProjectName(name);
             ResolveProjectNameResponse response = apiClient.projectsResolve(request);
-            return Optional.ofNullable(response.getProjectId()).map(Object::toString).orElse(null);
+            Object projectId = response.getProjectId();
+            return projectId != null ? projectId.toString() : null;
         } catch (Exception e) {
             return null;
         }
@@ -332,12 +354,17 @@ public abstract class BaseTracer {
 
         @Override
         public String serialize(Object obj) {
-            return gson.toJson(obj);
+            return serialize(obj, obj.getClass());
         }
 
         @Override
         public String serialize(Object obj, Type type) {
-            return gson.toJson(obj, type);
+            try {
+                return gson.toJson(obj, type);
+            } catch (Exception e) {
+                Logger.error("Failed to serialize object: " + e.getMessage());
+                return obj != null ? obj.toString() : null;
+            }
         }
     }
 }
