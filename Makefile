@@ -1,4 +1,4 @@
-.PHONY: format format-core format-openai install install-core install-openai status status-core status-openai check test clean build generate-client
+.PHONY: format format-core format-openai install install-core install-openai status status-core status-openai check test clean build generate-client run
 
 format:
 	@echo "[format] judgeval-java"
@@ -69,9 +69,23 @@ status-openai:
 	 echo "GAV: $$G:$$A:$$V"; \
 	 ls -1 instrumentation/judgeval-instrumentation-openai/target/*.jar 2>/dev/null || echo "No jar built"
 
+MAIN ?=
+
+ifneq (,$(filter run,$(MAKECMDGOALS)))
+EXAMPLE := $(word 2,$(MAKECMDGOALS))
+ifeq ($(EXAMPLE),)
+$(error Usage: make run <example_folder> [MAIN=ClassName])
+endif
+$(eval $(EXAMPLE):;@:)
+endif
+
+
+
 run:
-	@if [ -f .env ]; then \
-		export $$(grep -v '^#' .env | grep -v '^$$' | xargs) && mvn exec:java -Dexec.mainClass="$(CLASS)"; \
-	else \
-		mvn exec:java -Dexec.mainClass="$(CLASS)"; \
-	fi
+	@echo "[run] examples.$(EXAMPLE)"
+	if [ -f .env ]; then export $$(grep -v '^#' .env | grep -v '^$$' | xargs); fi; \
+	MAIN_CLASS=$(MAIN); \
+	if [ -z "$$MAIN_CLASS" ]; then \
+	  MAIN_CLASS=$$(ls examples/src/main/java/examples/$(EXAMPLE)/*.java | head -n1 | xargs -n1 basename | sed 's/\.java$$//'); \
+	fi; \
+	mvn -q -f examples/pom.xml -DskipTests -Dexec.cleanupDaemonThreads=false -Dexec.mainClass=examples.$(EXAMPLE).$$MAIN_CLASS compile exec:java

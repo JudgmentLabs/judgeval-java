@@ -9,6 +9,7 @@
     <modules>
         <module>judgeval-java</module>
         <module>instrumentation/judgeval-instrumentation-openai</module>
+        <module>examples</module>
     </modules>
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
