@@ -23,6 +23,7 @@ import com.judgmentlabs.judgeval.utils.Logger;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanContext;
+import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
@@ -401,6 +402,9 @@ public abstract class BaseTracer {
                 .startSpan();
         try (Scope scope = span.makeCurrent()) {
             runnable.run();
+        } catch (Exception e) {
+            span.setStatus(StatusCode.ERROR).recordException(e);
+            throw e;
         } finally {
             span.end();
         }
@@ -425,6 +429,9 @@ public abstract class BaseTracer {
                 .startSpan();
         try (Scope scope = span.makeCurrent()) {
             return callable.call();
+        } catch (Exception e) {
+            span.setStatus(StatusCode.ERROR).recordException(e);
+            throw e;
         } finally {
             span.end();
         }
