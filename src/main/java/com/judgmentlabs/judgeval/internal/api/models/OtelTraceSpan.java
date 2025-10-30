@@ -11,82 +11,41 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class OtelTraceSpan {
     @JsonProperty("organization_id")
-    private String organizationId;
-
+    private String              organizationId;
     @JsonProperty("project_id")
-    private String projectId;
-
+    private String              projectId;
     @JsonProperty("user_id")
-    private String userId;
-
+    private String              userId;
     @JsonProperty("timestamp")
-    private String timestamp;
-
+    private String              timestamp;
     @JsonProperty("trace_id")
-    private String traceId;
-
+    private String              traceId;
     @JsonProperty("span_id")
-    private String spanId;
-
+    private String              spanId;
     @JsonProperty("parent_span_id")
-    private String parentSpanId;
-
+    private String              parentSpanId;
     @JsonProperty("trace_state")
-    private String traceState;
-
+    private String              traceState;
     @JsonProperty("span_name")
-    private String spanName;
-
+    private String              spanName;
     @JsonProperty("span_kind")
-    private String spanKind;
-
+    private String              spanKind;
     @JsonProperty("service_name")
-    private String serviceName;
-
+    private String              serviceName;
     @JsonProperty("resource_attributes")
-    private Object resourceAttributes;
-
+    private Object              resourceAttributes;
     @JsonProperty("span_attributes")
-    private Object spanAttributes;
-
+    private Object              spanAttributes;
     @JsonProperty("duration")
-    private Integer duration;
-
+    private Integer             duration;
     @JsonProperty("status_code")
-    private String statusCode;
-
+    private Integer             statusCode;
     @JsonProperty("status_message")
-    private String statusMessage;
-
+    private String              statusMessage;
     @JsonProperty("events")
-    private List<Object> events;
-
+    private List<Object>        events;
     @JsonProperty("links")
-    private List<Object> links;
-
-    @JsonProperty("legacy_span_id")
-    private String legacySpanId;
-
-    @JsonProperty("inputs")
-    private Object inputs;
-
-    @JsonProperty("output")
-    private Object output;
-
-    @JsonProperty("error")
-    private Object error;
-
-    @JsonProperty("agent_id")
-    private String agentId;
-
-    @JsonProperty("cumulative_llm_cost")
-    private Double cumulativeLlmCost;
-
-    @JsonProperty("state_after")
-    private Object stateAfter;
-
-    @JsonProperty("state_before")
-    private Object stateBefore;
+    private List<Object>        links;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -156,7 +115,7 @@ public class OtelTraceSpan {
         return duration;
     }
 
-    public String getStatusCode() {
+    public Integer getStatusCode() {
         return statusCode;
     }
 
@@ -170,38 +129,6 @@ public class OtelTraceSpan {
 
     public List<Object> getLinks() {
         return links;
-    }
-
-    public String getLegacySpanId() {
-        return legacySpanId;
-    }
-
-    public Object getInputs() {
-        return inputs;
-    }
-
-    public Object getOutput() {
-        return output;
-    }
-
-    public Object getError() {
-        return error;
-    }
-
-    public String getAgentId() {
-        return agentId;
-    }
-
-    public Double getCumulativeLlmCost() {
-        return cumulativeLlmCost;
-    }
-
-    public Object getStateAfter() {
-        return stateAfter;
-    }
-
-    public Object getStateBefore() {
-        return stateBefore;
     }
 
     public void setOrganizationId(String organizationId) {
@@ -260,7 +187,7 @@ public class OtelTraceSpan {
         this.duration = duration;
     }
 
-    public void setStatusCode(String statusCode) {
+    public void setStatusCode(Integer statusCode) {
         this.statusCode = statusCode;
     }
 
@@ -276,101 +203,30 @@ public class OtelTraceSpan {
         this.links = links;
     }
 
-    public void setLegacySpanId(String legacySpanId) {
-        this.legacySpanId = legacySpanId;
-    }
-
-    public void setInputs(Object inputs) {
-        this.inputs = inputs;
-    }
-
-    public void setOutput(Object output) {
-        this.output = output;
-    }
-
-    public void setError(Object error) {
-        this.error = error;
-    }
-
-    public void setAgentId(String agentId) {
-        this.agentId = agentId;
-    }
-
-    public void setCumulativeLlmCost(Double cumulativeLlmCost) {
-        this.cumulativeLlmCost = cumulativeLlmCost;
-    }
-
-    public void setStateAfter(Object stateAfter) {
-        this.stateAfter = stateAfter;
-    }
-
-    public void setStateBefore(Object stateBefore) {
-        this.stateBefore = stateBefore;
-    }
-
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         OtelTraceSpan other = (OtelTraceSpan) obj;
-        return Objects.equals(organizationId, other.organizationId)
-                && Objects.equals(projectId, other.projectId)
-                && Objects.equals(userId, other.userId)
-                && Objects.equals(timestamp, other.timestamp)
-                && Objects.equals(traceId, other.traceId)
-                && Objects.equals(spanId, other.spanId)
-                && Objects.equals(parentSpanId, other.parentSpanId)
-                && Objects.equals(traceState, other.traceState)
-                && Objects.equals(spanName, other.spanName)
-                && Objects.equals(spanKind, other.spanKind)
+        return Objects.equals(organizationId, other.organizationId) && Objects.equals(projectId, other.projectId)
+                && Objects.equals(userId, other.userId) && Objects.equals(timestamp, other.timestamp)
+                && Objects.equals(traceId, other.traceId) && Objects.equals(spanId, other.spanId)
+                && Objects.equals(parentSpanId, other.parentSpanId) && Objects.equals(traceState, other.traceState)
+                && Objects.equals(spanName, other.spanName) && Objects.equals(spanKind, other.spanKind)
                 && Objects.equals(serviceName, other.serviceName)
                 && Objects.equals(resourceAttributes, other.resourceAttributes)
-                && Objects.equals(spanAttributes, other.spanAttributes)
-                && Objects.equals(duration, other.duration)
-                && Objects.equals(statusCode, other.statusCode)
-                && Objects.equals(statusMessage, other.statusMessage)
-                && Objects.equals(events, other.events)
-                && Objects.equals(links, other.links)
-                && Objects.equals(legacySpanId, other.legacySpanId)
-                && Objects.equals(inputs, other.inputs)
-                && Objects.equals(output, other.output)
-                && Objects.equals(error, other.error)
-                && Objects.equals(agentId, other.agentId)
-                && Objects.equals(cumulativeLlmCost, other.cumulativeLlmCost)
-                && Objects.equals(stateAfter, other.stateAfter)
-                && Objects.equals(stateBefore, other.stateBefore)
+                && Objects.equals(spanAttributes, other.spanAttributes) && Objects.equals(duration, other.duration)
+                && Objects.equals(statusCode, other.statusCode) && Objects.equals(statusMessage, other.statusMessage)
+                && Objects.equals(events, other.events) && Objects.equals(links, other.links)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                organizationId,
-                projectId,
-                userId,
-                timestamp,
-                traceId,
-                spanId,
-                parentSpanId,
-                traceState,
-                spanName,
-                spanKind,
-                serviceName,
-                resourceAttributes,
-                spanAttributes,
-                duration,
-                statusCode,
-                statusMessage,
-                events,
-                links,
-                legacySpanId,
-                inputs,
-                output,
-                error,
-                agentId,
-                cumulativeLlmCost,
-                stateAfter,
-                stateBefore,
-                Objects.hashCode(additionalProperties));
+        return Objects.hash(organizationId, projectId, userId, timestamp, traceId, spanId, parentSpanId, traceState,
+                spanName, spanKind, serviceName, resourceAttributes, spanAttributes, duration, statusCode,
+                statusMessage, events, links, Objects.hashCode(additionalProperties));
     }
 }

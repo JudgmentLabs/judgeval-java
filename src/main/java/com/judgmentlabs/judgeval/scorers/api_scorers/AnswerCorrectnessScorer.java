@@ -20,6 +20,7 @@ public class AnswerCorrectnessScorer extends APIScorer {
     }
 
     public static AnswerCorrectnessScorer create(double threshold) {
-        return builder().threshold(threshold).build();
+        return builder().threshold(threshold)
+                .build();
     }
 }

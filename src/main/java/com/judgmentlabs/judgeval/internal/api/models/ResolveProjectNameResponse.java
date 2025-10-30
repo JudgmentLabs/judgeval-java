@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ResolveProjectNameResponse {
     @JsonProperty("project_id")
-    private String projectId;
+    private String              projectId;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -34,8 +34,10 @@ public class ResolveProjectNameResponse {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         ResolveProjectNameResponse other = (ResolveProjectNameResponse) obj;
         return Objects.equals(projectId, other.projectId)
                 && Objects.equals(additionalProperties, other.additionalProperties);

@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.judgmentlabs</groupId>
     <artifactId>judgeval-java</artifactId>
-    <version>0.2.1</version>
+    <version>0.2.2</version>
     <packaging>jar</packaging>
     <name>Judgeval Java</name>
     <description>Java SDK for Judgeval</description>
@@ -207,13 +207,13 @@
                 <version>${spotless.version}</version>
                 <configuration>
                     <java>
-                        <googleJavaFormat>
-                            <version>1.19.2</version>
-                            <style>AOSP</style>
-                        </googleJavaFormat>
+                        <eclipse>
+                            <version>4.28</version>
+                            <file>.vscode/java-formatter.xml</file>
+                        </eclipse>
                         <removeUnusedImports/>
                         <importOrder>
-                            <order>java,javax,org,com,</order>
+                            <order>java,javax,org,com</order>
                         </importOrder>
                     </java>
                 </configuration>
@@ -225,7 +225,6 @@
                 <version>${checkstyle.version}</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>false</failsOnError>
                 </configuration>

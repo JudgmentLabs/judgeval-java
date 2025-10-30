@@ -17,6 +17,7 @@ public class DerailmentScorer extends APIScorer {
     }
 
     public static DerailmentScorer create(double threshold) {
-        return builder().threshold(threshold).build();
+        return builder().threshold(threshold)
+                .build();
     }
 }

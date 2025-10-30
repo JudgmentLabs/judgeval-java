@@ -12,9 +12,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class EvalResults {
     @JsonProperty("results")
     private List<ScoringResult> results;
-
     @JsonProperty("run")
-    private Object run;
+    private Object              run;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -46,11 +45,12 @@ public class EvalResults {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         EvalResults other = (EvalResults) obj;
-        return Objects.equals(results, other.results)
-                && Objects.equals(run, other.run)
+        return Objects.equals(results, other.results) && Objects.equals(run, other.run)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 

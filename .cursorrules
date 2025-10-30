@@ -1,0 +1,227 @@
+# Judgeval Java - Internal API Patterns
+
+## Context
+
+The `com.judgmentlabs.judgeval.internal` package contains internal API code that is auto-generated from OpenAPI specifications using `scripts/generate_client.py`, but is explicitly modifiable for internal improvements. This code is NOT part of the public API and can be refactored, cleaned up, and optimized as needed.
+
+## Internal API Models (`internal/api/models/`)
+
+### Structure Pattern
+- **Package**: `com.judgmentlabs.judgeval.internal.api.models`
+- **Naming**: PascalCase class names matching OpenAPI schema names (e.g., `EvalResultsFetch`, `ResolveProjectNameResponse`)
+- **Purpose**: Jackson-annotated POJOs for serializing/deserializing JSON requests and responses
+
+### Field Patterns
+- **Field Declaration**: 
+  - Private fields with camelCase naming (e.g., `experimentRunId`, `projectName`)
+  - Jackson `@JsonProperty` annotation mapping snake_case JSON keys to camelCase fields
+  - Use wrapper types (String, Integer, Boolean, List<T>, etc.) - never primitives for nullable fields
+  - All fields are nullable by default (no `@NotNull` annotations)
+
+### Additional Properties Pattern
+All model classes MUST include:
+```java
+private Map<String, Object> additionalProperties = new HashMap<>();
+
+@JsonAnyGetter
+public Map<String, Object> getAdditionalProperties() {
+    return additionalProperties;
+}
+
+@JsonAnySetter
+public void setAdditionalProperty(String name, Object value) {
+    additionalProperties.put(name, value);
+}
+```
+This allows unknown JSON fields to be preserved during deserialization.
+
+### Getter/Setter Pattern
+- **Getters**: Public methods following JavaBean convention `getFieldName()` returning field type
+- **Setters**: Public methods following JavaBean convention `setFieldName(Type fieldName)` returning void
+- **Order**: Fields declared first, then additionalProperties, then getters, then setters
+
+### Equals/HashCode Pattern
+- **Equals**: Must include all fields plus `additionalProperties`
+- **Implementation**: Use `Objects.equals()` for all field comparisons
+- **HashCode**: Use `Objects.hash()` for all fields, with `Objects.hashCode(additionalProperties)` for the Map
+- **Null Safety**: Both methods handle null fields safely via `Objects.equals()`
+
+### Imports
+Standard imports:
+- `java.util.HashMap`
+- `java.util.List` (if using collections)
+- `java.util.Map`
+- `java.util.Objects`
+- `com.fasterxml.jackson.annotation.JsonAnyGetter`
+- `com.fasterxml.jackson.annotation.JsonAnySetter`
+- `com.fasterxml.jackson.annotation.JsonProperty`
+
+## Internal API Clients (`internal/api/`)
+
+### Client Classes
+- **JudgmentSyncClient**: Synchronous HTTP client for blocking API calls
+- **JudgmentAsyncClient**: Asynchronous HTTP client for non-blocking API calls
+- Both share identical structure and helper methods, differing only in execution model
+
+### Constructor Pattern
+```java
+public JudgmentSyncClient(String baseUrl, String apiKey, String organizationId) {
+    this.baseUrl = baseUrl;
+    this.apiKey = apiKey;
+    this.organizationId = organizationId;
+    this.client = HttpClient.newBuilder().version(HttpClient.Version.HTTP_1_1).build();
+    this.mapper = new ObjectMapper();
+}
+```
+
+### Helper Methods Pattern
+
+#### buildUrl(String path, Map<String, String> queryParams)
+- Builds full URL from baseUrl + path
+- Appends query string from map if non-empty
+- Query string format: `key1=value1&key2=value2`
+- Returns complete URL string
+
+#### buildUrl(String path)
+- Convenience overload calling `buildUrl(path, new HashMap<>())`
+
+#### buildHeaders()
+- Validates `apiKey` and `organizationId` are not null (throws `IllegalArgumentException`)
+- Returns String array with:
+  - `"Content-Type"`, `"application/json"`
+  - `"Authorization"`, `"Bearer " + apiKey`
+  - `"X-Organization-Id"`, `organizationId`
+
+#### handleResponse(HttpResponse<String> response)
+- **Sync**: `throws IOException`
+- **Async**: No throws clause (unchecked exceptions)
+- Checks status code >= 400, throws `RuntimeException` with status and body
+- Attempts to deserialize response body using `mapper.readValue(response.body(), new TypeReference<T>() {})`
+- Catches parsing exceptions and wraps in `RuntimeException("Failed to parse response", e)`
+- **Issue**: TypeReference generic type erasure makes this unreliable - should use specific class when known
+
+### Method Naming Pattern
+- Method names derived from API path: `/fetch_experiment_run/` → `fetchExperimentRun`
+- Path segments separated by underscores/forward slashes become camelCase
+- HTTP method determines method signature (GET = no body, POST = has payload)
+
+### Sync Client Method Pattern
+```java
+public ReturnType methodName(RequestType payload) throws IOException, InterruptedException {
+    String url = buildUrl("/api/path/");
+    String jsonPayload = mapper.writeValueAsString(payload);
+    HttpRequest request = HttpRequest.newBuilder()
+            .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+            .uri(URI.create(url))
+            .headers(buildHeaders())
+            .build();
+    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+    return handleResponse(response); // or mapper.readValue(response.body(), SpecificType.class);
+}
+```
+
+### Async Client Method Pattern
+```java
+public CompletableFuture<ReturnType> methodName(RequestType payload) {
+    String url = buildUrl("/api/path/");
+    String jsonPayload;
+    try {
+        jsonPayload = mapper.writeValueAsString(payload);
+    } catch (Exception e) {
+        throw new RuntimeException("Failed to serialize payload", e);
+    }
+    HttpRequest request = HttpRequest.newBuilder()
+            .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+            .uri(URI.create(url))
+            .headers(buildHeaders())
+            .build();
+    return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+            .thenApply(this::handleResponse);
+}
+```
+
+### Return Type Patterns
+- **Consistency Issue**: Some methods return `Object`, others return specific response types
+- **Preferred**: Return specific response model types when known (e.g., `ScorerExistsResponse`, `ResolveProjectNameResponse`)
+- **Fallback**: Use `Object` only when response schema is truly unknown/variable
+- **Async**: Return type wrapped in `CompletableFuture<T>`
+
+### Error Handling Standards
+
+#### Sync Client
+- `IOException` and `InterruptedException` propagate (method signature)
+- `RuntimeException` for HTTP errors (4xx/5xx) - thrown by `handleResponse`
+- `RuntimeException` for deserialization errors - thrown by `handleResponse` or `mapper.readValue`
+
+#### Async Client
+- All exceptions caught internally and wrapped in `RuntimeException`
+- Serialization errors caught immediately and rethrown before async operation
+- HTTP/deserialization errors thrown from `handleResponse` in CompletableFuture chain
+- No checked exceptions in method signatures
+
+### Query Parameters Pattern
+For GET requests or POST requests with query params:
+```java
+Map<String, String> queryParams = new HashMap<>();
+queryParams.put("param_name", paramValue);
+String url = buildUrl("/api/path/", queryParams);
+```
+
+## Code Quality Expectations
+
+### Documentation
+- Add JavaDoc to all public methods in client classes
+- Document parameters, return types, and thrown exceptions
+- Explain complex business logic or non-obvious patterns
+
+### Null Safety
+- Use `Optional` internally for nullable values when appropriate
+- Use `@NotNull` annotations for parameters that must not be null (only if needed for external safety)
+- Validate constructor parameters that must not be null
+
+### Error Messages
+- Error messages should be descriptive and include context
+- HTTP errors should include status code and response body
+- Serialization errors should indicate the operation that failed
+
+### Code Organization
+- Group related methods together
+- Keep helper methods private
+- Maintain consistent method ordering (constructors, helpers, public API methods)
+- Extract common patterns into reusable helpers when duplicated across sync/async clients
+
+### Type Safety
+- Prefer specific types over `Object` for return values
+- Use proper generic types for collections
+- Avoid raw types and unchecked casts
+
+### Consistency
+- Sync and async clients should have identical API (only differing by CompletableFuture wrapper)
+- Method names should be consistent across both clients
+- Helper methods should behave identically in both clients
+
+## Refactoring Opportunities
+
+### Known Issues
+1. **TypeReference generic erasure**: `handleResponse` uses `TypeReference<T>()` which doesn't preserve type information. Consider passing `Class<T>` or using Jackson's `TypeFactory`.
+
+2. **Return type inconsistency**: Some sync methods return `Object`, others return specific types. Standardize based on OpenAPI response schemas.
+
+3. **Code duplication**: Sync and async clients share ~90% of code. Consider extracting common base class or using composition.
+
+4. **Error handling**: Async client wraps serialization errors, sync client doesn't. Consider consistent error handling strategy.
+
+5. **Missing validation**: No validation of request payloads before serialization. Consider adding validation for required fields.
+
+6. **Missing documentation**: No JavaDoc comments on any client methods. Should document all public methods.
+
+### Recommended Improvements
+- Extract common client logic to base class `BaseJudgmentClient`
+- Standardize return types based on OpenAPI response schemas
+- Add request/response validation
+- Improve error handling with custom exception types
+- Add comprehensive JavaDoc documentation
+- Consider using builder pattern for request construction
+- Add retry logic for transient failures
+- Add request/response logging
+

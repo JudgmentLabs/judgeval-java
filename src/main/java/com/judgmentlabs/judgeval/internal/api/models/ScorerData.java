@@ -10,34 +10,25 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ScorerData {
     @JsonProperty("id")
-    private String id;
-
+    private String              id;
     @JsonProperty("name")
-    private String name;
-
+    private String              name;
     @JsonProperty("threshold")
-    private Double threshold;
-
+    private Double              threshold;
     @JsonProperty("success")
-    private Boolean success;
-
+    private Boolean             success;
     @JsonProperty("score")
-    private Double score;
-
+    private Double              score;
     @JsonProperty("reason")
-    private String reason;
-
+    private String              reason;
     @JsonProperty("strict_mode")
-    private Boolean strictMode;
-
+    private Boolean             strictMode;
     @JsonProperty("evaluation_model")
-    private String evaluationModel;
-
+    private String              evaluationModel;
     @JsonProperty("error")
-    private String error;
-
+    private String              error;
     @JsonProperty("additional_metadata")
-    private Object additionalMetadata;
+    private Object              additionalMetadata;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -133,35 +124,23 @@ public class ScorerData {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         ScorerData other = (ScorerData) obj;
-        return Objects.equals(id, other.id)
-                && Objects.equals(name, other.name)
-                && Objects.equals(threshold, other.threshold)
-                && Objects.equals(success, other.success)
-                && Objects.equals(score, other.score)
-                && Objects.equals(reason, other.reason)
+        return Objects.equals(id, other.id) && Objects.equals(name, other.name)
+                && Objects.equals(threshold, other.threshold) && Objects.equals(success, other.success)
+                && Objects.equals(score, other.score) && Objects.equals(reason, other.reason)
                 && Objects.equals(strictMode, other.strictMode)
-                && Objects.equals(evaluationModel, other.evaluationModel)
-                && Objects.equals(error, other.error)
+                && Objects.equals(evaluationModel, other.evaluationModel) && Objects.equals(error, other.error)
                 && Objects.equals(additionalMetadata, other.additionalMetadata)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                id,
-                name,
-                threshold,
-                success,
-                score,
-                reason,
-                strictMode,
-                evaluationModel,
-                error,
-                additionalMetadata,
-                Objects.hashCode(additionalProperties));
+        return Objects.hash(id, name, threshold, success, score, reason, strictMode, evaluationModel, error,
+                additionalMetadata, Objects.hashCode(additionalProperties));
     }
 }

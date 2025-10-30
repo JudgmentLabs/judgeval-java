@@ -1,8 +1,10 @@
 package com.judgmentlabs.judgeval.scorers.api_scorers.prompt_scorer;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.data.APIScorerType;
@@ -10,160 +12,70 @@ import com.judgmentlabs.judgeval.exceptions.JudgmentAPIError;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersRequest;
 import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersResponse;
-import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerRequest;
-import com.judgmentlabs.judgeval.internal.api.models.SavePromptScorerResponse;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerExistsResponse;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
-import com.judgmentlabs.judgeval.utils.Logger;
 
 public abstract class BasePromptScorer extends APIScorer {
-    protected String prompt;
-    protected Map<String, Double> options;
-    protected String judgmentApiKey;
-    protected String organizationId;
+    private static final Map<CacheKey, com.judgmentlabs.judgeval.internal.api.models.PromptScorer> cache = new ConcurrentHashMap<>();
 
-    protected BasePromptScorer(
-            APIScorerType scoreType,
-            String name,
-            String prompt,
-            double threshold,
-            Map<String, Double> options,
-            String judgmentApiKey,
-            String organizationId) {
+    protected String                                                                               prompt;
+    protected Map<String, Double>                                                                  options;
+    protected String                                                                               judgmentApiKey;
+    protected String                                                                               organizationId;
+
+    protected BasePromptScorer(APIScorerType scoreType, String name, String prompt, double threshold,
+            Map<String, Double> options, String judgmentApiKey, String organizationId) {
         super(scoreType);
         this.prompt = prompt;
         this.options = options;
         this.judgmentApiKey = judgmentApiKey;
         this.organizationId = organizationId;
         setName(name);
-        setThreshold(threshold);
+        super.setThreshold(threshold);
     }
 
     public static boolean scorerExists(String name, String judgmentApiKey, String organizationId) {
         try {
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             ScorerExistsRequest request = new ScorerExistsRequest();
             request.setName(name);
             ScorerExistsResponse response = client.scorerExists(request);
             return Boolean.TRUE.equals(response.getExists());
-        } catch (JudgmentAPIError e) {
-            if (e.getStatusCode() == 500) {
-                throw new JudgmentAPIError(
-                        e.getStatusCode(),
-                        "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
-                                + e.getMessage());
-            }
-            throw new JudgmentAPIError(
-                    e.getStatusCode(), "Failed to check if scorer exists: " + e.getMessage());
-        } catch (IOException | InterruptedException e) {
-            throw new JudgmentAPIError(
-                    500,
-                    "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
-                            + e.getMessage());
+        } catch (Exception e) {
+            throw new JudgmentAPIError(500, "Failed to check if scorer exists: " + e.getMessage());
         }
     }
 
-    public static com.judgmentlabs.judgeval.internal.api.models.PromptScorer fetchPromptScorer(
-            String name, String judgmentApiKey, String organizationId) {
+    public static com.judgmentlabs.judgeval.internal.api.models.PromptScorer fetchPromptScorer(String name,
+            String judgmentApiKey, String organizationId) {
+        CacheKey key = new CacheKey(name, judgmentApiKey, organizationId);
+        com.judgmentlabs.judgeval.internal.api.models.PromptScorer cached = cache.get(key);
+        if (cached != null) {
+            return cached;
+        }
+
         try {
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
+            JudgmentSyncClient client = new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
             FetchPromptScorersRequest request = new FetchPromptScorersRequest();
             request.setNames(java.util.Collections.singletonList(name));
 
             FetchPromptScorersResponse response = client.fetchScorers(request);
 
-            if (response.getScorers() == null || response.getScorers().isEmpty()) {
-                throw new JudgmentAPIError(
-                        404, "Failed to fetch prompt scorer '" + name + "': not found");
-            }
+            com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorer = Optional.ofNullable(response)
+                    .map(FetchPromptScorersResponse::getScorers)
+                    .filter(scorers -> scorers != null && !scorers.isEmpty())
+                    .map(scorers -> scorers.get(0))
+                    .orElseThrow(
+                            () -> new JudgmentAPIError(404, "Failed to fetch prompt scorer '" + name + "': not found"));
 
-            return response.getScorers().get(0);
+            cache.put(key, scorer);
+            return scorer;
         } catch (JudgmentAPIError e) {
-            if (e.getStatusCode() == 500) {
-                throw new JudgmentAPIError(
-                        e.getStatusCode(),
-                        "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
-                                + e.getMessage());
-            }
-            throw new JudgmentAPIError(
-                    e.getStatusCode(),
-                    "Failed to fetch prompt scorer '" + name + "': " + e.getMessage());
-        } catch (IOException | InterruptedException e) {
-            throw new JudgmentAPIError(
-                    500,
-                    "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
-                            + e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            throw new JudgmentAPIError(500, "Failed to fetch prompt scorer '" + name + "': " + e.getMessage());
         }
-    }
-
-    public static String pushPromptScorer(
-            String name,
-            String prompt,
-            double threshold,
-            Map<String, Double> options,
-            String judgmentApiKey,
-            String organizationId,
-            Boolean isTrace) {
-        try {
-            JudgmentSyncClient client =
-                    new JudgmentSyncClient(Env.JUDGMENT_API_URL, judgmentApiKey, organizationId);
-            SavePromptScorerRequest request = new SavePromptScorerRequest();
-            request.setName(name);
-            request.setPrompt(prompt);
-            request.setThreshold(threshold);
-            Map<String, Object> apiOptions = null;
-            if (options != null) {
-                apiOptions = new HashMap<>();
-                for (Map.Entry<String, Double> entry : options.entrySet()) {
-                    apiOptions.put(entry.getKey(), entry.getValue());
-                }
-            }
-            request.setOptions(apiOptions);
-            request.setIsTrace(isTrace);
-
-            SavePromptScorerResponse response = client.saveScorer(request);
-            return response != null ? response.getName() : null;
-        } catch (JudgmentAPIError e) {
-            if (e.getStatusCode() == 500) {
-                throw new JudgmentAPIError(
-                        e.getStatusCode(),
-                        "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
-                                + e.getMessage());
-            }
-            throw new JudgmentAPIError(
-                    e.getStatusCode(), "Failed to save prompt scorer: " + e.getMessage());
-        } catch (IOException | InterruptedException e) {
-            throw new JudgmentAPIError(
-                    500,
-                    "The server is temporarily unavailable. Please try your request again in a few moments. Error details: "
-                            + e.getMessage());
-        }
-    }
-
-    public void setThreshold(double threshold) {
-        super.setThreshold(threshold);
-        pushPromptScorer();
-    }
-
-    public void setPrompt(String prompt) {
-        this.prompt = prompt;
-        pushPromptScorer();
-        Logger.info("Successfully updated prompt for " + getName());
-    }
-
-    public void setOptions(Map<String, Double> options) {
-        this.options = options;
-        pushPromptScorer();
-        Logger.info("Successfully updated options for " + getName());
-    }
-
-    public void appendToPrompt(String promptAddition) {
-        this.prompt += promptAddition;
-        pushPromptScorer();
-        Logger.info("Successfully appended to prompt for " + getName());
     }
 
     public Double getThreshold() {
@@ -175,7 +87,9 @@ public abstract class BasePromptScorer extends APIScorer {
     }
 
     public Map<String, Double> getOptions() {
-        return options != null ? new HashMap<>(options) : null;
+        return Optional.ofNullable(options)
+                .map(HashMap::new)
+                .orElse(null);
     }
 
     public String getScorerName() {
@@ -191,29 +105,39 @@ public abstract class BasePromptScorer extends APIScorer {
         return config;
     }
 
-    protected void pushPromptScorer() {
-        pushPromptScorer(
-                getName(),
-                prompt,
-                getThreshold(),
-                options,
-                judgmentApiKey,
-                organizationId,
-                isTrace());
-    }
-
     protected abstract boolean isTrace();
+
+    private static final class CacheKey {
+        private final String name;
+        private final String apiKey;
+        private final String organizationId;
+
+        CacheKey(String name, String apiKey, String organizationId) {
+            this.name = name;
+            this.apiKey = apiKey;
+            this.organizationId = organizationId;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null || getClass() != obj.getClass())
+                return false;
+            CacheKey that = (CacheKey) obj;
+            return Objects.equals(name, that.name) && Objects.equals(apiKey, that.apiKey)
+                    && Objects.equals(organizationId, that.organizationId);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, apiKey, organizationId);
+        }
+    }
 
     @Override
     public String toString() {
-        return "PromptScorer(name="
-                + getName()
-                + ", prompt="
-                + prompt
-                + ", threshold="
-                + getThreshold()
-                + ", options="
-                + options
-                + ")";
+        return "PromptScorer(name=" + getName() + ", prompt=" + prompt + ", threshold=" + getThreshold()
+                + ", options=" + options + ")";
     }
 }

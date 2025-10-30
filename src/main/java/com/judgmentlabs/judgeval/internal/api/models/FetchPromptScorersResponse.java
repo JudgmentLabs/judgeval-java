@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class FetchPromptScorersResponse {
     @JsonProperty("scorers")
-    private List<PromptScorer> scorers;
+    private List<PromptScorer>  scorers;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -35,8 +35,10 @@ public class FetchPromptScorersResponse {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj)
+            return true;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
         FetchPromptScorersResponse other = (FetchPromptScorersResponse) obj;
         return Objects.equals(scorers, other.scorers)
                 && Objects.equals(additionalProperties, other.additionalProperties);

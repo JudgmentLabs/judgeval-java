@@ -20,6 +20,7 @@ public class AnswerRelevancyScorer extends APIScorer {
     }
 
     public static AnswerRelevancyScorer create(double threshold) {
-        return builder().threshold(threshold).build();
+        return builder().threshold(threshold)
+                .build();
     }
 }

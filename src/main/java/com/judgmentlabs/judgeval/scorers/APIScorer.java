@@ -3,16 +3,17 @@ package com.judgmentlabs.judgeval.scorers;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
-public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer
-        implements BaseScorer {
+public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer implements BaseScorer {
     private APIScorerType scoreType;
 
-    @JsonIgnore private List<String> requiredParams;
+    @JsonIgnore
+    private List<String>  requiredParams;
 
     public APIScorer(APIScorerType scoreType) {
         super();
@@ -27,8 +28,7 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
 
     public void setThreshold(double threshold) {
         if (threshold < 0 || threshold > 1) {
-            throw new IllegalArgumentException(
-                    "Threshold must be between 0 and 1, got: " + threshold);
+            throw new IllegalArgumentException("Threshold must be between 0 and 1, got: " + threshold);
         }
         super.setThreshold(threshold);
     }
@@ -47,20 +47,21 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
 
     @Override
     public Double getThreshold() {
-        Double threshold = super.getThreshold();
-        return threshold != null ? threshold : 0.5;
+        return Optional.ofNullable(super.getThreshold())
+                .orElse(0.5);
     }
 
     @Override
     public String getName() {
-        Object name = super.getName();
-        return name != null ? name.toString() : null;
+        return Optional.ofNullable(super.getName())
+                .map(Object::toString)
+                .orElse(null);
     }
 
     @Override
     public Boolean getStrictMode() {
-        Boolean strictMode = super.getStrictMode();
-        return strictMode != null ? strictMode : false;
+        return Optional.ofNullable(super.getStrictMode())
+                .orElse(false);
     }
 
     @Override
@@ -72,7 +73,8 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
         cfg.setStrictMode(getStrictMode());
         cfg.setRequiredParams(getRequiredParams());
         Map<String, Object> kwargs = new HashMap<>();
-        if (getAdditionalProperties() != null) kwargs.putAll(getAdditionalProperties());
+        if (getAdditionalProperties() != null)
+            kwargs.putAll(getAdditionalProperties());
         cfg.setKwargs(kwargs);
         return cfg;
     }
@@ -86,7 +88,8 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
 
         private Builder(Class<T> scorerClass) {
             try {
-                this.scorer = scorerClass.getDeclaredConstructor().newInstance();
+                this.scorer = scorerClass.getDeclaredConstructor()
+                        .newInstance();
             } catch (Exception e) {
                 throw new RuntimeException("Failed to create scorer instance", e);
             }
