@@ -1,20 +1,24 @@
 package com.judgmentlabs.judgeval.tracer;
 
 import java.lang.reflect.Type;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
+import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
 import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
-import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
 import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;
@@ -27,11 +31,6 @@ import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
-
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 public abstract class BaseTracer {
     public static final String          TRACER_NAME = "judgeval";
