@@ -16,7 +16,6 @@ public class SimpleChat {
         var tracer = Tracer.createDefault("SimpleChat-Java");
         tracer.initialize();
 
-        System.out.println("init tracer");
         OpenAIClient baseClient;
         try {
             baseClient = OpenAIOkHttpClient.fromEnv();
@@ -27,32 +26,19 @@ public class SimpleChat {
         var otelClient = OpenAITelemetry.builder(GlobalOpenTelemetry.get()).build().wrap(baseClient);
 
         tracer.span("chat.session", () -> {
-            tracer.setGeneralSpan();
-            tracer.span("llm.call", () -> {
-                tracer.setLLMSpan();
-                System.out.println("building request");
-                var req = ChatCompletionCreateParams.builder()
-                        .model(ChatModel.GPT_4O_MINI)
-                        .maxCompletionTokens(512)
-                        .addUserMessage("Say hi.")
-                        .build();
-                tracer.setInput(req);
-                try {
-                    System.out.println("sending request");
-                    var res = otelClient.chat().completions().create(req);
-                    tracer.setOutput(res);
-                    System.out.println(String.valueOf(res));
-                } catch (Throwable e) {
-                    System.err.println(e.toString());
-                    e.printStackTrace();
-                }
-            });
+            System.out.println("building request");
+            var req = ChatCompletionCreateParams.builder()
+                    .model(ChatModel.GPT_4O_MINI)
+                    .maxCompletionTokens(512)
+                    .addUserMessage("Say hi.")
+                    .build();
+            var res = otelClient.chat().completions().create(req);
+            System.out.println(String.valueOf(res));
         });
 
         try {
             Thread.sleep(Duration.ofSeconds(5).toMillis());
         } catch (InterruptedException ignored) {
         }
-        System.out.println("done");
     }
 }
