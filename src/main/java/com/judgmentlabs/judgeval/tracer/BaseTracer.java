@@ -10,11 +10,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.data.Example;
-import com.judgmentlabs.judgeval.data.ExampleEvaluationRun;
-import com.judgmentlabs.judgeval.data.TraceEvaluationRun;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
+import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
+import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
 import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;
@@ -27,6 +27,11 @@ import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
+
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 public abstract class BaseTracer {
     public static final String          TRACER_NAME = "judgeval";
@@ -502,11 +507,22 @@ public abstract class BaseTracer {
         String runId = generateRunId("async_evaluate_", spanId);
         String modelName = getModelName(model);
 
-        ExampleEvaluationRun evaluationRun = new ExampleEvaluationRun(configuration.projectName(), runId,
-                List.of(example), List.of(scorer.getScorerConfig()), modelName, configuration.organizationId());
-        evaluationRun.setTraceId(traceId);
-        evaluationRun.setTraceSpanId(spanId);
-        return evaluationRun;
+        ExampleEvaluationRun exampleEvaluationRun = new ExampleEvaluationRun();
+        exampleEvaluationRun.setProjectName(configuration.projectName());
+        exampleEvaluationRun.setEvalName(runId);
+        exampleEvaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
+        exampleEvaluationRun.setModel(modelName);
+        com.judgmentlabs.judgeval.internal.api.models.Example internalExample = (com.judgmentlabs.judgeval.internal.api.models.Example) example;
+        exampleEvaluationRun.setExamples(List.of(internalExample));
+        exampleEvaluationRun.setTraceId(traceId);
+        exampleEvaluationRun.setTraceSpanId(spanId);
+        exampleEvaluationRun.setCustomScorers(new java.util.ArrayList<>());
+        exampleEvaluationRun.setId(UUID.randomUUID()
+                .toString());
+        exampleEvaluationRun.setCreatedAt(Instant.now()
+                .atOffset(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ISO_INSTANT));
+        return exampleEvaluationRun;
     }
 
     private TraceEvaluationRun createTraceEvaluationRun(BaseScorer scorer, String model, String traceId,
@@ -514,14 +530,37 @@ public abstract class BaseTracer {
         String evalName = generateRunId("async_trace_evaluate_", spanId);
         String modelName = getModelName(model);
 
-        return TraceEvaluationRun.builder()
-                .projectName(configuration.projectName())
-                .evalName(evalName)
-                .scorer(scorer.getScorerConfig())
-                .model(modelName)
-                .organizationId(configuration.organizationId())
-                .traceAndSpanId(traceId, spanId)
-                .build();
+        TraceEvaluationRun traceEvaluationRun = new TraceEvaluationRun();
+        traceEvaluationRun.setProjectName(configuration.projectName());
+        traceEvaluationRun.setEvalName(evalName);
+        traceEvaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
+        traceEvaluationRun.setModel(modelName);
+        traceEvaluationRun.setTraceAndSpanIds(convertTraceAndSpanIds(List.of(List.of(traceId, spanId))));
+        traceEvaluationRun.setIsOffline(false);
+        traceEvaluationRun.setIsBucketRun(false);
+        traceEvaluationRun.setCustomScorers(new java.util.ArrayList<>());
+        traceEvaluationRun.setId(UUID.randomUUID()
+                .toString());
+        traceEvaluationRun.setCreatedAt(Instant.now()
+                .atOffset(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ISO_INSTANT));
+
+        return traceEvaluationRun;
+    }
+
+    private static List<List<Object>> convertTraceAndSpanIds(List<List<String>> traceAndSpanIds) {
+        if (traceAndSpanIds == null || traceAndSpanIds.isEmpty()) {
+            throw new IllegalArgumentException("Trace and span IDs are required for trace evaluations.");
+        }
+
+        List<List<Object>> converted = new java.util.ArrayList<>();
+        for (List<String> pair : traceAndSpanIds) {
+            if (pair == null || pair.size() != 2) {
+                throw new IllegalArgumentException("Each trace and span ID pair must contain exactly 2 elements.");
+            }
+            converted.add(List.of(pair.get(0), pair.get(1)));
+        }
+        return converted;
     }
 
     private void enqueueEvaluation(ExampleEvaluationRun evaluationRun) {
