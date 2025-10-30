@@ -173,7 +173,10 @@ def get_java_type(schema: Dict[str, Any]) -> str:
             if len(non_null_types) == 1:
                 return list(non_null_types)[0]
             else:
-                print(f"Union type with multiple non-null types: {non_null_types}", file=sys.stderr)
+                print(
+                    f"Union type with multiple non-null types: {non_null_types}",
+                    file=sys.stderr,
+                )
                 return "Object"
 
     schema_type = schema.get("type", "object")
@@ -195,7 +198,7 @@ def get_java_type(schema: Dict[str, Any]) -> str:
 def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
     required_fields = set(schema.get("required", []))
     has_required = bool(required_fields)
-    
+
     lines = [
         "package com.judgmentlabs.judgeval.internal.api.models;",
         "",
@@ -207,7 +210,7 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
         "import java.util.Map;",
         "import java.util.Objects;",
     ]
-    
+
     lines.extend(["", f"public class {className} {{"])
 
     fields = []
@@ -224,9 +227,9 @@ def generate_model_class(className: str, schema: Dict[str, Any]) -> str:
 
             field_lines = [
                 f'    @JsonProperty("{field_name}")',
-                f"    private {java_type} {camel_case_name};"
+                f"    private {java_type} {camel_case_name};",
             ]
-            
+
             fields.extend(field_lines)
 
             getters.extend(
@@ -451,9 +454,9 @@ def generate_client_class(
         "    private final String organizationId;",
         "",
         f"    public {className}(String baseUrl, String apiKey, String organizationId) {{",
-        "        this.baseUrl = Objects.requireNonNull(baseUrl, \"Base URL cannot be null\");",
-        "        this.apiKey = Objects.requireNonNull(apiKey, \"API key cannot be null\");",
-        "        this.organizationId = Objects.requireNonNull(organizationId, \"Organization ID cannot be null\");",
+        '        this.baseUrl = Objects.requireNonNull(baseUrl, "Base URL cannot be null");',
+        '        this.apiKey = Objects.requireNonNull(apiKey, "API key cannot be null");',
+        '        this.organizationId = Objects.requireNonNull(organizationId, "Organization ID cannot be null");',
         "        this.client = HttpClient.newBuilder()",
         "                .version(HttpClient.Version.HTTP_1_1)",
         "                .build();",
@@ -490,14 +493,22 @@ def generate_client_class(
     ]
 
     throws_clause = "" if is_async else " throws IOException"
-    lines.append(f"    private <T> T handleResponse(HttpResponse<String> response){throws_clause} {{")
+    lines.append(
+        f"    private <T> T handleResponse(HttpResponse<String> response){throws_clause} {{"
+    )
     lines.append("        if (response.statusCode() >= 400) {")
-    lines.append(f'            throw new RuntimeException("HTTP Error: " + response.statusCode() + " - " + response.body());')
+    lines.append(
+        f'            throw new RuntimeException("HTTP Error: " + response.statusCode() + " - " + response.body());'
+    )
     lines.append("        }")
     lines.append("        try {")
-    lines.append("            return mapper.readValue(response.body(), new TypeReference<T>() {});")
+    lines.append(
+        "            return mapper.readValue(response.body(), new TypeReference<T>() {});"
+    )
     lines.append("        } catch (Exception e) {")
-    lines.append('            throw new RuntimeException("Failed to parse response", e);')
+    lines.append(
+        '            throw new RuntimeException("Failed to parse response", e);'
+    )
     lines.append("        }")
     lines.append("    }")
     lines.append("")
@@ -534,7 +545,9 @@ def generate_api_files(spec: Dict[str, Any]) -> None:
     used_schemas = find_used_schemas(spec)
     schemas = spec.get("components", {}).get("schemas", {})
 
-    models_dir = "src/main/java/com/judgmentlabs/judgeval/internal/api/models"
+    models_dir = (
+        "judgeval-java/src/main/java/com/judgmentlabs/judgeval/internal/api/models"
+    )
     if os.path.exists(models_dir):
         print(f"Clearing existing models directory: {models_dir}", file=sys.stderr)
         shutil.rmtree(models_dir)
@@ -590,7 +603,7 @@ def generate_api_files(spec: Dict[str, Any]) -> None:
                 }
                 methods.append(method_info)
 
-    api_dir = "src/main/java/com/judgmentlabs/judgeval/internal/api"
+    api_dir = "judgeval-java/src/main/java/com/judgmentlabs/judgeval/internal/api"
     os.makedirs(api_dir, exist_ok=True)
 
     for is_async, class_name in [
