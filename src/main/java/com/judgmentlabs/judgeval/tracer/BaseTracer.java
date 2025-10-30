@@ -512,7 +512,8 @@ public abstract class BaseTracer {
         exampleEvaluationRun.setEvalName(runId);
         exampleEvaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
         exampleEvaluationRun.setModel(modelName);
-        exampleEvaluationRun.setExamples(List.of(example));
+        com.judgmentlabs.judgeval.internal.api.models.Example internalExample = (com.judgmentlabs.judgeval.internal.api.models.Example) example;
+        exampleEvaluationRun.setExamples(List.of(internalExample));
         exampleEvaluationRun.setTraceId(traceId);
         exampleEvaluationRun.setTraceSpanId(spanId);
         exampleEvaluationRun.setCustomScorers(new java.util.ArrayList<>());
@@ -534,7 +535,7 @@ public abstract class BaseTracer {
         traceEvaluationRun.setEvalName(evalName);
         traceEvaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
         traceEvaluationRun.setModel(modelName);
-        traceEvaluationRun.setTraceAndSpanIds(List.of(List.of(traceId, spanId)));
+        traceEvaluationRun.setTraceAndSpanIds(convertTraceAndSpanIds(List.of(List.of(traceId, spanId))));
         traceEvaluationRun.setIsOffline(false);
         traceEvaluationRun.setIsBucketRun(false);
         traceEvaluationRun.setCustomScorers(new java.util.ArrayList<>());
@@ -543,9 +544,23 @@ public abstract class BaseTracer {
         traceEvaluationRun.setCreatedAt(Instant.now()
                 .atOffset(ZoneOffset.UTC)
                 .format(DateTimeFormatter.ISO_INSTANT));
-        traceEvaluationRun.setIsOffline(false);
 
         return traceEvaluationRun;
+    }
+
+    private static List<List<Object>> convertTraceAndSpanIds(List<List<String>> traceAndSpanIds) {
+        if (traceAndSpanIds == null || traceAndSpanIds.isEmpty()) {
+            throw new IllegalArgumentException("Trace and span IDs are required for trace evaluations.");
+        }
+
+        List<List<Object>> converted = new java.util.ArrayList<>();
+        for (List<String> pair : traceAndSpanIds) {
+            if (pair == null || pair.size() != 2) {
+                throw new IllegalArgumentException("Each trace and span ID pair must contain exactly 2 elements.");
+            }
+            converted.add(List.of(pair.get(0), pair.get(1)));
+        }
+        return converted;
     }
 
     private void enqueueEvaluation(ExampleEvaluationRun evaluationRun) {
