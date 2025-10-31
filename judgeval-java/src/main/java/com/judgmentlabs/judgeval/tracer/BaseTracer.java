@@ -452,8 +452,27 @@ public abstract class BaseTracer {
     }
 
     /**
-     * Creates and returns a new span with the given name. The span must be ended
-     * manually by calling {@link Span#end()}.
+     * Gets the tracer configuration.
+     *
+     * @return the TracerConfiguration instance
+     */
+    public TracerConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    /**
+     * Gets the resolved project ID, if available.
+     *
+     * @return an Optional containing the project ID, or empty if not resolved
+     */
+    public Optional<String> getProjectId() {
+        return projectId;
+    }
+
+    /**
+     * Creates and returns a new span with the given name. The span must be entered
+     * with a try-with-resources block or manually ended by calling
+     * {@link Span#end()}.
      *
      * @param spanName
      *            the name of the span

@@ -6,7 +6,8 @@ public final class OpenAITelemetry {
     private OpenAITelemetry() {
     }
 
-    public static io.opentelemetry.instrumentation.openai.v1_1.OpenAITelemetryBuilder builder(OpenTelemetry openTelemetry) {
+    public static io.opentelemetry.instrumentation.openai.v1_1.OpenAITelemetryBuilder builder(
+            OpenTelemetry openTelemetry) {
         return io.opentelemetry.instrumentation.openai.v1_1.OpenAITelemetry.builder(openTelemetry);
     }
 
