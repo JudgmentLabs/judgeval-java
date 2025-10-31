@@ -9,12 +9,14 @@ import java.util.Optional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.judgmentlabs.judgeval.Env;
+import com.judgmentlabs.judgeval.data.EvaluationRunBuilder;
 import com.judgmentlabs.judgeval.data.Example;
+import com.judgmentlabs.judgeval.data.TraceEvaluationRunBuilder;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
+import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
 import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
-import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
 import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;
@@ -27,11 +29,6 @@ import io.opentelemetry.api.trace.StatusCode;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
-
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
 
 public abstract class BaseTracer {
     public static final String          TRACER_NAME = "judgeval";
@@ -453,8 +450,27 @@ public abstract class BaseTracer {
     }
 
     /**
-     * Creates and returns a new span with the given name. The span must be ended
-     * manually by calling {@link Span#end()}.
+     * Gets the tracer configuration.
+     *
+     * @return the TracerConfiguration instance
+     */
+    public TracerConfiguration getConfiguration() {
+        return configuration;
+    }
+
+    /**
+     * Gets the resolved project ID, if available.
+     *
+     * @return an Optional containing the project ID, or empty if not resolved
+     */
+    public Optional<String> getProjectId() {
+        return projectId;
+    }
+
+    /**
+     * Creates and returns a new span with the given name. The span must be entered
+     * with a try-with-resources block or manually ended by calling
+     * {@link Span#end()}.
      *
      * @param spanName
      *            the name of the span
@@ -505,59 +521,35 @@ public abstract class BaseTracer {
     private ExampleEvaluationRun createEvaluationRun(BaseScorer scorer, Example example, String model, String traceId,
             String spanId) {
         String runId = generateRunId("async_evaluate_", spanId);
-        String modelName = getModelName(model);
-
-        ExampleEvaluationRun exampleEvaluationRun = new ExampleEvaluationRun();
-        exampleEvaluationRun.setProjectName(configuration.projectName());
-        exampleEvaluationRun.setEvalName(runId);
-        exampleEvaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
-        exampleEvaluationRun.setModel(modelName);
-        com.judgmentlabs.judgeval.internal.api.models.Example internalExample = (com.judgmentlabs.judgeval.internal.api.models.Example) example;
-        exampleEvaluationRun.setExamples(List.of(internalExample));
-        exampleEvaluationRun.setTraceId(traceId);
-        exampleEvaluationRun.setTraceSpanId(spanId);
-        exampleEvaluationRun.setCustomScorers(new java.util.ArrayList<>());
-        exampleEvaluationRun.setId(UUID.randomUUID()
-                .toString());
-        exampleEvaluationRun.setCreatedAt(Instant.now()
-                .atOffset(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ISO_INSTANT));
-        return exampleEvaluationRun;
+        return new EvaluationRunBuilder()
+                .projectName(configuration.projectName())
+                .evalName(runId)
+                .model(model)
+                .example(example)
+                .trace(traceId, spanId)
+                .addScorer(scorer)
+                .build();
     }
 
     private TraceEvaluationRun createTraceEvaluationRun(BaseScorer scorer, String model, String traceId,
             String spanId) {
         String evalName = generateRunId("async_trace_evaluate_", spanId);
-        String modelName = getModelName(model);
-
-        TraceEvaluationRun traceEvaluationRun = new TraceEvaluationRun();
-        traceEvaluationRun.setProjectName(configuration.projectName());
-        traceEvaluationRun.setEvalName(evalName);
-        traceEvaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
-        traceEvaluationRun.setModel(modelName);
-        traceEvaluationRun.setTraceAndSpanIds(convertTraceAndSpanIds(List.of(List.of(traceId, spanId))));
-        traceEvaluationRun.setIsOffline(false);
-        traceEvaluationRun.setIsBucketRun(false);
-        traceEvaluationRun.setCustomScorers(new java.util.ArrayList<>());
-        traceEvaluationRun.setId(UUID.randomUUID()
-                .toString());
-        traceEvaluationRun.setCreatedAt(Instant.now()
-                .atOffset(ZoneOffset.UTC)
-                .format(DateTimeFormatter.ISO_INSTANT));
-
-        return traceEvaluationRun;
+        return new TraceEvaluationRunBuilder()
+                .projectName(configuration.projectName())
+                .evalName(evalName)
+                .model(model)
+                .trace(traceId, spanId)
+                .addScorer(scorer)
+                .build();
     }
 
     private static List<List<Object>> convertTraceAndSpanIds(List<List<String>> traceAndSpanIds) {
-        if (traceAndSpanIds == null || traceAndSpanIds.isEmpty()) {
+        if (traceAndSpanIds == null || traceAndSpanIds.isEmpty())
             throw new IllegalArgumentException("Trace and span IDs are required for trace evaluations.");
-        }
-
         List<List<Object>> converted = new java.util.ArrayList<>();
         for (List<String> pair : traceAndSpanIds) {
-            if (pair == null || pair.size() != 2) {
+            if (pair == null || pair.size() != 2)
                 throw new IllegalArgumentException("Each trace and span ID pair must contain exactly 2 elements.");
-            }
             converted.add(List.of(pair.get(0), pair.get(1)));
         }
         return converted;

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
@@ -33,6 +34,7 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
         super.setThreshold(threshold);
     }
 
+    @JsonProperty("score_type")
     public String getScoreType() {
         return scoreType.toString();
     }
@@ -65,6 +67,7 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
     }
 
     @Override
+    @JsonIgnore
     public ScorerConfig getScorerConfig() {
         ScorerConfig cfg = new ScorerConfig();
         cfg.setScoreType(getScoreType());

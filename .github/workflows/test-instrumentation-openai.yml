@@ -1,8 +1,12 @@
-name: Test Install
+name: Test judgeval-instrumentation-openai
 
 on:
   pull_request:
     branches: [main]
+    paths:
+      - "instrumentation/judgeval-instrumentation-openai/**"
+      - "pom.xml"
+      - ".github/workflows/test-instrumentation-openai.yml"
 
 jobs:
   test-install:
@@ -25,11 +29,11 @@ jobs:
 
       - name: Test Install
         run: |
-          mvn clean install -Dgpg.skip=true
+          mvn -B -Dgpg.skip=true -pl instrumentation/judgeval-instrumentation-openai -am clean install
 
       - name: Verify Build Artifacts
         run: |
           echo "Checking build artifacts..."
-          ls -la target/
+          ls -la instrumentation/judgeval-instrumentation-openai/target/ || true
           echo "JAR files:"
-          find target/ -name "*.jar" -type f
+          find instrumentation/judgeval-instrumentation-openai/target -name "*.jar" -type f
