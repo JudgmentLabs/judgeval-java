@@ -4,9 +4,9 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'judgeval-java/**'
-      - 'pom.xml'
-      - '.github/workflows/test-judgeval-java.yml'
+      - "judgeval-java/**"
+      - "pom.xml"
+      - ".github/workflows/test-judgeval-java.yml"
 
 jobs:
   test-install:
@@ -37,4 +37,3 @@ jobs:
           ls -la judgeval-java/target/ || true
           echo "JAR files:"
           find judgeval-java/target -name "*.jar" -type f
-
