@@ -88,4 +88,4 @@ run:
 	if [ -z "$$MAIN_CLASS" ]; then \
 	  MAIN_CLASS=$$(ls examples/src/main/java/examples/$(EXAMPLE)/*.java | head -n1 | xargs -n1 basename | sed 's/\.java$$//'); \
 	fi; \
-	mvn -q -f examples/pom.xml -DskipTests -Dexec.cleanupDaemonThreads=false -Dexec.mainClass=examples.$(EXAMPLE).$$MAIN_CLASS compile exec:java
+    mvn -q -f examples/pom.xml -DskipTests -Dexec.cleanupDaemonThreads=false -Dexec.mainClass=examples.$(EXAMPLE).$$MAIN_CLASS clean compile exec:java

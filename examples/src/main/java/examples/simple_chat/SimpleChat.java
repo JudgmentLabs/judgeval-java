@@ -10,7 +10,6 @@ import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.trace.Span;
 
 public class SimpleChat {
     public static void main(String[] args) {
@@ -21,15 +20,6 @@ public class SimpleChat {
         var otelClient = OpenAITelemetry.builder(GlobalOpenTelemetry.get()).build().wrap(baseClient);
 
         tracer.span("chat.session", () -> {
-
-            tracer.getProjectId().ifPresent(projectId -> {
-                String url = String.format(
-                        "https://app.judgmentlabs.ai/org/%s/project/%s/monitoring/traces?trace_id=%s",
-                        tracer.getConfiguration().organizationId(),
-                        projectId,
-                        Span.current().getSpanContext().getTraceId());
-                System.out.println("Trace details: " + url);
-            });
 
             var req = ChatCompletionCreateParams.builder()
                     .model(ChatModel.GPT_4O_MINI)
