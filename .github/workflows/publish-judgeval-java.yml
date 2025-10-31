@@ -1,6 +1,12 @@
 name: Publish judgeval-java
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "judgeval-java/**"
+      - "pom.xml"
   workflow_dispatch:
 
 jobs:
