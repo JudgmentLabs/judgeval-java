@@ -8,7 +8,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <artifactId>judgeval-instrumentation-openai</artifactId>
-    <version>0.0.1</version>
+    <version>${judgeval-instrumentation-openai.version}</version>
     <packaging>jar</packaging>
     <name>Judgeval Instrumentation OpenAI</name>
     <dependencies>
