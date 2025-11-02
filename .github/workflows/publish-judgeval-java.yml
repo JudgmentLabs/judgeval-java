@@ -1,16 +1,40 @@
 name: Publish judgeval-java
 
 on:
+  workflow_dispatch:
+  release:
+    types: [created]
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - "judgeval-java/**"
       - "pom.xml"
-  workflow_dispatch:
 
 jobs:
+  test-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Test Install
+        run: |
+          mvn clean install -Dgpg.skip=true -pl judgeval-java -am
+
   publish:
+    needs: test-install
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,6 +48,24 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
 
+      - name: Verify POM groupId
+        run: |
+          echo "Checking pom.xml for correct groupId..."
+          grep -E "<groupId>.*</groupId>" judgeval-java/pom.xml | head -1
+          echo "Expected: <groupId>com.judgmentlabs</groupId>"
+
+      - name: Show Maven coordinates
+        run: |
+          G=$(mvn -q -DforceStdout -pl judgeval-java help:evaluate -Dexpression=project.groupId)
+          A=$(mvn -q -DforceStdout -pl judgeval-java help:evaluate -Dexpression=project.artifactId)
+          V=$(mvn -q -DforceStdout -pl judgeval-java help:evaluate -Dexpression=project.version)
+          echo "GAV: ${G}:${A}:${V}"
+
+      - name: Clean Maven cache
+        run: |
+          rm -rf ~/.m2/repository/com/judgment
+          rm -rf ~/.m2/repository/com/judgmentlabs
+
       - name: Import GPG key
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import --batch --yes
@@ -36,7 +78,7 @@ jobs:
       - name: Clean and Deploy to Central Portal
         run: |
           mvn clean
-          mvn -B -pl judgeval-java -e deploy \
+          mvn -e --batch-mode deploy -pl judgeval-java -am \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
             --update-snapshots
