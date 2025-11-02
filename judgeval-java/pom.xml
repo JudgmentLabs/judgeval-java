@@ -130,9 +130,9 @@
                 <configuration>
                     <publishingServerId>central</publishingServerId>
                     <autoPublish>true</autoPublish>
-                    <waitUntil>published</waitUntil>
-                    <waitMaxTime>3600</waitMaxTime>
-                    <waitPollingInterval>5</waitPollingInterval>
+                    <waitUntil>uploaded</waitUntil>
+                    <waitMaxTime>600</waitMaxTime>
+                    <waitPollingInterval>10</waitPollingInterval>
                 </configuration>
             </plugin>
 
@@ -215,5 +215,3 @@
         </repository>
     </distributionManagement>
 </project>
-
-

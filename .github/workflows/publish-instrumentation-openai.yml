@@ -10,8 +10,9 @@ on:
       - "instrumentation/judgeval-instrumentation-openai/**"
 
 jobs:
-  test-install:
+  test-and-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -20,21 +21,26 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
+          cache: "maven"
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-
-      - name: Test Install
+      - name: Test and Build
         run: |
-          cd instrumentation/judgeval-instrumentation-openai && mvn clean install -Dgpg.skip=true
+          cd instrumentation/judgeval-instrumentation-openai
+          mvn clean install -Dgpg.skip=true
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: judgeval-instrumentation-openai-build
+          path: |
+            instrumentation/judgeval-instrumentation-openai/target/*.jar
+            instrumentation/judgeval-instrumentation-openai/target/*.pom
+          retention-days: 1
 
   publish:
-    needs: test-install
+    needs: test-and-build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -43,9 +49,16 @@ jobs:
         with:
           java-version: "21"
           distribution: "temurin"
+          cache: "maven"
           server-id: central
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: judgeval-instrumentation-openai-build
+          path: instrumentation/judgeval-instrumentation-openai/target
 
       - name: Verify POM groupId
         run: |
@@ -59,7 +72,7 @@ jobs:
           G=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.groupId)
           A=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.artifactId)
           V=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
-          echo "GAV: ${G}:${A}:${V}"
+          echo "Publishing: ${G}:${A}:${V}"
 
       - name: Import GPG key
         run: |
@@ -70,14 +83,18 @@ jobs:
           gpg-connect-agent reloadagent /bye
           gpg --list-secret-keys --keyid-format LONG
 
-      - name: Clean and Deploy to Central Portal
+      - name: Deploy to Central Portal
         run: |
           cd instrumentation/judgeval-instrumentation-openai
-          mvn clean
           mvn -e --batch-mode deploy \
+            -DskipTests \
+            -Dmaven.install.skip=true \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
-            --update-snapshots
+            -Dhttp.keepAlive=true \
+            -Dmaven.wagon.http.pool=false \
+            -Dmaven.wagon.httpconnectionManager.ttlSeconds=120 \
+            -Dmaven.wagon.http.retryHandler.count=3
         env:
           MAVEN_USERNAME: ${{ secrets.CENTRAL_PORTAL_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
@@ -85,4 +102,10 @@ jobs:
 
       - name: Deployment Status
         run: |
-          echo "Deployment completed - check https://central.sonatype.com for status"
+          echo "Deployment completed successfully!"
+          echo "Artifacts uploaded to Central Portal"
+          echo "Check status at: https://central.sonatype.com/publishing/deployments"
+          echo ""
+          echo "Note: It may take 15-30 minutes for artifacts to sync to Maven Central"
+          echo "Once published, artifacts will be available at:"
+          echo "    https://central.sonatype.com/artifact/com.judgmentlabs/judgeval-instrumentation-openai"
