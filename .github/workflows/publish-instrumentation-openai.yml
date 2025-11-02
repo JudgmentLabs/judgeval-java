@@ -35,7 +35,8 @@ jobs:
 
       - name: Deploy judgeval-instrumentation-openai
         run: |
-          mvn -B -pl instrumentation/judgeval-instrumentation-openai -am -e deploy \
+          mvn -B -pl instrumentation/judgeval-instrumentation-openai -am -e install -DskipTests
+          mvn -B -rf instrumentation/judgeval-instrumentation-openai -e deploy \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
             --update-snapshots

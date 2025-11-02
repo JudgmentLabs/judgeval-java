@@ -35,7 +35,8 @@ jobs:
 
       - name: Deploy judgeval-java
         run: |
-          mvn -B -pl judgeval-java -am -e deploy \
+          mvn -B -pl judgeval-java -am -e install -DskipTests
+          mvn -B -rf judgeval-java -e deploy \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
             --update-snapshots

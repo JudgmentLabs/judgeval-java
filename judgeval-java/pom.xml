@@ -8,7 +8,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>judgeval-java</artifactId>
-    <version>${judgeval-java.version}</version>
+    <version>0.2.3</version>
     <packaging>jar</packaging>
     <name>Judgeval Java</name>
     <description>Java SDK for Judgeval</description>
