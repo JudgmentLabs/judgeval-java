@@ -8,7 +8,6 @@ on:
     branches: [main]
     paths:
       - "instrumentation/judgeval-instrumentation-openai/**"
-      - "pom.xml"
 
 jobs:
   test-install:
@@ -31,7 +30,7 @@ jobs:
 
       - name: Test Install
         run: |
-          mvn clean install -Dgpg.skip=true -pl instrumentation/judgeval-instrumentation-openai -am
+          cd instrumentation/judgeval-instrumentation-openai && mvn clean install -Dgpg.skip=true
 
   publish:
     needs: test-install
@@ -56,9 +55,10 @@ jobs:
 
       - name: Show Maven coordinates
         run: |
-          G=$(mvn -q -DforceStdout -pl instrumentation/judgeval-instrumentation-openai help:evaluate -Dexpression=project.groupId)
-          A=$(mvn -q -DforceStdout -pl instrumentation/judgeval-instrumentation-openai help:evaluate -Dexpression=project.artifactId)
-          V=$(mvn -q -DforceStdout -pl instrumentation/judgeval-instrumentation-openai help:evaluate -Dexpression=project.version)
+          cd instrumentation/judgeval-instrumentation-openai
+          G=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.groupId)
+          A=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.artifactId)
+          V=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version)
           echo "GAV: ${G}:${A}:${V}"
 
       - name: Import GPG key
@@ -72,9 +72,9 @@ jobs:
 
       - name: Clean and Deploy to Central Portal
         run: |
+          cd instrumentation/judgeval-instrumentation-openai
           mvn clean
-          mvn install -N
-          mvn -e --batch-mode deploy -pl instrumentation/judgeval-instrumentation-openai \
+          mvn -e --batch-mode deploy \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
             --update-snapshots

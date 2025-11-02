@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>com.judgmentlabs</groupId>
-        <artifactId>judgeval-parent</artifactId>
-        <version>0.0.0</version>
-        <relativePath>../../pom.xml</relativePath>
-    </parent>
     <groupId>com.judgmentlabs</groupId>
     <artifactId>judgeval-instrumentation-openai</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <packaging>jar</packaging>
     <name>Judgeval Instrumentation OpenAI</name>
     <description>OpenAI instrumentation for Judgeval Java</description>
@@ -39,6 +33,12 @@
         <url>https://github.com/judgmentlabs/judgeval-java/tree/main</url>
     </scm>
 
+    <properties>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.opentelemetry.instrumentation</groupId>
@@ -48,6 +48,24 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>2.43.0</version>
+                <configuration>
+                    <java>
+                        <eclipse>
+                            <version>4.28</version>
+                            <file>../../.vscode/java-formatter.xml</file>
+                        </eclipse>
+                        <removeUnusedImports/>
+                        <importOrder>
+                            <order>java,javax,org,com</order>
+                        </importOrder>
+                    </java>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

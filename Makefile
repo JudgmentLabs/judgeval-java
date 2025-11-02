@@ -2,52 +2,54 @@
 
 format:
 	@echo "[format] judgeval-java"
-	mvn -B -pl judgeval-java -am spotless:apply
+	mvn -B -f judgeval-java/pom.xml spotless:apply
 	@echo "[format] instrumentation/judgeval-instrumentation-openai"
-	mvn -B -pl instrumentation/judgeval-instrumentation-openai -am spotless:apply
+	mvn -B -f instrumentation/judgeval-instrumentation-openai/pom.xml spotless:apply
 
 format-core:
-	mvn -B -pl judgeval-java -am spotless:apply
+	mvn -B -f judgeval-java/pom.xml spotless:apply
 
 format-openai:
-	mvn -B -pl instrumentation/judgeval-instrumentation-openai -am spotless:apply
+	mvn -B -f instrumentation/judgeval-instrumentation-openai/pom.xml spotless:apply
 
 check:
-	mvn -B compile checkstyle:check spotless:check
+	cd judgeval-java && mvn -B compile checkstyle:check spotless:check
 
 test:
-	mvn test
+	cd judgeval-java && mvn test
 
 clean:
-	mvn clean
+	cd judgeval-java && mvn clean
+	cd instrumentation/judgeval-instrumentation-openai && mvn clean
 
 build:
-	mvn -B clean compile
+	cd judgeval-java && mvn -B clean compile
 
 install:
 	@echo "[install] judgeval-java"
-	mvn -B -Dgpg.skip=true -pl judgeval-java -am clean install
+	cd judgeval-java && mvn -B -Dgpg.skip=true clean install
 	@echo "[install] instrumentation/judgeval-instrumentation-openai"
-	mvn -B -Dgpg.skip=true -pl instrumentation/judgeval-instrumentation-openai -am clean install
+	cd instrumentation/judgeval-instrumentation-openai && mvn -B -Dgpg.skip=true clean install
 
 install-core:
-	mvn -B -Dgpg.skip=true -pl judgeval-java -am clean install
+	cd judgeval-java && mvn -B -Dgpg.skip=true clean install
 
 install-openai:
-	mvn -B -Dgpg.skip=true -pl instrumentation/judgeval-instrumentation-openai -am clean install
+	cd instrumentation/judgeval-instrumentation-openai && mvn -B -Dgpg.skip=true clean install
 
 generate-client:
 	./scripts/generate-client.sh
 	make format
 
 lint:
-	mvn -B checkstyle:check
+	cd judgeval-java && mvn -B checkstyle:check
 
 format-check:
-	mvn -B spotless:check
+	cd judgeval-java && mvn -B spotless:check
+	cd instrumentation/judgeval-instrumentation-openai && mvn -B spotless:check
 
 ci:
-	mvn -B clean compile test checkstyle:check spotless:check
+	cd judgeval-java && mvn -B clean compile test checkstyle:check spotless:check
 
 status:
 	$(MAKE) status-core
@@ -55,19 +57,21 @@ status:
 
 status-core:
 	@echo "[status] judgeval-java"
-	@G=$$(mvn -q -pl judgeval-java -DforceStdout help:evaluate -Dexpression=project.groupId); \
-	 A=$$(mvn -q -pl judgeval-java -DforceStdout help:evaluate -Dexpression=project.artifactId); \
-	 V=$$(mvn -q -pl judgeval-java -DforceStdout help:evaluate -Dexpression=project.version); \
+	@cd judgeval-java && \
+	 G=$$(mvn -q -DforceStdout help:evaluate -Dexpression=project.groupId); \
+	 A=$$(mvn -q -DforceStdout help:evaluate -Dexpression=project.artifactId); \
+	 V=$$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version); \
 	 echo "GAV: $$G:$$A:$$V"; \
-	 ls -1 judgeval-java/target/*.jar 2>/dev/null || echo "No jar built"
+	 ls -1 target/*.jar 2>/dev/null || echo "No jar built"
 
 status-openai:
 	@echo "[status] instrumentation/judgeval-instrumentation-openai"
-	@G=$$(mvn -q -pl instrumentation/judgeval-instrumentation-openai -DforceStdout help:evaluate -Dexpression=project.groupId); \
-	 A=$$(mvn -q -pl instrumentation/judgeval-instrumentation-openai -DforceStdout help:evaluate -Dexpression=project.artifactId); \
-	 V=$$(mvn -q -pl instrumentation/judgeval-instrumentation-openai -DforceStdout help:evaluate -Dexpression=project.version); \
+	@cd instrumentation/judgeval-instrumentation-openai && \
+	 G=$$(mvn -q -DforceStdout help:evaluate -Dexpression=project.groupId); \
+	 A=$$(mvn -q -DforceStdout help:evaluate -Dexpression=project.artifactId); \
+	 V=$$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version); \
 	 echo "GAV: $$G:$$A:$$V"; \
-	 ls -1 instrumentation/judgeval-instrumentation-openai/target/*.jar 2>/dev/null || echo "No jar built"
+	 ls -1 target/*.jar 2>/dev/null || echo "No jar built"
 
 MAIN ?=
 
