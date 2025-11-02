@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <judgeval-java.version>0.2.3</judgeval-java.version>
         <judgeval-instrumentation-openai.version>0.0.1</judgeval-instrumentation-openai.version>
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
     <dependencyManagement>
         <dependencies>

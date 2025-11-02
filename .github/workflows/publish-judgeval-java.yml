@@ -61,11 +61,6 @@ jobs:
           V=$(mvn -q -DforceStdout -pl judgeval-java help:evaluate -Dexpression=project.version)
           echo "GAV: ${G}:${A}:${V}"
 
-      - name: Clean Maven cache
-        run: |
-          rm -rf ~/.m2/repository/com/judgment
-          rm -rf ~/.m2/repository/com/judgmentlabs
-
       - name: Import GPG key
         run: |
           echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 --decode | gpg --import --batch --yes
@@ -78,7 +73,8 @@ jobs:
       - name: Clean and Deploy to Central Portal
         run: |
           mvn clean
-          mvn -e --batch-mode deploy -pl judgeval-java -am \
+          mvn install -N
+          mvn -e --batch-mode deploy -pl judgeval-java \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
             --update-snapshots
