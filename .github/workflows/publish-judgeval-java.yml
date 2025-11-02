@@ -33,10 +33,10 @@ jobs:
           gpg-connect-agent reloadagent /bye
           gpg --list-secret-keys --keyid-format LONG
 
-      - name: Deploy judgeval-java
+      - name: Clean and Deploy to Central Portal
         run: |
-          mvn -B -pl judgeval-java -am -e install -DskipTests
-          mvn -B -rf judgeval-java -e deploy \
+          mvn clean
+          mvn -B -pl judgeval-java -e deploy \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
             --update-snapshots
@@ -45,5 +45,6 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-      - name: Done
-        run: echo "Published judgeval-java"
+      - name: Deployment Status
+        run: |
+          echo "Deployment completed - check https://central.sonatype.com for status"

@@ -33,10 +33,10 @@ jobs:
           gpg-connect-agent reloadagent /bye
           gpg --list-secret-keys --keyid-format LONG
 
-      - name: Deploy judgeval-instrumentation-openai
+      - name: Clean and Deploy to Central Portal
         run: |
-          mvn -B -pl instrumentation/judgeval-instrumentation-openai -am -e install -DskipTests
-          mvn -B -rf instrumentation/judgeval-instrumentation-openai -e deploy \
+          mvn clean
+          mvn -B -pl instrumentation/judgeval-instrumentation-openai -e deploy \
             -Dgpg.passphrase="${{ secrets.GPG_PASSPHRASE }}" \
             -Dgpg.pinentry-mode=loopback \
             --update-snapshots
@@ -45,5 +45,6 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.CENTRAL_PORTAL_TOKEN }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
-      - name: Done
-        run: echo "Published judgeval-instrumentation-openai"
+      - name: Deployment Status
+        run: |
+          echo "Deployment completed - check https://central.sonatype.com for status"
