@@ -9,6 +9,22 @@ import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.exceptions.JudgmentAPIError;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.JudgmentClient} instead.
+ * 
+ *             <p>
+ *             Migration example:
+ * 
+ *             <pre>{@code
+ * // Old way:
+ * TracePromptScorer scorer = TracePromptScorer.get("my-scorer");
+ * 
+ * // New way:
+ * JudgmentClient client = JudgmentClient.builder().build();
+ * PromptScorer scorer = client.scorers().tracePromptScorer().get("my-scorer");
+ * }</pre>
+ */
+@Deprecated
 public class TracePromptScorer extends BasePromptScorer {
 
     public TracePromptScorer(String name, String prompt, double threshold, Map<String, Double> options) {

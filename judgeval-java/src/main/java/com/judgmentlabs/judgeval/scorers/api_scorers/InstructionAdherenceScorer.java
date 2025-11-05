@@ -5,6 +5,22 @@ import java.util.Arrays;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.JudgmentClient} instead.
+ * 
+ *             <p>
+ *             Migration example:
+ * 
+ *             <pre>{@code
+ * // Old way:
+ * InstructionAdherenceScorer scorer = InstructionAdherenceScorer.create();
+ * 
+ * // New way:
+ * JudgmentClient client = JudgmentClient.builder().build();
+ * InstructionAdherenceScorer scorer = client.scorers().builtIn().instructionAdherence().build();
+ * }</pre>
+ */
+@Deprecated
 public class InstructionAdherenceScorer extends APIScorer {
     public InstructionAdherenceScorer() {
         super(APIScorerType.INSTRUCTION_ADHERENCE);
