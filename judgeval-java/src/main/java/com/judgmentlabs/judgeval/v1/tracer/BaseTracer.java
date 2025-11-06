@@ -1,7 +1,6 @@
 package com.judgmentlabs.judgeval.v1.tracer;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -36,21 +35,15 @@ public abstract class BaseTracer {
     public static final String         TRACER_NAME = "judgeval";
 
     protected final String             projectName;
-    protected final String             apiKey;
-    protected final String             organizationId;
-    protected final String             apiUrl;
     protected final boolean            enableEvaluation;
     protected final JudgmentSyncClient apiClient;
     protected final ISerializer        serializer;
     protected final ObjectMapper       jacksonMapper;
     protected final Optional<String>   projectId;
 
-    protected BaseTracer(String projectName, String apiKey, String organizationId, String apiUrl,
+    protected BaseTracer(String projectName,
             boolean enableEvaluation, JudgmentSyncClient apiClient, ISerializer serializer) {
         this.projectName = Objects.requireNonNull(projectName, "projectName required");
-        this.apiKey = Objects.requireNonNull(apiKey, "apiKey required");
-        this.organizationId = Objects.requireNonNull(organizationId, "organizationId required");
-        this.apiUrl = Objects.requireNonNull(apiUrl, "apiUrl required");
         this.enableEvaluation = enableEvaluation;
         this.apiClient = Objects.requireNonNull(apiClient, "apiClient required");
         this.serializer = Objects.requireNonNull(serializer, "serializer required");
@@ -59,7 +52,7 @@ public abstract class BaseTracer {
 
         this.projectId.ifPresentOrElse(id -> {
         }, () -> Logger.error("Failed to resolve project " + projectName
-                + ", please create it first at https://app.judgmentlabs.ai/org/" + organizationId
+                + ", please create it first at https://app.judgmentlabs.ai/org/" + this.apiClient.getOrganizationId()
                 + "/projects. Skipping Judgment export."));
     }
 
@@ -480,33 +473,6 @@ public abstract class BaseTracer {
     }
 
     /**
-     * Returns the API key.
-     *
-     * @return the API key
-     */
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    /**
-     * Returns the organization ID.
-     *
-     * @return the organization ID
-     */
-    public String getOrganizationId() {
-        return organizationId;
-    }
-
-    /**
-     * Returns the API URL.
-     *
-     * @return the API URL
-     */
-    public String getApiUrl() {
-        return apiUrl;
-    }
-
-    /**
      * Returns whether evaluation is enabled.
      *
      * @return true if evaluation is enabled
@@ -556,9 +522,9 @@ public abstract class BaseTracer {
 
     private JudgmentSpanExporter createJudgmentSpanExporter(String projectId) {
         return JudgmentSpanExporter.builder()
-                .endpoint(buildEndpoint(apiUrl))
-                .apiKey(apiKey)
-                .organizationId(organizationId)
+                .endpoint(buildEndpoint(apiClient.getApiUrl()))
+                .apiKey(apiClient.getApiKey())
+                .organizationId(apiClient.getOrganizationId())
                 .projectId(projectId)
                 .build();
     }
@@ -579,11 +545,7 @@ public abstract class BaseTracer {
         evaluationRun.setModel(modelName);
         evaluationRun.setTraceId(traceId);
         evaluationRun.setTraceSpanId(spanId);
-
-        List<com.judgmentlabs.judgeval.internal.api.models.Example> examples = new ArrayList<>();
-        examples.add(example);
-        evaluationRun.setExamples(examples);
-
+        evaluationRun.setExamples(List.of(example));
         evaluationRun.setCustomScorers(List.of());
         evaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
 

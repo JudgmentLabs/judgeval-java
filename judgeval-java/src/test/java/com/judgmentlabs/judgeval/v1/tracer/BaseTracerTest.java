@@ -1,9 +1,13 @@
 package com.judgmentlabs.judgeval.v1.tracer;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,9 +27,6 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 class BaseTracerTest {
     private static final String TEST_PROJECT_NAME = "test-project";
     private static final String TEST_PROJECT_ID   = "test-project-id-123";
-    private static final String TEST_API_KEY      = "test-key";
-    private static final String TEST_ORG_ID       = "test-org";
-    private static final String TEST_API_URL      = "https://api.test.com";
     @Mock
     private JudgmentSyncClient  mockClient;
 
@@ -41,15 +42,15 @@ class BaseTracerTest {
 
         lenient().when(mockClient.projectsResolve(any(ResolveProjectNameRequest.class)))
                 .thenReturn(response);
+        lenient().when(mockClient.getApiUrl()).thenReturn("https://api.example.com");
+        lenient().when(mockClient.getApiKey()).thenReturn("test-api-key");
+        lenient().when(mockClient.getOrganizationId()).thenReturn("test-org-id");
 
         lenient().when(mockSerializer.serialize(any())).thenReturn("serialized");
         lenient().when(mockSerializer.serialize(any(), any())).thenReturn("serialized");
 
         tracer = new TestableBaseTracer(
                 TEST_PROJECT_NAME,
-                TEST_API_KEY,
-                TEST_ORG_ID,
-                TEST_API_URL,
                 true,
                 mockClient,
                 mockSerializer);
@@ -59,9 +60,6 @@ class BaseTracerTest {
     void constructor_withValidParameters_resolvesProject() {
         assertNotNull(tracer);
         assertEquals(TEST_PROJECT_NAME, tracer.getProjectName());
-        assertEquals(TEST_API_KEY, tracer.getApiKey());
-        assertEquals(TEST_ORG_ID, tracer.getOrganizationId());
-        assertEquals(TEST_API_URL, tracer.getApiUrl());
         assertTrue(tracer.isEnableEvaluation());
         assertTrue(tracer.getProjectId().isPresent());
         assertEquals(TEST_PROJECT_ID, tracer.getProjectId().get());
@@ -72,9 +70,6 @@ class BaseTracerTest {
         assertThrows(NullPointerException.class, () -> {
             new TestableBaseTracer(
                     null,
-                    TEST_API_KEY,
-                    TEST_ORG_ID,
-                    TEST_API_URL,
                     true,
                     mockClient,
                     mockSerializer);
@@ -82,44 +77,24 @@ class BaseTracerTest {
     }
 
     @Test
-    void constructor_withNullApiKey_throwsException() {
+    void constructor_withNullClient_throwsException() {
         assertThrows(NullPointerException.class, () -> {
             new TestableBaseTracer(
                     TEST_PROJECT_NAME,
-                    null,
-                    TEST_ORG_ID,
-                    TEST_API_URL,
                     true,
-                    mockClient,
+                    null,
                     mockSerializer);
         });
     }
 
     @Test
-    void constructor_withNullOrganizationId_throwsException() {
+    void constructor_withNullSerializer_throwsException() {
         assertThrows(NullPointerException.class, () -> {
             new TestableBaseTracer(
                     TEST_PROJECT_NAME,
-                    TEST_API_KEY,
-                    null,
-                    TEST_API_URL,
                     true,
                     mockClient,
-                    mockSerializer);
-        });
-    }
-
-    @Test
-    void constructor_withNullApiUrl_throwsException() {
-        assertThrows(NullPointerException.class, () -> {
-            new TestableBaseTracer(
-                    TEST_PROJECT_NAME,
-                    TEST_API_KEY,
-                    TEST_ORG_ID,
-                    null,
-                    true,
-                    mockClient,
-                    mockSerializer);
+                    null);
         });
     }
 
@@ -130,9 +105,6 @@ class BaseTracerTest {
 
         TestableBaseTracer failedTracer = new TestableBaseTracer(
                 TEST_PROJECT_NAME,
-                TEST_API_KEY,
-                TEST_ORG_ID,
-                TEST_API_URL,
                 true,
                 mockClient,
                 mockSerializer);
@@ -154,9 +126,6 @@ class BaseTracerTest {
 
         TestableBaseTracer failedTracer = new TestableBaseTracer(
                 TEST_PROJECT_NAME,
-                TEST_API_KEY,
-                TEST_ORG_ID,
-                TEST_API_URL,
                 true,
                 mockClient,
                 mockSerializer);
@@ -178,9 +147,9 @@ class BaseTracerTest {
     }
 
     private static class TestableBaseTracer extends BaseTracer {
-        protected TestableBaseTracer(String projectName, String apiKey, String organizationId, String apiUrl,
-                boolean enableEvaluation, JudgmentSyncClient apiClient, ISerializer serializer) {
-            super(projectName, apiKey, organizationId, apiUrl, enableEvaluation, apiClient, serializer);
+        protected TestableBaseTracer(String projectName, boolean enableEvaluation, JudgmentSyncClient apiClient,
+                ISerializer serializer) {
+            super(projectName, enableEvaluation, apiClient, serializer);
         }
 
         @Override

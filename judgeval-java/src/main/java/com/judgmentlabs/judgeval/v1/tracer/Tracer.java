@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 import com.google.gson.Gson;
-import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.Version;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.utils.Logger;
@@ -25,18 +24,8 @@ public final class Tracer extends BaseTracer {
     private Tracer(Builder builder) {
         super(
                 Objects.requireNonNull(builder.projectName, "projectName required"),
-                builder.client != null ? builder.client.getApiKey()
-                        : Objects.requireNonNull(builder.apiKey, "apiKey required"),
-                builder.client != null ? builder.client.getOrganizationId()
-                        : Objects.requireNonNull(builder.organizationId, "organizationId required"),
-                builder.client != null ? builder.client.getApiUrl()
-                        : (builder.apiUrl != null ? builder.apiUrl : Env.JUDGMENT_API_URL),
                 builder.enableEvaluation,
-                builder.client != null ? builder.client
-                        : new JudgmentSyncClient(
-                                builder.apiUrl != null ? builder.apiUrl : Env.JUDGMENT_API_URL,
-                                Objects.requireNonNull(builder.apiKey, "apiKey required"),
-                                Objects.requireNonNull(builder.organizationId, "organizationId required")),
+                Objects.requireNonNull(builder.client, "client required"),
                 builder.serializer != null ? builder.serializer : new GsonSerializer());
 
         if (builder.initialize) {
@@ -123,9 +112,6 @@ public final class Tracer extends BaseTracer {
     public static final class Builder {
         private JudgmentSyncClient client;
         private String             projectName;
-        private String             apiKey;
-        private String             organizationId;
-        private String             apiUrl;
         private boolean            enableEvaluation = true;
         private ISerializer        serializer;
         private boolean            initialize       = false;
@@ -151,42 +137,6 @@ public final class Tracer extends BaseTracer {
          */
         public Builder projectName(String projectName) {
             this.projectName = projectName;
-            return this;
-        }
-
-        /**
-         * Sets the API key for authentication.
-         *
-         * @param apiKey
-         *            the API key
-         * @return this builder
-         */
-        public Builder apiKey(String apiKey) {
-            this.apiKey = apiKey;
-            return this;
-        }
-
-        /**
-         * Sets the organization ID.
-         *
-         * @param organizationId
-         *            the organization ID
-         * @return this builder
-         */
-        public Builder organizationId(String organizationId) {
-            this.organizationId = organizationId;
-            return this;
-        }
-
-        /**
-         * Sets the API URL.
-         *
-         * @param apiUrl
-         *            the API URL
-         * @return this builder
-         */
-        public Builder apiUrl(String apiUrl) {
-            this.apiUrl = apiUrl;
             return this;
         }
 
