@@ -27,6 +27,10 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Run Tests
+        run: |
+          mvn -B -pl judgeval-java -am test
+
       - name: Test Install
         run: |
           mvn -B -Dgpg.skip=true -pl judgeval-java -am clean install

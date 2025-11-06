@@ -17,8 +17,6 @@ public final class TracerFactory {
 
     public Tracer.Builder create() {
         return Tracer.builder()
-                .apiKey(apiKey)
-                .organizationId(organizationId)
-                .apiUrl(apiUrl);
+                .client(client);
     }
 }

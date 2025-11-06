@@ -25,14 +25,18 @@ public final class Tracer extends BaseTracer {
     private Tracer(Builder builder) {
         super(
                 Objects.requireNonNull(builder.projectName, "projectName required"),
-                Objects.requireNonNull(builder.apiKey, "apiKey required"),
-                Objects.requireNonNull(builder.organizationId, "organizationId required"),
-                builder.apiUrl != null ? builder.apiUrl : Env.JUDGMENT_API_URL,
+                builder.client != null ? builder.client.getApiKey()
+                        : Objects.requireNonNull(builder.apiKey, "apiKey required"),
+                builder.client != null ? builder.client.getOrganizationId()
+                        : Objects.requireNonNull(builder.organizationId, "organizationId required"),
+                builder.client != null ? builder.client.getApiUrl()
+                        : (builder.apiUrl != null ? builder.apiUrl : Env.JUDGMENT_API_URL),
                 builder.enableEvaluation,
-                new JudgmentSyncClient(
-                        builder.apiUrl != null ? builder.apiUrl : Env.JUDGMENT_API_URL,
-                        Objects.requireNonNull(builder.apiKey, "apiKey required"),
-                        Objects.requireNonNull(builder.organizationId, "organizationId required")),
+                builder.client != null ? builder.client
+                        : new JudgmentSyncClient(
+                                builder.apiUrl != null ? builder.apiUrl : Env.JUDGMENT_API_URL,
+                                Objects.requireNonNull(builder.apiKey, "apiKey required"),
+                                Objects.requireNonNull(builder.organizationId, "organizationId required")),
                 builder.serializer != null ? builder.serializer : new GsonSerializer());
 
         if (builder.initialize) {
@@ -90,13 +94,19 @@ public final class Tracer extends BaseTracer {
     }
 
     public static final class Builder {
-        private String      projectName;
-        private String      apiKey;
-        private String      organizationId;
-        private String      apiUrl;
-        private boolean     enableEvaluation = true;
-        private ISerializer serializer;
-        private boolean     initialize       = false;
+        private JudgmentSyncClient client;
+        private String             projectName;
+        private String             apiKey;
+        private String             organizationId;
+        private String             apiUrl;
+        private boolean            enableEvaluation = true;
+        private ISerializer        serializer;
+        private boolean            initialize       = false;
+
+        public Builder client(JudgmentSyncClient client) {
+            this.client = client;
+            return this;
+        }
 
         public Builder projectName(String projectName) {
             this.projectName = projectName;
