@@ -11,7 +11,7 @@ public final class CustomScorerFactory {
      * Creates a custom scorer with the specified name.
      *
      * @param name
-     *             the scorer name
+     *            the scorer name
      * @return the configured custom scorer
      */
     public CustomScorer get(String name) {
@@ -25,9 +25,9 @@ public final class CustomScorerFactory {
      * Creates a custom scorer with the specified name and class name.
      *
      * @param name
-     *                  the scorer name
+     *            the scorer name
      * @param className
-     *                  the class name
+     *            the class name
      * @return the configured custom scorer
      */
     public CustomScorer get(String name, String className) {

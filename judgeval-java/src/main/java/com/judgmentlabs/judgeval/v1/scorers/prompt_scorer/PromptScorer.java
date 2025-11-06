@@ -19,9 +19,9 @@ import com.judgmentlabs.judgeval.v1.scorers.APIScorer;
  *      Docs: Prompt Scorers</a>
  */
 public final class PromptScorer extends APIScorer {
-    private final String prompt;
+    private final String              prompt;
     private final Map<String, Double> options;
-    private final boolean isTrace;
+    private final boolean             isTrace;
 
     private PromptScorer(Builder builder) {
         super(builder.isTrace ? APIScorerType.TRACE_PROMPT_SCORER : APIScorerType.PROMPT_SCORER);
@@ -52,7 +52,7 @@ public final class PromptScorer extends APIScorer {
         cfg.setName(getName());
         cfg.setStrictMode(getStrictMode());
         cfg.setRequiredParams(getRequiredParams());
-        
+
         Map<String, Object> kwargs = new HashMap<>();
         kwargs.put("prompt", prompt);
         if (options != null) {
@@ -78,11 +78,11 @@ public final class PromptScorer extends APIScorer {
      * Builder for configuring and creating PromptScorer instances.
      */
     public static final class Builder {
-        private String name;
-        private String prompt;
-        private double threshold = 0.5;
+        private String              name;
+        private String              prompt;
+        private double              threshold = 0.5;
         private Map<String, Double> options;
-        private boolean isTrace;
+        private boolean             isTrace;
 
         public Builder name(String name) {
             this.name = name;
