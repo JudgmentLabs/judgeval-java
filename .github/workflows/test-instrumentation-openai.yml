@@ -29,11 +29,11 @@ jobs:
 
       - name: Run Tests
         run: |
-          mvn -B -pl instrumentation/judgeval-instrumentation-openai -am test
+          cd instrumentation/judgeval-instrumentation-openai && mvn -B test
 
       - name: Test Install
         run: |
-          mvn -B -Dgpg.skip=true -pl instrumentation/judgeval-instrumentation-openai -am clean install
+          cd instrumentation/judgeval-instrumentation-openai && mvn -B -Dgpg.skip=true clean install
 
       - name: Verify Build Artifacts
         run: |
