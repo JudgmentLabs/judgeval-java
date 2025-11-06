@@ -1,10 +1,5 @@
-package com.judgmentlabs.judgeval.data;
+package com.judgmentlabs.judgeval.v1.data;
 
-/**
- * @deprecated Use {@link com.judgmentlabs.judgeval.v1.data.APIScorerType}
- *             instead.
- */
-@Deprecated
 public enum APIScorerType {
     PROMPT_SCORER("Prompt Scorer"),
     TRACE_PROMPT_SCORER("Trace Prompt Scorer"),

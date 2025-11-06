@@ -1,8 +1,8 @@
 package com.judgmentlabs.judgeval.v1.scorers.custom_scorer;
 
-import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
-import com.judgmentlabs.judgeval.scorers.APIScorer;
+import com.judgmentlabs.judgeval.v1.data.APIScorerType;
+import com.judgmentlabs.judgeval.v1.scorers.APIScorer;
 
 public final class CustomScorer extends APIScorer {
     private CustomScorer(Builder builder) {

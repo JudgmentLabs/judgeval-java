@@ -2,8 +2,8 @@ package com.judgmentlabs.judgeval.v1.scorers.built_in;
 
 import java.util.Arrays;
 
-import com.judgmentlabs.judgeval.data.APIScorerType;
-import com.judgmentlabs.judgeval.scorers.APIScorer;
+import com.judgmentlabs.judgeval.v1.data.APIScorerType;
+import com.judgmentlabs.judgeval.v1.scorers.APIScorer;
 
 public final class DerailmentScorer extends APIScorer {
     private DerailmentScorer(Builder builder) {

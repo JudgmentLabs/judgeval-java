@@ -1,27 +1,25 @@
 package com.judgmentlabs.judgeval.v1.tracer;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.judgmentlabs.judgeval.Env;
-import com.judgmentlabs.judgeval.data.EvaluationRunBuilder;
-import com.judgmentlabs.judgeval.data.Example;
-import com.judgmentlabs.judgeval.data.TraceEvaluationRunBuilder;
+import com.judgmentlabs.judgeval.JudgmentAttributeKeys;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
 import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
-import com.judgmentlabs.judgeval.scorers.BaseScorer;
-import com.judgmentlabs.judgeval.tracer.ISerializer;
-import com.judgmentlabs.judgeval.tracer.JudgevalTraceKeys;
-import com.judgmentlabs.judgeval.tracer.TracerConfiguration;
-import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
-import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;
 import com.judgmentlabs.judgeval.utils.Logger;
+import com.judgmentlabs.judgeval.v1.data.Example;
+import com.judgmentlabs.judgeval.v1.scorers.BaseScorer;
+import com.judgmentlabs.judgeval.v1.tracer.exporters.JudgmentSpanExporter;
+import com.judgmentlabs.judgeval.v1.tracer.exporters.NoOpSpanExporter;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
@@ -31,24 +29,33 @@ import io.opentelemetry.context.Scope;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 
 public abstract class BaseTracer {
-    public static final String          TRACER_NAME = "judgeval";
+    public static final String         TRACER_NAME = "judgeval";
 
-    protected final TracerConfiguration configuration;
-    protected final JudgmentSyncClient  apiClient;
-    protected final ISerializer         serializer;
-    protected final ObjectMapper        jacksonMapper;
-    protected final Optional<String>    projectId;
+    protected final String             projectName;
+    protected final String             apiKey;
+    protected final String             organizationId;
+    protected final String             apiUrl;
+    protected final boolean            enableEvaluation;
+    protected final JudgmentSyncClient apiClient;
+    protected final ISerializer        serializer;
+    protected final ObjectMapper       jacksonMapper;
+    protected final Optional<String>   projectId;
 
-    protected BaseTracer(TracerConfiguration configuration, JudgmentSyncClient apiClient, ISerializer serializer) {
-        this.configuration = Objects.requireNonNull(configuration, "configuration required");
+    protected BaseTracer(String projectName, String apiKey, String organizationId, String apiUrl,
+            boolean enableEvaluation, JudgmentSyncClient apiClient, ISerializer serializer) {
+        this.projectName = Objects.requireNonNull(projectName, "projectName required");
+        this.apiKey = Objects.requireNonNull(apiKey, "apiKey required");
+        this.organizationId = Objects.requireNonNull(organizationId, "organizationId required");
+        this.apiUrl = Objects.requireNonNull(apiUrl, "apiUrl required");
+        this.enableEvaluation = enableEvaluation;
         this.apiClient = Objects.requireNonNull(apiClient, "apiClient required");
         this.serializer = Objects.requireNonNull(serializer, "serializer required");
         this.jacksonMapper = new ObjectMapper();
-        this.projectId = resolveProjectId(configuration.projectName());
+        this.projectId = resolveProjectId(projectName);
 
         this.projectId.ifPresentOrElse(id -> {
-        }, () -> Logger.error("Failed to resolve project " + configuration.projectName()
-                + ", please create it first at https://app.judgmentlabs.ai/org/" + configuration.organizationId()
+        }, () -> Logger.error("Failed to resolve project " + projectName
+                + ", please create it first at https://app.judgmentlabs.ai/org/" + organizationId
                 + "/projects. Skipping Judgment export."));
     }
 
@@ -69,7 +76,7 @@ public abstract class BaseTracer {
     public void setSpanKind(String kind) {
         Optional.ofNullable(kind)
                 .ifPresent(k -> withCurrentSpan(
-                        span -> span.setAttribute(JudgevalTraceKeys.AttributeKeys.JUDGMENT_SPAN_KIND, k)));
+                        span -> span.setAttribute(JudgmentAttributeKeys.AttributeKeys.JUDGMENT_SPAN_KIND, k)));
     }
 
     private static void withCurrentSpan(java.util.function.Consumer<Span> action) {
@@ -141,11 +148,11 @@ public abstract class BaseTracer {
     }
 
     private boolean isEvaluationEnabled() {
-        return configuration.enableEvaluation();
+        return enableEvaluation;
     }
 
     private void logEvaluationInfo(String method, String traceId, String spanId, String scorerName) {
-        Logger.info(method + ": project=" + configuration.projectName() + ", traceId=" + traceId + ", spanId="
+        Logger.info(method + ": project=" + projectName + ", traceId=" + traceId + ", spanId="
                 + spanId + ", scorer=" + scorerName);
     }
 
@@ -195,7 +202,8 @@ public abstract class BaseTracer {
                 TraceEvaluationRun evaluationRun = createTraceEvaluationRun(scorer, model, traceId, spanId);
                 try {
                     String traceEvalJson = jacksonMapper.writeValueAsString(evaluationRun);
-                    currentSpan.setAttribute(JudgevalTraceKeys.AttributeKeys.PENDING_TRACE_EVAL, traceEvalJson);
+                    currentSpan.setAttribute(JudgmentAttributeKeys.AttributeKeys.JUDGMENT_PENDING_TRACE_EVAL,
+                            traceEvalJson);
                 } catch (Exception e) {
                     Logger.error("Failed to serialize trace evaluation: " + e.getMessage());
                 }
@@ -225,19 +233,19 @@ public abstract class BaseTracer {
     }
 
     public void setInput(Object input) {
-        setAttribute(JudgevalTraceKeys.AttributeKeys.JUDGMENT_INPUT, input);
+        setAttribute(JudgmentAttributeKeys.AttributeKeys.JUDGMENT_INPUT, input);
     }
 
     public void setOutput(Object output) {
-        setAttribute(JudgevalTraceKeys.AttributeKeys.JUDGMENT_OUTPUT, output);
+        setAttribute(JudgmentAttributeKeys.AttributeKeys.JUDGMENT_OUTPUT, output);
     }
 
     public void setInput(Object input, Type type) {
-        setAttribute(JudgevalTraceKeys.AttributeKeys.JUDGMENT_INPUT, input, type);
+        setAttribute(JudgmentAttributeKeys.AttributeKeys.JUDGMENT_INPUT, input, type);
     }
 
     public void setOutput(Object output, Type type) {
-        setAttribute(JudgevalTraceKeys.AttributeKeys.JUDGMENT_OUTPUT, output, type);
+        setAttribute(JudgmentAttributeKeys.AttributeKeys.JUDGMENT_OUTPUT, output, type);
     }
 
     public void span(String spanName, Runnable runnable) {
@@ -271,8 +279,24 @@ public abstract class BaseTracer {
                 .getTracer(TRACER_NAME);
     }
 
-    public TracerConfiguration getConfiguration() {
-        return configuration;
+    public String getProjectName() {
+        return projectName;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public String getOrganizationId() {
+        return organizationId;
+    }
+
+    public String getApiUrl() {
+        return apiUrl;
+    }
+
+    public boolean isEnableEvaluation() {
+        return enableEvaluation;
     }
 
     public Optional<String> getProjectId() {
@@ -304,9 +328,9 @@ public abstract class BaseTracer {
 
     private JudgmentSpanExporter createJudgmentSpanExporter(String projectId) {
         return JudgmentSpanExporter.builder()
-                .endpoint(buildEndpoint(configuration.apiUrl()))
-                .apiKey(configuration.apiKey())
-                .organizationId(configuration.organizationId())
+                .endpoint(buildEndpoint(apiUrl))
+                .apiKey(apiKey)
+                .organizationId(organizationId)
                 .projectId(projectId)
                 .build();
     }
@@ -319,26 +343,38 @@ public abstract class BaseTracer {
     private ExampleEvaluationRun createEvaluationRun(BaseScorer scorer, Example example, String model, String traceId,
             String spanId) {
         String runId = generateRunId("async_evaluate_", spanId);
-        return new EvaluationRunBuilder()
-                .projectName(configuration.projectName())
-                .evalName(runId)
-                .model(model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL)
-                .example(example)
-                .trace(traceId, spanId)
-                .addScorer(scorer)
-                .build();
+        String modelName = model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL;
+
+        ExampleEvaluationRun evaluationRun = new ExampleEvaluationRun();
+        evaluationRun.setProjectName(projectName);
+        evaluationRun.setEvalName(runId);
+        evaluationRun.setModel(modelName);
+        evaluationRun.setTraceId(traceId);
+        evaluationRun.setTraceSpanId(spanId);
+
+        List<com.judgmentlabs.judgeval.internal.api.models.Example> examples = new ArrayList<>();
+        examples.add(example);
+        evaluationRun.setExamples(examples);
+
+        evaluationRun.setCustomScorers(List.of());
+        evaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
+
+        return evaluationRun;
     }
 
     private TraceEvaluationRun createTraceEvaluationRun(BaseScorer scorer, String model, String traceId,
             String spanId) {
         String evalName = generateRunId("async_trace_evaluate_", spanId);
-        return new TraceEvaluationRunBuilder()
-                .projectName(configuration.projectName())
-                .evalName(evalName)
-                .model(model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL)
-                .trace(traceId, spanId)
-                .addScorer(scorer)
-                .build();
+        String modelName = model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL;
+
+        TraceEvaluationRun evaluationRun = new TraceEvaluationRun();
+        evaluationRun.setProjectName(projectName);
+        evaluationRun.setEvalName(evalName);
+        evaluationRun.setModel(modelName);
+        evaluationRun.setTraceAndSpanIds(List.of(List.of(traceId, spanId)));
+        evaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
+
+        return evaluationRun;
     }
 
     private void enqueueEvaluation(ExampleEvaluationRun evaluationRun) {
@@ -349,4 +385,3 @@ public abstract class BaseTracer {
         }
     }
 }
-

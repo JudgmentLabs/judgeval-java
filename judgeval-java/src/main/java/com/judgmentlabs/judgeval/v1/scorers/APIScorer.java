@@ -1,4 +1,4 @@
-package com.judgmentlabs.judgeval.scorers;
+package com.judgmentlabs.judgeval.v1.scorers;
 
 import java.util.HashMap;
 import java.util.List;
@@ -7,14 +7,9 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
+import com.judgmentlabs.judgeval.v1.data.APIScorerType;
 
-/**
- * @deprecated Use {@link com.judgmentlabs.judgeval.v1.scorers.APIScorer}
- *             instead.
- */
-@Deprecated
 public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer implements BaseScorer {
     private APIScorerType scoreType;
 

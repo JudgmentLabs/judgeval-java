@@ -1,0 +1,33 @@
+{
+  "name": "judgeval-java",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "format": "npm run format:core && npm run format:openai",
+    "format:core": "mvn -B -f judgeval-java/pom.xml spotless:apply",
+    "format:openai": "mvn -B -f instrumentation/judgeval-instrumentation-openai/pom.xml spotless:apply",
+    "format:check": "npm run format:check:core && npm run format:check:openai",
+    "format:check:core": "cd judgeval-java && mvn -B spotless:check",
+    "format:check:openai": "cd instrumentation/judgeval-instrumentation-openai && mvn -B spotless:check",
+    "check": "cd judgeval-java && mvn -B compile checkstyle:check spotless:check",
+    "lint": "cd judgeval-java && mvn -B checkstyle:check",
+    "test": "cd judgeval-java && mvn test",
+    "clean": "npm run clean:core && npm run clean:openai",
+    "clean:core": "cd judgeval-java && mvn clean",
+    "clean:openai": "cd instrumentation/judgeval-instrumentation-openai && mvn clean",
+    "build": "cd judgeval-java && mvn -B clean compile",
+    "install:all": "npm run install:core && npm run install:openai",
+    "install:core": "cd judgeval-java && mvn -B -Dgpg.skip=true clean install",
+    "install:openai": "cd instrumentation/judgeval-instrumentation-openai && mvn -B -Dgpg.skip=true clean install",
+    "generate:client": "npm run generate:client:raw && npm run format",
+    "generate:client:raw": "./scripts/generate-client.sh",
+    "ci": "cd judgeval-java && mvn -B clean compile test checkstyle:check spotless:check",
+    "status": "npm run status:core && npm run status:openai",
+    "status:core": "cd judgeval-java && echo \"[status] judgeval-java\" && G=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.groupId) && A=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.artifactId) && V=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version) && echo \"GAV: $G:$A:$V\" && (ls -1 target/*.jar 2>/dev/null || echo \"No jar built\")",
+    "status:openai": "cd instrumentation/judgeval-instrumentation-openai && echo \"[status] instrumentation/judgeval-instrumentation-openai\" && G=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.groupId) && A=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.artifactId) && V=$(mvn -q -DforceStdout help:evaluate -Dexpression=project.version) && echo \"GAV: $G:$A:$V\" && (ls -1 target/*.jar 2>/dev/null || echo \"No jar built\")",
+    "example": "dotenv -e .env -- ./scripts/run-example.sh"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.4.2"
+  }
+}

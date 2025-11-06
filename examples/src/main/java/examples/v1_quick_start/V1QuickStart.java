@@ -1,6 +1,6 @@
 package examples.v1_quick_start;
 
-import com.judgmentlabs.judgeval.data.Example;
+import com.judgmentlabs.judgeval.v1.data.Example;
 import com.judgmentlabs.judgeval.v1.JudgmentClient;
 import com.judgmentlabs.judgeval.v1.scorers.built_in.AnswerCorrectnessScorer;
 import com.judgmentlabs.judgeval.v1.scorers.built_in.FaithfulnessScorer;

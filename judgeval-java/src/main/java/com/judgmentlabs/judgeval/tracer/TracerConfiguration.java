@@ -23,7 +23,10 @@ import java.util.Optional;
  * }</pre>
  *
  * @see Tracer
+ * @deprecated Replaced by
+ *             com.judgmentlabs.judgeval.v1.tracer.TracerConfiguration
  */
+@Deprecated
 public final class TracerConfiguration {
     private final String  projectName;
     private final String  apiKey;
