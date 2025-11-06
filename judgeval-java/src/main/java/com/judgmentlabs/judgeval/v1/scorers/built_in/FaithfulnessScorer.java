@@ -5,6 +5,9 @@ import java.util.Arrays;
 import com.judgmentlabs.judgeval.v1.data.APIScorerType;
 import com.judgmentlabs.judgeval.v1.scorers.APIScorer;
 
+/**
+ * Scorer that evaluates whether an answer is faithful to the provided context.
+ */
 public final class FaithfulnessScorer extends APIScorer {
     private FaithfulnessScorer(Builder builder) {
         super(APIScorerType.FAITHFULNESS);
@@ -23,10 +26,18 @@ public final class FaithfulnessScorer extends APIScorer {
         }
     }
 
+    /**
+     * Creates a new builder for configuring a FaithfulnessScorer.
+     *
+     * @return a new builder instance
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder for configuring and creating FaithfulnessScorer instances.
+     */
     public static final class Builder {
         private double  threshold = -1;
         private String  name;

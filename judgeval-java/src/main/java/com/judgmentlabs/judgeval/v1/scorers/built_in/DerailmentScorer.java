@@ -5,6 +5,10 @@ import java.util.Arrays;
 import com.judgmentlabs.judgeval.v1.data.APIScorerType;
 import com.judgmentlabs.judgeval.v1.scorers.APIScorer;
 
+/**
+ * Scorer that detects whether a conversation has derailed from its intended
+ * topic.
+ */
 public final class DerailmentScorer extends APIScorer {
     private DerailmentScorer(Builder builder) {
         super(APIScorerType.DERAILMENT);
@@ -23,10 +27,18 @@ public final class DerailmentScorer extends APIScorer {
         }
     }
 
+    /**
+     * Creates a new builder for configuring a DerailmentScorer.
+     *
+     * @return a new builder instance
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder for configuring and creating DerailmentScorer instances.
+     */
     public static final class Builder {
         private double  threshold = -1;
         private String  name;

@@ -1,5 +1,8 @@
 package com.judgmentlabs.judgeval.v1.data;
 
+/**
+ * Available types of API-based scorers.
+ */
 public enum APIScorerType {
     PROMPT_SCORER("Prompt Scorer"),
     TRACE_PROMPT_SCORER("Trace Prompt Scorer"),
@@ -9,9 +12,6 @@ public enum APIScorerType {
     INSTRUCTION_ADHERENCE("Instruction Adherence"),
     EXECUTION_ORDER("Execution Order"),
     DERAILMENT("Derailment"),
-    TOOL_ORDER("Tool Order"),
-    CLASSIFIER("Classifier"),
-    TOOL_DEPENDENCY("Tool Dependency"),
     CUSTOM("Custom");
 
     private final String value;

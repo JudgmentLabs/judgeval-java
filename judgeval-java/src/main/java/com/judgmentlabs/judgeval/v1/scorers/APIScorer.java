@@ -10,6 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.v1.data.APIScorerType;
 
+/**
+ * Base class for API-based scorers that evaluate using the Judgment backend.
+ */
 public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer implements BaseScorer {
     private APIScorerType scoreType;
 
@@ -82,10 +85,25 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
         return cfg;
     }
 
+    /**
+     * Creates a new builder for an APIScorer subclass.
+     *
+     * @param <T>
+     *            the scorer type
+     * @param scorerClass
+     *            the scorer class
+     * @return a new builder instance
+     */
     public static <T extends APIScorer> Builder<T> builder(Class<T> scorerClass) {
         return new Builder<>(scorerClass);
     }
 
+    /**
+     * Builder for configuring and creating APIScorer instances.
+     *
+     * @param <T>
+     *            the scorer type
+     */
     public static final class Builder<T extends APIScorer> {
         private final T scorer;
 

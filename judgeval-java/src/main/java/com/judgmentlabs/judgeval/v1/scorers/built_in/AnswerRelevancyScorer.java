@@ -5,6 +5,9 @@ import java.util.Arrays;
 import com.judgmentlabs.judgeval.v1.data.APIScorerType;
 import com.judgmentlabs.judgeval.v1.scorers.APIScorer;
 
+/**
+ * Scorer that evaluates the relevancy of an answer to the input question.
+ */
 public final class AnswerRelevancyScorer extends APIScorer {
     private AnswerRelevancyScorer(Builder builder) {
         super(APIScorerType.ANSWER_RELEVANCY);
@@ -23,10 +26,18 @@ public final class AnswerRelevancyScorer extends APIScorer {
         }
     }
 
+    /**
+     * Creates a new builder for configuring an AnswerRelevancyScorer.
+     *
+     * @return a new builder instance
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder for configuring and creating AnswerRelevancyScorer instances.
+     */
     public static final class Builder {
         private double  threshold = -1;
         private String  name;

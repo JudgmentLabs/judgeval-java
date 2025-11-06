@@ -44,6 +44,12 @@ public final class Tracer extends BaseTracer {
         }
     }
 
+    /**
+     * Initializes the tracer by setting up the OpenTelemetry SDK with a span
+     * exporter,
+     * configuring the tracer provider with batch span processing, and registering
+     * it globally.
+     */
     @Override
     public void initialize() {
         SpanExporter spanExporter = getSpanExporter();
@@ -68,6 +74,13 @@ public final class Tracer extends BaseTracer {
         GlobalOpenTelemetry.set(openTelemetry);
     }
 
+    /**
+     * Forces the tracer to flush any pending spans within the specified timeout.
+     *
+     * @param timeoutMillis
+     *            the maximum time to wait in milliseconds
+     * @return true if the flush completed successfully within the timeout
+     */
     @Override
     public boolean forceFlush(int timeoutMillis) {
         if (tracerProvider == null) {
@@ -79,6 +92,12 @@ public final class Tracer extends BaseTracer {
                 .isSuccess();
     }
 
+    /**
+     * Shuts down the tracer, flushing any remaining spans and releasing resources.
+     *
+     * @param timeoutMillis
+     *            the maximum time to wait for shutdown in milliseconds
+     */
     @Override
     public void shutdown(int timeoutMillis) {
         if (tracerProvider == null) {
@@ -89,10 +108,18 @@ public final class Tracer extends BaseTracer {
                 .join(timeoutMillis, java.util.concurrent.TimeUnit.MILLISECONDS);
     }
 
+    /**
+     * Creates a new builder for configuring a Tracer.
+     *
+     * @return a new builder instance
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder for configuring and creating Tracer instances.
+     */
     public static final class Builder {
         private JudgmentSyncClient client;
         private String             projectName;
@@ -103,46 +130,107 @@ public final class Tracer extends BaseTracer {
         private ISerializer        serializer;
         private boolean            initialize       = false;
 
+        /**
+         * Sets the Judgment API client.
+         *
+         * @param client
+         *            the API client
+         * @return this builder
+         */
         public Builder client(JudgmentSyncClient client) {
             this.client = client;
             return this;
         }
 
+        /**
+         * Sets the project name for this tracer.
+         *
+         * @param projectName
+         *            the project name
+         * @return this builder
+         */
         public Builder projectName(String projectName) {
             this.projectName = projectName;
             return this;
         }
 
+        /**
+         * Sets the API key for authentication.
+         *
+         * @param apiKey
+         *            the API key
+         * @return this builder
+         */
         public Builder apiKey(String apiKey) {
             this.apiKey = apiKey;
             return this;
         }
 
+        /**
+         * Sets the organization ID.
+         *
+         * @param organizationId
+         *            the organization ID
+         * @return this builder
+         */
         public Builder organizationId(String organizationId) {
             this.organizationId = organizationId;
             return this;
         }
 
+        /**
+         * Sets the API URL.
+         *
+         * @param apiUrl
+         *            the API URL
+         * @return this builder
+         */
         public Builder apiUrl(String apiUrl) {
             this.apiUrl = apiUrl;
             return this;
         }
 
+        /**
+         * Sets whether evaluation is enabled.
+         *
+         * @param enableEvaluation
+         *            true to enable evaluation
+         * @return this builder
+         */
         public Builder enableEvaluation(boolean enableEvaluation) {
             this.enableEvaluation = enableEvaluation;
             return this;
         }
 
+        /**
+         * Sets the custom serializer for span attributes.
+         *
+         * @param serializer
+         *            the serializer
+         * @return this builder
+         */
         public Builder serializer(ISerializer serializer) {
             this.serializer = serializer;
             return this;
         }
 
+        /**
+         * Sets whether to automatically initialize the tracer on build.
+         *
+         * @param initialize
+         *            true to initialize on build
+         * @return this builder
+         */
         public Builder initialize(boolean initialize) {
             this.initialize = initialize;
             return this;
         }
 
+        /**
+         * Builds and returns a new Tracer instance.
+         *
+         * @return the configured Tracer
+         */
         public Tracer build() {
             return new Tracer(this);
         }

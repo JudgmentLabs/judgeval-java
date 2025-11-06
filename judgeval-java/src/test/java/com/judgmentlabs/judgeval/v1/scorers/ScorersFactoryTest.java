@@ -20,7 +20,7 @@ class ScorersFactoryTest {
     @BeforeEach
     void setUp() {
         JudgmentSyncClient client = new JudgmentSyncClient(TEST_API_URL, TEST_API_KEY, TEST_ORG_ID);
-        factory = new ScorersFactory(client, TEST_API_KEY, TEST_ORG_ID);
+        factory = new ScorersFactory(client);
     }
 
     @Test

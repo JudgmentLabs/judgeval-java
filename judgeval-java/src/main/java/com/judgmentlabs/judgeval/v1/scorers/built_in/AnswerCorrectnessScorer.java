@@ -5,6 +5,10 @@ import java.util.Arrays;
 import com.judgmentlabs.judgeval.v1.data.APIScorerType;
 import com.judgmentlabs.judgeval.v1.scorers.APIScorer;
 
+/**
+ * Scorer that evaluates the correctness of an answer against an expected
+ * output.
+ */
 public final class AnswerCorrectnessScorer extends APIScorer {
     private AnswerCorrectnessScorer(Builder builder) {
         super(APIScorerType.ANSWER_CORRECTNESS);
@@ -23,10 +27,18 @@ public final class AnswerCorrectnessScorer extends APIScorer {
         }
     }
 
+    /**
+     * Creates a new builder for configuring an AnswerCorrectnessScorer.
+     *
+     * @return a new builder instance
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder for configuring and creating AnswerCorrectnessScorer instances.
+     */
     public static final class Builder {
         private double  threshold = -1;
         private String  name;

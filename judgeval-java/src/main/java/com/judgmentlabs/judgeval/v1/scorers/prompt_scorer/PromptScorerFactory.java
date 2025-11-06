@@ -11,22 +11,31 @@ import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersRequest;
 import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersResponse;
 
+/**
+ * Factory for retrieving and creating prompt-based scorers.
+ */
 public final class PromptScorerFactory {
     private final JudgmentSyncClient                                                               client;
-    private final String                                                                           apiKey;
-    private final String                                                                           organizationId;
     private final boolean                                                                          isTrace;
     private static final Map<CacheKey, com.judgmentlabs.judgeval.internal.api.models.PromptScorer> cache = new ConcurrentHashMap<>();
 
-    public PromptScorerFactory(JudgmentSyncClient client, String apiKey, String organizationId, boolean isTrace) {
+    public PromptScorerFactory(JudgmentSyncClient client, boolean isTrace) {
         this.client = client;
-        this.apiKey = apiKey;
-        this.organizationId = organizationId;
         this.isTrace = isTrace;
     }
 
+    /**
+     * Retrieves a prompt scorer by name from the Judgment API.
+     * Results are cached to avoid repeated API calls.
+     *
+     * @param name
+     *            the scorer name
+     * @return the configured prompt scorer
+     * @throws JudgmentAPIError
+     *             if the scorer is not found or retrieval fails
+     */
     public PromptScorer get(String name) {
-        CacheKey key = new CacheKey(name, apiKey, organizationId);
+        CacheKey key = new CacheKey(name, client.getApiKey(), client.getOrganizationId());
         com.judgmentlabs.judgeval.internal.api.models.PromptScorer cached = cache.get(key);
         if (cached != null) {
             return createFromModel(cached, name);
@@ -82,16 +91,17 @@ public final class PromptScorerFactory {
                 .prompt(model.getPrompt())
                 .threshold(Optional.ofNullable(model.getThreshold()).orElse(0.5))
                 .options(options)
-                .apiKey(apiKey)
-                .organizationId(organizationId)
                 .isTrace(isTrace)
                 .build();
     }
 
+    /**
+     * Creates a new prompt scorer builder.
+     *
+     * @return a new scorer builder
+     */
     public PromptScorer.Builder create() {
         return PromptScorer.builder()
-                .apiKey(apiKey)
-                .organizationId(organizationId)
                 .isTrace(isTrace);
     }
 

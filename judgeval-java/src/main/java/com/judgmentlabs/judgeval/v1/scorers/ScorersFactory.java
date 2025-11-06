@@ -5,29 +5,48 @@ import com.judgmentlabs.judgeval.v1.scorers.built_in.BuiltInScorersFactory;
 import com.judgmentlabs.judgeval.v1.scorers.custom_scorer.CustomScorerFactory;
 import com.judgmentlabs.judgeval.v1.scorers.prompt_scorer.PromptScorerFactory;
 
+/**
+ * Factory for creating scorer builders and accessing scorer types.
+ */
 public final class ScorersFactory {
     private final JudgmentSyncClient client;
-    private final String             apiKey;
-    private final String             organizationId;
 
-    public ScorersFactory(JudgmentSyncClient client, String apiKey, String organizationId) {
+    public ScorersFactory(JudgmentSyncClient client) {
         this.client = client;
-        this.apiKey = apiKey;
-        this.organizationId = organizationId;
     }
 
+    /**
+     * Returns a factory for creating prompt-based scorers.
+     *
+     * @return the prompt scorer factory
+     */
     public PromptScorerFactory promptScorer() {
-        return new PromptScorerFactory(client, apiKey, organizationId, false);
+        return new PromptScorerFactory(client, false);
     }
 
+    /**
+     * Returns a factory for creating trace-level prompt scorers.
+     *
+     * @return the trace prompt scorer factory
+     */
     public PromptScorerFactory tracePromptScorer() {
-        return new PromptScorerFactory(client, apiKey, organizationId, true);
+        return new PromptScorerFactory(client, true);
     }
 
+    /**
+     * Returns a factory for creating custom scorers.
+     *
+     * @return the custom scorer factory
+     */
     public CustomScorerFactory customScorer() {
         return new CustomScorerFactory();
     }
 
+    /**
+     * Returns a factory for creating built-in scorers.
+     *
+     * @return the built-in scorers factory
+     */
     public BuiltInScorersFactory builtIn() {
         return new BuiltInScorersFactory();
     }

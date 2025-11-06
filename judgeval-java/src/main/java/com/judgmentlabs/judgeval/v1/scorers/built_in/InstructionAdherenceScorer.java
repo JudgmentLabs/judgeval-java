@@ -5,6 +5,9 @@ import java.util.Arrays;
 import com.judgmentlabs.judgeval.v1.data.APIScorerType;
 import com.judgmentlabs.judgeval.v1.scorers.APIScorer;
 
+/**
+ * Scorer that evaluates whether an answer adheres to the given instructions.
+ */
 public final class InstructionAdherenceScorer extends APIScorer {
     private InstructionAdherenceScorer(Builder builder) {
         super(APIScorerType.INSTRUCTION_ADHERENCE);
@@ -23,10 +26,18 @@ public final class InstructionAdherenceScorer extends APIScorer {
         }
     }
 
+    /**
+     * Creates a new builder for configuring an InstructionAdherenceScorer.
+     *
+     * @return a new builder instance
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Builder for configuring and creating InstructionAdherenceScorer instances.
+     */
     public static final class Builder {
         private double  threshold = -1;
         private String  name;

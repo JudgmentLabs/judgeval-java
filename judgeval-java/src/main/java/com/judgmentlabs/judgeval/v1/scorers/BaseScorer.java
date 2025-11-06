@@ -3,19 +3,18 @@ package com.judgmentlabs.judgeval.v1.scorers;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
 /**
- * Minimal interface for scorers used by BaseTracer. Only requires the essential
- * methods needed for evaluation.
+ * Base interface for all scorers in the Judgment evaluation system.
  */
 public interface BaseScorer {
     /**
-     * Gets the name of the scorer.
+     * Returns the name of this scorer.
      *
      * @return the scorer name
      */
     String getName();
 
     /**
-     * Gets the scorer configuration for evaluation runs.
+     * Returns the configuration for this scorer.
      *
      * @return the scorer configuration
      */
