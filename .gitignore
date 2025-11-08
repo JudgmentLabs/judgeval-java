@@ -160,3 +160,6 @@ $RECYCLE.BIN/
 
 .env
 .env*
+
+
+.idea
