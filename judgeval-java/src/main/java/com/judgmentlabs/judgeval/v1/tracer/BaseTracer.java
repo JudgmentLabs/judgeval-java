@@ -572,6 +572,7 @@ public abstract class BaseTracer {
         evaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
         evaluationRun.setCustomScorers(List.of());
         evaluationRun.setIsOffline(false);
+        evaluationRun.setIsBucketRun(false);
         evaluationRun.setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
 
         return evaluationRun;

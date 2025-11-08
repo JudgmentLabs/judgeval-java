@@ -5,11 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b4677526-b42e-47ce-882e-27367bc06429" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/judgmentlabs/judgeval/tracer/BaseTracer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/judgmentlabs/judgeval/tracer/BaseTracer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/judgmentlabs/judgeval/tracer/Tracer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/judgmentlabs/judgeval/tracer/Tracer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/judgmentlabs/judgeval/tracer/TracerConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/judgmentlabs/judgeval/tracer/TracerConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/judgmentlabs/judgeval/tracer/exporters/JudgmentSpanExporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/judgmentlabs/judgeval/tracer/exporters/JudgmentSpanExporter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/examples/src/main/java/examples/simple_chat/SimpleChat.java" beforeDir="false" afterPath="$PROJECT_DIR$/examples/src/main/java/examples/simple_chat/SimpleChat.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,13 +15,25 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "abhishekg999"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "git@github.com:JudgmentLabs/judgeval-java.git",
+    "accountId": "624c87bb-d31b-48b4-8193-ae9aa8d48164"
+  }
+}]]></component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="2" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="34kwFQXtZKaGPRLLxeBC5sjXFEU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -36,8 +44,9 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "ahh/0.2.2",
-    "kotlin-language-version-configured": "true"
+    "git-widget-placeholder": "#16 on ahh/0.3.0",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/ahh/Judgment/judgeval-java"
   }
 }]]></component>
   <component name="RunManager">

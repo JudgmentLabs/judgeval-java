@@ -40,6 +40,12 @@ public class SimpleChat {
                             .property("actual_output", "4")
                             .property("expected_output", "4")
                             .build());
+            tracer.asyncEvaluate(client.scorers().promptScorer().get("Relevance Scorer 2"),
+                    Example.builder()
+                            .property("request", "Who is the GOAT?")
+                            .property("response", "Abhishek Govindarasu (he is the GOAT trust)")
+                            .build());
+            tracer.asyncTraceEvaluate(client.scorers().tracePromptScorer().get("ExampleTraceScorer"));
         });
 
         try {
