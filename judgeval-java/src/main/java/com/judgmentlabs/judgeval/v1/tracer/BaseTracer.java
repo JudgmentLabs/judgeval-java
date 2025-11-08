@@ -36,14 +36,14 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
  * capabilities.
  */
 public abstract class BaseTracer {
-    public static final String TRACER_NAME = "judgeval";
+    public static final String         TRACER_NAME = "judgeval";
 
-    protected final String projectName;
-    protected final boolean enableEvaluation;
+    protected final String             projectName;
+    protected final boolean            enableEvaluation;
     protected final JudgmentSyncClient apiClient;
-    protected final ISerializer serializer;
-    protected final ObjectMapper jacksonMapper;
-    protected final Optional<String> projectId;
+    protected final ISerializer        serializer;
+    protected final ObjectMapper       jacksonMapper;
+    protected final Optional<String>   projectId;
 
     protected BaseTracer(String projectName,
             boolean enableEvaluation, JudgmentSyncClient apiClient, ISerializer serializer) {
@@ -69,7 +69,7 @@ public abstract class BaseTracer {
      * Forces pending spans to flush.
      *
      * @param timeoutMillis
-     *                      maximum time to wait in milliseconds
+     *            maximum time to wait in milliseconds
      * @return true if flush succeeded within timeout
      */
     public abstract boolean forceFlush(int timeoutMillis);
@@ -78,7 +78,7 @@ public abstract class BaseTracer {
      * Shuts down the tracer.
      *
      * @param timeoutMillis
-     *                      maximum time to wait for shutdown in milliseconds
+     *            maximum time to wait for shutdown in milliseconds
      */
     public abstract void shutdown(int timeoutMillis);
 
@@ -99,7 +99,7 @@ public abstract class BaseTracer {
      * Sets the span kind attribute on the current span.
      *
      * @param kind
-     *             the span kind
+     *            the span kind
      */
     public void setSpanKind(String kind) {
         Optional.ofNullable(kind)
@@ -120,9 +120,9 @@ public abstract class BaseTracer {
      * Sets an attribute on the current span by serializing the value.
      *
      * @param key
-     *              the attribute key
+     *            the attribute key
      * @param value
-     *              the attribute value
+     *            the attribute value
      */
     public void setAttribute(String key, Object value) {
         if (!isValidKey(key)) {
@@ -138,11 +138,11 @@ public abstract class BaseTracer {
      * specified type.
      *
      * @param key
-     *              the attribute key
+     *            the attribute key
      * @param value
-     *              the attribute value
+     *            the attribute value
      * @param type
-     *              the type to use for serialization
+     *            the type to use for serialization
      */
     public void setAttribute(String key, Object value, Type type) {
         if (!isValidKey(key)) {
@@ -157,9 +157,9 @@ public abstract class BaseTracer {
      * Sets a string attribute on the current span.
      *
      * @param key
-     *              the attribute key
+     *            the attribute key
      * @param value
-     *              the attribute value
+     *            the attribute value
      */
     public void setAttribute(String key, String value) {
         if (!isValidKey(key)) {
@@ -172,9 +172,9 @@ public abstract class BaseTracer {
      * Sets a long attribute on the current span.
      *
      * @param key
-     *              the attribute key
+     *            the attribute key
      * @param value
-     *              the attribute value
+     *            the attribute value
      */
     public void setAttribute(String key, long value) {
         if (!isValidKey(key)) {
@@ -187,9 +187,9 @@ public abstract class BaseTracer {
      * Sets a double attribute on the current span.
      *
      * @param key
-     *              the attribute key
+     *            the attribute key
      * @param value
-     *              the attribute value
+     *            the attribute value
      */
     public void setAttribute(String key, double value) {
         if (!isValidKey(key)) {
@@ -202,9 +202,9 @@ public abstract class BaseTracer {
      * Sets a boolean attribute on the current span.
      *
      * @param key
-     *              the attribute key
+     *            the attribute key
      * @param value
-     *              the attribute value
+     *            the attribute value
      */
     public void setAttribute(String key, boolean value) {
         if (!isValidKey(key)) {
@@ -250,11 +250,11 @@ public abstract class BaseTracer {
      * backend.
      *
      * @param scorer
-     *                the scorer to use for evaluation
+     *            the scorer to use for evaluation
      * @param example
-     *                the example data to evaluate against
+     *            the example data to evaluate against
      * @param model
-     *                the model to use for evaluation
+     *            the model to use for evaluation
      */
     public void asyncEvaluate(BaseScorer scorer, Example example, String model) {
         safeExecute("evaluate scorer", () -> {
@@ -279,9 +279,9 @@ public abstract class BaseTracer {
      * example.
      *
      * @param scorer
-     *                the scorer to use for evaluation
+     *            the scorer to use for evaluation
      * @param example
-     *                the example data to evaluate against
+     *            the example data to evaluate against
      */
     public void asyncEvaluate(BaseScorer scorer, Example example) {
         asyncEvaluate(scorer, example, null);
@@ -293,9 +293,9 @@ public abstract class BaseTracer {
      * completion.
      *
      * @param scorer
-     *               the scorer to use for trace evaluation
+     *            the scorer to use for trace evaluation
      * @param model
-     *               the model to use for evaluation
+     *            the model to use for evaluation
      */
     public void asyncTraceEvaluate(BaseScorer scorer, String model) {
         safeExecute("evaluate trace scorer", () -> {
@@ -326,7 +326,7 @@ public abstract class BaseTracer {
      * Asynchronously evaluates the current trace using the specified scorer.
      *
      * @param scorer
-     *               the scorer to use for trace evaluation
+     *            the scorer to use for trace evaluation
      */
     public void asyncTraceEvaluate(BaseScorer scorer) {
         asyncTraceEvaluate(scorer, null);
@@ -336,7 +336,7 @@ public abstract class BaseTracer {
      * Sets multiple attributes on the current span.
      *
      * @param attributes
-     *                   map of attribute keys to values
+     *            map of attribute keys to values
      */
     public void setAttributes(Map<String, Object> attributes) {
         Optional.ofNullable(attributes)
@@ -368,7 +368,7 @@ public abstract class BaseTracer {
      * Sets the input attribute on the current span.
      *
      * @param input
-     *              the input value
+     *            the input value
      */
     public void setInput(Object input) {
         setInput(input, input.getClass());
@@ -378,7 +378,7 @@ public abstract class BaseTracer {
      * Sets the output attribute on the current span.
      *
      * @param output
-     *               the output value
+     *            the output value
      */
     public void setOutput(Object output) {
         setOutput(output, output.getClass());
@@ -388,9 +388,9 @@ public abstract class BaseTracer {
      * Sets the input attribute on the current span using the specified type.
      *
      * @param input
-     *              the input value
+     *            the input value
      * @param type
-     *              the type to use for serialization
+     *            the type to use for serialization
      */
     public void setInput(Object input, Type type) {
         setAttribute(JudgmentAttributeKeys.AttributeKeys.JUDGMENT_INPUT, input, type);
@@ -400,9 +400,9 @@ public abstract class BaseTracer {
      * Sets the output attribute on the current span using the specified type.
      *
      * @param output
-     *               the output value
+     *            the output value
      * @param type
-     *               the type to use for serialization
+     *            the type to use for serialization
      */
     public void setOutput(Object output, Type type) {
         setAttribute(JudgmentAttributeKeys.AttributeKeys.JUDGMENT_OUTPUT, output, type);
@@ -413,9 +413,9 @@ public abstract class BaseTracer {
      * and errors.
      *
      * @param spanName
-     *                 the name of the span
+     *            the name of the span
      * @param runnable
-     *                 the code to execute within the span
+     *            the code to execute within the span
      */
     public void span(String spanName, Runnable runnable) {
         Span span = getTracer().spanBuilder(spanName)
@@ -435,14 +435,14 @@ public abstract class BaseTracer {
      * and errors.
      *
      * @param <T>
-     *                 the return type
+     *            the return type
      * @param spanName
-     *                 the name of the span
+     *            the name of the span
      * @param callable
-     *                 the code to execute within the span
+     *            the code to execute within the span
      * @return the result of the callable
      * @throws Exception
-     *                   if the callable throws an exception
+     *             if the callable throws an exception
      */
     public <T> T span(String spanName, java.util.concurrent.Callable<T> callable) throws Exception {
         Span span = getTracer().spanBuilder(spanName)
@@ -498,7 +498,7 @@ public abstract class BaseTracer {
      * Creates and returns a new span with the specified name.
      *
      * @param spanName
-     *                 the name of the span
+     *            the name of the span
      * @return the created span
      */
     public static Span span(String spanName) {
