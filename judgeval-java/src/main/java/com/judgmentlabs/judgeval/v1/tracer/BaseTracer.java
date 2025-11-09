@@ -21,6 +21,7 @@ import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
 import com.judgmentlabs.judgeval.utils.Logger;
 import com.judgmentlabs.judgeval.v1.data.Example;
 import com.judgmentlabs.judgeval.v1.scorers.BaseScorer;
+import com.judgmentlabs.judgeval.v1.scorers.custom_scorer.CustomScorer;
 import com.judgmentlabs.judgeval.v1.tracer.exporters.JudgmentSpanExporter;
 import com.judgmentlabs.judgeval.v1.tracer.exporters.NoOpSpanExporter;
 
@@ -551,8 +552,14 @@ public abstract class BaseTracer {
         evaluationRun.setTraceId(traceId);
         evaluationRun.setTraceSpanId(spanId);
         evaluationRun.setExamples(List.of(example));
-        evaluationRun.setCustomScorers(List.of());
-        evaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
+
+        if (scorer instanceof CustomScorer) {
+            evaluationRun.setJudgmentScorers(List.of());
+            evaluationRun.setCustomScorers(List.of((com.judgmentlabs.judgeval.internal.api.models.BaseScorer) scorer));
+        } else {
+            evaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
+            evaluationRun.setCustomScorers(List.of());
+        }
         evaluationRun.setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
 
         return evaluationRun;
