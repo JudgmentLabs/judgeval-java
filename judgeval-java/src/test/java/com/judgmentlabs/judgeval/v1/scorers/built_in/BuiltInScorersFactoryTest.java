@@ -36,10 +36,4 @@ class BuiltInScorersFactoryTest {
         InstructionAdherenceScorer.Builder builder = factory.instructionAdherence();
         assertNotNull(builder);
     }
-
-    @Test
-    void derailment_returnsBuilder() {
-        DerailmentScorer.Builder builder = factory.derailment();
-        assertNotNull(builder);
-    }
 }

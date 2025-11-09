@@ -42,13 +42,4 @@ public final class BuiltInScorersFactory {
     public InstructionAdherenceScorer.Builder instructionAdherence() {
         return InstructionAdherenceScorer.builder();
     }
-
-    /**
-     * Creates a builder for a derailment scorer.
-     *
-     * @return the scorer builder
-     */
-    public DerailmentScorer.Builder derailment() {
-        return DerailmentScorer.builder();
-    }
 }
