@@ -40,6 +40,9 @@ public class SimpleChat {
                             .property("actual_output", "4")
                             .property("expected_output", "4")
                             .build());
+
+            tracer.asyncTraceEvaluate(client.scorers().tracePromptScorer().get("ExampleTraceScorer"));
+
         });
 
         try {

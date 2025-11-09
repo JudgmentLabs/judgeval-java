@@ -11,7 +11,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.judgmentlabs.judgeval.Env;
 import com.judgmentlabs.judgeval.JudgmentAttributeKeys;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
@@ -254,10 +253,8 @@ public abstract class BaseTracer {
      *            the scorer to use for evaluation
      * @param example
      *            the example data to evaluate against
-     * @param model
-     *            the model to use for evaluation
      */
-    public void asyncEvaluate(BaseScorer scorer, Example example, String model) {
+    public void asyncEvaluate(BaseScorer scorer, Example example) {
         safeExecute("evaluate scorer", () -> {
             if (!isEvaluationEnabled()) {
                 return;
@@ -269,23 +266,10 @@ public abstract class BaseTracer {
 
                 logEvaluationInfo("asyncEvaluate", traceId, spanId, scorer.getName());
 
-                ExampleEvaluationRun evaluationRun = createEvaluationRun(scorer, example, model, traceId, spanId);
+                ExampleEvaluationRun evaluationRun = createEvaluationRun(scorer, example, traceId, spanId);
                 enqueueEvaluation(evaluationRun);
             });
         });
-    }
-
-    /**
-     * Asynchronously evaluates the current span using the specified scorer and
-     * example.
-     *
-     * @param scorer
-     *            the scorer to use for evaluation
-     * @param example
-     *            the example data to evaluate against
-     */
-    public void asyncEvaluate(BaseScorer scorer, Example example) {
-        asyncEvaluate(scorer, example, null);
     }
 
     /**
@@ -295,10 +279,8 @@ public abstract class BaseTracer {
      *
      * @param scorer
      *            the scorer to use for trace evaluation
-     * @param model
-     *            the model to use for evaluation
      */
-    public void asyncTraceEvaluate(BaseScorer scorer, String model) {
+    public void asyncTraceEvaluate(BaseScorer scorer) {
         safeExecute("evaluate trace scorer", () -> {
             if (!isEvaluationEnabled()) {
                 return;
@@ -311,7 +293,7 @@ public abstract class BaseTracer {
 
                 logEvaluationInfo("asyncTraceEvaluate", traceId, spanId, scorer.getName());
 
-                TraceEvaluationRun evaluationRun = createTraceEvaluationRun(scorer, model, traceId, spanId);
+                TraceEvaluationRun evaluationRun = createTraceEvaluationRun(scorer, traceId, spanId);
                 try {
                     String traceEvalJson = jacksonMapper.writeValueAsString(evaluationRun);
                     currentSpan.setAttribute(JudgmentAttributeKeys.AttributeKeys.JUDGMENT_PENDING_TRACE_EVAL,
@@ -321,16 +303,6 @@ public abstract class BaseTracer {
                 }
             });
         });
-    }
-
-    /**
-     * Asynchronously evaluates the current trace using the specified scorer.
-     *
-     * @param scorer
-     *            the scorer to use for trace evaluation
-     */
-    public void asyncTraceEvaluate(BaseScorer scorer) {
-        asyncTraceEvaluate(scorer, null);
     }
 
     /**
@@ -539,16 +511,14 @@ public abstract class BaseTracer {
                 .orElseGet(() -> String.valueOf(System.currentTimeMillis()));
     }
 
-    private ExampleEvaluationRun createEvaluationRun(BaseScorer scorer, Example example, String model, String traceId,
+    private ExampleEvaluationRun createEvaluationRun(BaseScorer scorer, Example example, String traceId,
             String spanId) {
         String runId = generateRunId("async_evaluate_", spanId);
-        String modelName = model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL;
 
         ExampleEvaluationRun evaluationRun = new ExampleEvaluationRun();
         evaluationRun.setId(UUID.randomUUID().toString());
         evaluationRun.setProjectName(projectName);
         evaluationRun.setEvalName(runId);
-        evaluationRun.setModel(modelName);
         evaluationRun.setTraceId(traceId);
         evaluationRun.setTraceSpanId(spanId);
         evaluationRun.setExamples(List.of(example));
@@ -565,16 +535,14 @@ public abstract class BaseTracer {
         return evaluationRun;
     }
 
-    private TraceEvaluationRun createTraceEvaluationRun(BaseScorer scorer, String model, String traceId,
+    private TraceEvaluationRun createTraceEvaluationRun(BaseScorer scorer, String traceId,
             String spanId) {
         String evalName = generateRunId("async_trace_evaluate_", spanId);
-        String modelName = model != null ? model : Env.JUDGMENT_DEFAULT_GPT_MODEL;
 
         TraceEvaluationRun evaluationRun = new TraceEvaluationRun();
         evaluationRun.setId(UUID.randomUUID().toString());
         evaluationRun.setProjectName(projectName);
         evaluationRun.setEvalName(evalName);
-        evaluationRun.setModel(modelName);
         evaluationRun.setTraceAndSpanIds(List.of(List.of(traceId, spanId)));
         evaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
         evaluationRun.setCustomScorers(List.of());
