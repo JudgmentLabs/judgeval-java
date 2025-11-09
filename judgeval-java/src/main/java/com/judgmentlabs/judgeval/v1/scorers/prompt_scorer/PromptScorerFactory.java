@@ -6,13 +6,13 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.judgmentlabs.judgeval.exceptions.JudgmentAPIError;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersRequest;
 import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersResponse;
+import com.judgmentlabs.judgeval.utils.Logger;
 
 /**
- * Factory for retrieving and creating prompt-based scorers.
+ * Factory for retrieving prompt-based scorers.
  */
 public final class PromptScorerFactory {
     private final JudgmentSyncClient                                                               client;
@@ -30,9 +30,7 @@ public final class PromptScorerFactory {
      *
      * @param name
      *            the scorer name
-     * @return the configured prompt scorer
-     * @throws JudgmentAPIError
-     *             if the scorer is not found or retrieval fails
+     * @return the configured prompt scorer or null if not found or retrieval fails
      */
     public PromptScorer get(String name) {
         CacheKey key = new CacheKey(name, client.getApiKey(), client.getOrganizationId());
@@ -51,22 +49,28 @@ public final class PromptScorerFactory {
                     .map(FetchPromptScorersResponse::getScorers)
                     .filter(scorers -> scorers != null && !scorers.isEmpty())
                     .map(scorers -> scorers.get(0))
-                    .orElseThrow(
-                            () -> new JudgmentAPIError(404, "Failed to fetch prompt scorer '" + name + "': not found"));
+                    .orElseGet(
+                            () -> {
+                                Logger.error("Failed to fetch prompt scorer '" + name + "': not found");
+                                return null;
+                            });
+
+            if (scorer == null) {
+                return null;
+            }
 
             if (Boolean.TRUE.equals(scorer.getIsTrace()) != isTrace) {
-                String expectedType = isTrace ? "TracePromptScorer" : "PromptScorer";
-                String actualType = Boolean.TRUE.equals(scorer.getIsTrace()) ? "TracePromptScorer" : "PromptScorer";
-                throw new JudgmentAPIError(400,
-                        "Scorer with name " + name + " is a " + actualType + ", not a " + expectedType);
+                Logger.error("Scorer with name " + name + " is a "
+                        + (Boolean.TRUE.equals(scorer.getIsTrace()) ? "TracePromptScorer" : "PromptScorer") + ", not a "
+                        + (isTrace ? "TracePromptScorer" : "PromptScorer"));
+                return null;
             }
 
             cache.put(key, scorer);
             return createFromModel(scorer, name);
-        } catch (JudgmentAPIError e) {
-            throw e;
         } catch (Exception e) {
-            throw new JudgmentAPIError(500, "Failed to fetch prompt scorer '" + name + "': " + e.getMessage());
+            Logger.error("Failed to fetch prompt scorer '" + name + "': " + e.getMessage());
+            return null;
         }
     }
 
@@ -93,16 +97,6 @@ public final class PromptScorerFactory {
                 .options(options)
                 .isTrace(isTrace)
                 .build();
-    }
-
-    /**
-     * Creates a new prompt scorer builder.
-     *
-     * @return a new scorer builder
-     */
-    public PromptScorer.Builder create() {
-        return PromptScorer.builder()
-                .isTrace(isTrace);
     }
 
     private static final class CacheKey {

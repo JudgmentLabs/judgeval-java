@@ -9,9 +9,6 @@ public enum APIScorerType {
     FAITHFULNESS("Faithfulness"),
     ANSWER_RELEVANCY("Answer Relevancy"),
     ANSWER_CORRECTNESS("Answer Correctness"),
-    INSTRUCTION_ADHERENCE("Instruction Adherence"),
-    EXECUTION_ORDER("Execution Order"),
-    DERAILMENT("Derailment"),
     CUSTOM("Custom");
 
     private final String value;

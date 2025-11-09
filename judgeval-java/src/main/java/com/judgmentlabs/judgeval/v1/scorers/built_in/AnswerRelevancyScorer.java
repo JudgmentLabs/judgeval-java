@@ -39,7 +39,7 @@ public final class AnswerRelevancyScorer extends APIScorer {
      * Builder for configuring and creating AnswerRelevancyScorer instances.
      */
     public static final class Builder {
-        private double  threshold = -1;
+        private double  threshold = 0.5;
         private String  name;
         private Boolean strictMode;
         private String  model;

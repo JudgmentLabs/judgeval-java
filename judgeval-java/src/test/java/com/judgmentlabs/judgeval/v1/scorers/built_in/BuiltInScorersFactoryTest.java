@@ -30,10 +30,4 @@ class BuiltInScorersFactoryTest {
         FaithfulnessScorer.Builder builder = factory.faithfulness();
         assertNotNull(builder);
     }
-
-    @Test
-    void instructionAdherence_returnsBuilder() {
-        InstructionAdherenceScorer.Builder builder = factory.instructionAdherence();
-        assertNotNull(builder);
-    }
 }

@@ -33,13 +33,4 @@ public final class BuiltInScorersFactory {
     public FaithfulnessScorer.Builder faithfulness() {
         return FaithfulnessScorer.builder();
     }
-
-    /**
-     * Creates a builder for an instruction adherence scorer.
-     *
-     * @return the scorer builder
-     */
-    public InstructionAdherenceScorer.Builder instructionAdherence() {
-        return InstructionAdherenceScorer.builder();
-    }
 }
