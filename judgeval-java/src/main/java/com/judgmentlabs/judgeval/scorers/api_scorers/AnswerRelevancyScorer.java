@@ -6,7 +6,7 @@ import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
 /**
- * @deprecated Use {@link com.judgmentlabs.judgeval.v1.JudgmentClient} instead.
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
  * 
  *             <p>
  *             Migration example:
@@ -16,7 +16,7 @@ import com.judgmentlabs.judgeval.scorers.APIScorer;
  * AnswerRelevancyScorer scorer = AnswerRelevancyScorer.create();
  * 
  * // New way:
- * JudgmentClient client = JudgmentClient.builder().build();
+ * Judgeval client = Judgeval.builder().build();
  * AnswerRelevancyScorer scorer = client.scorers().builtIn().answerRelevancy().build();
  * }</pre>
  */

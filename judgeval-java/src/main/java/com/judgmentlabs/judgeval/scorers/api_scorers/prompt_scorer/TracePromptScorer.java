@@ -10,7 +10,7 @@ import com.judgmentlabs.judgeval.exceptions.JudgmentAPIError;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
 /**
- * @deprecated Use {@link com.judgmentlabs.judgeval.v1.JudgmentClient} instead.
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
  * 
  *             <p>
  *             Migration example:
@@ -20,7 +20,7 @@ import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
  * TracePromptScorer scorer = TracePromptScorer.get("my-scorer");
  * 
  * // New way:
- * JudgmentClient client = JudgmentClient.builder().build();
+ * Judgeval client = Judgeval.builder().build();
  * PromptScorer scorer = client.scorers().tracePromptScorer().get("my-scorer");
  * }</pre>
  */

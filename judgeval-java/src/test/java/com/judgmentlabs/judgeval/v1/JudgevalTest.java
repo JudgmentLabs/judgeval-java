@@ -8,14 +8,14 @@ import com.judgmentlabs.judgeval.v1.evaluation.EvaluationFactory;
 import com.judgmentlabs.judgeval.v1.scorers.ScorersFactory;
 import com.judgmentlabs.judgeval.v1.tracer.TracerFactory;
 
-class JudgmentClientTest {
+class JudgevalTest {
     private static final String TEST_API_URL = "https://api.test.com";
     private static final String TEST_API_KEY = "test-key";
     private static final String TEST_ORG_ID  = "test-org";
 
     @Test
     void builder_withAllParameters_buildsSuccessfully() {
-        JudgmentClient client = JudgmentClient.builder()
+        Judgeval client = Judgeval.builder()
                 .apiKey(TEST_API_KEY)
                 .organizationId(TEST_ORG_ID)
                 .apiUrl(TEST_API_URL)
@@ -27,7 +27,7 @@ class JudgmentClientTest {
     @Test
     void builder_withNullApiKey_throwsException() {
         assertThrows(NullPointerException.class, () -> {
-            JudgmentClient.builder()
+            Judgeval.builder()
                     .apiKey(null)
                     .organizationId(TEST_ORG_ID)
                     .build();
@@ -37,7 +37,7 @@ class JudgmentClientTest {
     @Test
     void builder_withNullOrganizationId_throwsException() {
         assertThrows(NullPointerException.class, () -> {
-            JudgmentClient.builder()
+            Judgeval.builder()
                     .apiKey(TEST_API_KEY)
                     .organizationId(null)
                     .build();
@@ -46,7 +46,7 @@ class JudgmentClientTest {
 
     @Test
     void tracer_returnsTracerFactory() {
-        JudgmentClient client = JudgmentClient.builder()
+        Judgeval client = Judgeval.builder()
                 .apiKey(TEST_API_KEY)
                 .organizationId(TEST_ORG_ID)
                 .build();
@@ -57,7 +57,7 @@ class JudgmentClientTest {
 
     @Test
     void scorers_returnsScorersFactory() {
-        JudgmentClient client = JudgmentClient.builder()
+        Judgeval client = Judgeval.builder()
                 .apiKey(TEST_API_KEY)
                 .organizationId(TEST_ORG_ID)
                 .build();
@@ -68,7 +68,7 @@ class JudgmentClientTest {
 
     @Test
     void evaluation_returnsEvaluationFactory() {
-        JudgmentClient client = JudgmentClient.builder()
+        Judgeval client = Judgeval.builder()
                 .apiKey(TEST_API_KEY)
                 .organizationId(TEST_ORG_ID)
                 .build();

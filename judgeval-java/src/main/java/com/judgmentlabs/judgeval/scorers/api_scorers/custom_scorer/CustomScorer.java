@@ -9,7 +9,7 @@ import com.judgmentlabs.judgeval.scorers.APIScorer;
  * Instances serialize into ExampleEvaluationRun.custom_scorers with score_type
  * "Custom", server_hosted=true, and optional class_name for server routing.
  *
- * @deprecated Use {@link com.judgmentlabs.judgeval.v1.JudgmentClient} instead.
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
  * 
  *             <p>
  *             Migration example:
@@ -19,7 +19,7 @@ import com.judgmentlabs.judgeval.scorers.APIScorer;
  * CustomScorer scorer = CustomScorer.get("my-scorer");
  * 
  * // New way:
- * JudgmentClient client = JudgmentClient.builder().build();
+ * Judgeval client = Judgeval.builder().build();
  * CustomScorer scorer = client.scorers().customScorer().get("my-scorer");
  * }</pre>
  */

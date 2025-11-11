@@ -12,13 +12,13 @@ import com.judgmentlabs.judgeval.v1.tracer.TracerFactory;
  * Main entry point for the Judgment SDK. Provides access to tracer, scorer, and
  * evaluation factories.
  */
-public final class JudgmentClient {
+public class Judgeval {
     private final String             apiKey;
     private final String             organizationId;
     private final String             apiUrl;
     private final JudgmentSyncClient internalClient;
 
-    private JudgmentClient(Builder builder) {
+    protected Judgeval(Builder builder) {
         this.apiKey = Objects.requireNonNull(builder.apiKey, "apiKey required");
         this.organizationId = Objects.requireNonNull(builder.organizationId, "organizationId required");
         this.apiUrl = builder.apiUrl != null ? builder.apiUrl : Env.JUDGMENT_API_URL;
@@ -53,7 +53,7 @@ public final class JudgmentClient {
     }
 
     /**
-     * Creates a new builder for configuring a JudgmentClient.
+     * Creates a new builder for configuring a Judgeval.
      *
      * @return a new builder instance
      */
@@ -62,9 +62,9 @@ public final class JudgmentClient {
     }
 
     /**
-     * Builder for configuring and creating JudgmentClient instances.
+     * Builder for configuring and creating Judgeval instances.
      */
-    public static final class Builder {
+    public static class Builder {
         private String apiKey         = Env.JUDGMENT_API_KEY;
         private String organizationId = Env.JUDGMENT_ORG_ID;
         private String apiUrl         = Env.JUDGMENT_API_URL;
@@ -106,12 +106,12 @@ public final class JudgmentClient {
         }
 
         /**
-         * Builds and returns a new JudgmentClient instance.
+         * Builds and returns a new Judgeval instance.
          *
-         * @return the configured JudgmentClient
+         * @return the configured Judgeval
          */
-        public JudgmentClient build() {
-            return new JudgmentClient(this);
+        public Judgeval build() {
+            return new Judgeval(this);
         }
     }
 }

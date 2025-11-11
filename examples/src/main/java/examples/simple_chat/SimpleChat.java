@@ -3,7 +3,7 @@ package examples.simple_chat;
 import java.time.Duration;
 
 import com.judgmentlabs.judgeval.instrumentation.openai.OpenAITelemetry;
-import com.judgmentlabs.judgeval.v1.JudgmentClient;
+import com.judgmentlabs.judgeval.v1.Judgeval;
 import com.judgmentlabs.judgeval.v1.data.Example;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
@@ -14,7 +14,7 @@ import io.opentelemetry.api.GlobalOpenTelemetry;
 
 public class SimpleChat {
     public static void main(String[] args) {
-        var client = JudgmentClient.builder()
+        var client = Judgeval.builder()
                 .apiKey(System.getenv("JUDGMENT_API_KEY"))
                 .organizationId(System.getenv("JUDGMENT_ORG_ID"))
                 .build();

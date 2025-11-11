@@ -6,7 +6,7 @@ import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
 /**
- * @deprecated Use {@link com.judgmentlabs.judgeval.v1.JudgmentClient} instead.
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
  * 
  *             <p>
  *             Migration example:
@@ -16,7 +16,7 @@ import com.judgmentlabs.judgeval.scorers.APIScorer;
  * FaithfulnessScorer scorer = FaithfulnessScorer.create();
  * 
  * // New way:
- * JudgmentClient client = JudgmentClient.builder().build();
+ * Judgeval client = Judgeval.builder().build();
  * FaithfulnessScorer scorer = client.scorers().builtIn().faithfulness().build();
  * }</pre>
  */
