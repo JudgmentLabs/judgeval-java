@@ -19,7 +19,6 @@ public class SimpleChat {
                 .organizationId(System.getenv("JUDGMENT_ORG_ID"))
                 .build();
         var tracer = client.tracer().create().projectName("SimpleChat-Java").build();
-        tracer.initialize();
 
         OpenAIClient baseClient = OpenAIOkHttpClient.fromEnv();
         var otelClient = OpenAITelemetry.builder(GlobalOpenTelemetry.get()).build().wrap(baseClient);

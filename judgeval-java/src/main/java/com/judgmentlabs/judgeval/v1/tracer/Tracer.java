@@ -114,7 +114,7 @@ public final class Tracer extends BaseTracer {
         private String             projectName;
         private boolean            enableEvaluation = true;
         private ISerializer        serializer;
-        private boolean            initialize       = false;
+        private boolean            initialize       = true;
 
         /**
          * Sets the Judgment API client.
