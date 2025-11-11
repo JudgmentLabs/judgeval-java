@@ -9,6 +9,22 @@ import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.exceptions.JudgmentAPIError;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
+ * 
+ *             <p>
+ *             Migration example:
+ * 
+ *             <pre>{@code
+ * // Old way:
+ * PromptScorer scorer = PromptScorer.get("my-scorer");
+ * 
+ * // New way:
+ * Judgeval client = Judgeval.builder().build();
+ * PromptScorer scorer = client.scorers().promptScorer().get("my-scorer");
+ * }</pre>
+ */
+@Deprecated
 public class PromptScorer extends BasePromptScorer {
 
     public PromptScorer(String name, String prompt, double threshold, Map<String, Double> options) {

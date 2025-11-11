@@ -13,6 +13,11 @@ import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.scorers.api_scorers.custom_scorer.CustomScorer;
 
+/**
+ * @deprecated Replaced by
+ *             com.judgmentlabs.judgeval.v1.data.TraceEvaluationRunBuilder
+ */
+@Deprecated
 public class TraceEvaluationRunBuilder {
     private String                 projectName;
     private String                 evalName;

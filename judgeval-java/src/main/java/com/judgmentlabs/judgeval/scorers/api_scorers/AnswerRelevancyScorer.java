@@ -5,6 +5,22 @@ import java.util.Arrays;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
+ * 
+ *             <p>
+ *             Migration example:
+ * 
+ *             <pre>{@code
+ * // Old way:
+ * AnswerRelevancyScorer scorer = AnswerRelevancyScorer.create();
+ * 
+ * // New way:
+ * Judgeval client = Judgeval.builder().build();
+ * AnswerRelevancyScorer scorer = client.scorers().builtIn().answerRelevancy().build();
+ * }</pre>
+ */
+@Deprecated
 public class AnswerRelevancyScorer extends APIScorer {
     public AnswerRelevancyScorer() {
         super(APIScorerType.ANSWER_RELEVANCY);

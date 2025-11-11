@@ -8,7 +8,22 @@ import com.judgmentlabs.judgeval.scorers.APIScorer;
  * Server-hosted custom scorer representation for enqueue payloads.
  * Instances serialize into ExampleEvaluationRun.custom_scorers with score_type
  * "Custom", server_hosted=true, and optional class_name for server routing.
+ *
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
+ * 
+ *             <p>
+ *             Migration example:
+ * 
+ *             <pre>{@code
+ * // Old way:
+ * CustomScorer scorer = CustomScorer.get("my-scorer");
+ * 
+ * // New way:
+ * Judgeval client = Judgeval.builder().build();
+ * CustomScorer scorer = client.scorers().customScorer().get("my-scorer");
+ * }</pre>
  */
+@Deprecated
 public class CustomScorer extends APIScorer {
     public CustomScorer() {
         super(APIScorerType.CUSTOM);

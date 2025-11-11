@@ -3,6 +3,10 @@ package com.judgmentlabs.judgeval.data;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.data.Example} instead.
+ */
+@Deprecated
 public class Example extends com.judgmentlabs.judgeval.internal.api.models.Example {
 
     public Example() {

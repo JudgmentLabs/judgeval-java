@@ -13,6 +13,11 @@ import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.scorers.api_scorers.custom_scorer.CustomScorer;
 
+/**
+ * @deprecated Replaced by
+ *             com.judgmentlabs.judgeval.v1.data.EvaluationRunBuilder
+ */
+@Deprecated
 public class EvaluationRunBuilder {
     private String                                                projectName;
     private String                                                evalName;

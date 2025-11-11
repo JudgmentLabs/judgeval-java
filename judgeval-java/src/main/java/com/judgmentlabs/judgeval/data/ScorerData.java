@@ -2,6 +2,10 @@ package com.judgmentlabs.judgeval.data;
 
 import java.util.Map;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.data.ScorerData} instead.
+ */
+@Deprecated
 public class ScorerData extends com.judgmentlabs.judgeval.internal.api.models.ScorerData {
 
     public static Builder builder() {

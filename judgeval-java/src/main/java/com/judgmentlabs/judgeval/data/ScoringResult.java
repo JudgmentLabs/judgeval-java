@@ -2,6 +2,11 @@ package com.judgmentlabs.judgeval.data;
 
 import java.util.List;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.data.ScoringResult}
+ *             instead.
+ */
+@Deprecated
 public class ScoringResult extends com.judgmentlabs.judgeval.internal.api.models.ScoringResult {
 
     public static Builder builder() {

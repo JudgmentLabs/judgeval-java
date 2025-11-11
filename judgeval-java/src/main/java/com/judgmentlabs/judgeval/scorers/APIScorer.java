@@ -10,6 +10,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.scorers.APIScorer}
+ *             instead.
+ */
+@Deprecated
 public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer implements BaseScorer {
     private APIScorerType scoreType;
 

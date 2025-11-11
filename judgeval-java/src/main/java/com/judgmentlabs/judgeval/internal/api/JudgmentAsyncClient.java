@@ -30,6 +30,18 @@ public class JudgmentAsyncClient {
         this.mapper = new ObjectMapper();
     }
 
+    public String getApiUrl() {
+        return baseUrl;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public String getOrganizationId() {
+        return organizationId;
+    }
+
     private String buildUrl(String path, Map<String, String> queryParams) {
         StringBuilder url = new StringBuilder(baseUrl).append(path);
         if (!queryParams.isEmpty()) {

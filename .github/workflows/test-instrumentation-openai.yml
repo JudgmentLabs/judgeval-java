@@ -27,9 +27,13 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Run Tests
+        run: |
+          cd instrumentation/judgeval-instrumentation-openai && mvn -B test
+
       - name: Test Install
         run: |
-          mvn -B -Dgpg.skip=true -pl instrumentation/judgeval-instrumentation-openai -am clean install
+          cd instrumentation/judgeval-instrumentation-openai && mvn -B -Dgpg.skip=true clean install
 
       - name: Verify Build Artifacts
         run: |

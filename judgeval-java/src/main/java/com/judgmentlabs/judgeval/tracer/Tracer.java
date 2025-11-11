@@ -16,11 +16,30 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 /**
  * Main tracer for Judgment Labs distributed tracing and evaluation.
  *
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
+ * 
+ *             <p>
+ *             Migration example:
+ * 
+ *             <pre>{@code
+ * // Old way:
+ * Tracer tracer = Tracer.createDefault("my-project");
+ * tracer.initialize();
+ * 
+ * // New way:
+ * Judgeval client = Judgeval.builder().build();
+ * Tracer tracer = client.tracer().create()
+ *     .projectName("my-project")
+ *     .build();
+ * tracer.initialize();
+ * }</pre>
+ *
  * @see TracerConfiguration
  * @see SpanExporter
  * @see com.judgmentlabs.judgeval.scorers.BaseScorer
  * @see com.judgmentlabs.judgeval.data.Example
  */
+@Deprecated
 public final class Tracer extends BaseTracer {
 
     private Tracer(TracerConfiguration configuration, ISerializer serializer, boolean shouldInitialize) {

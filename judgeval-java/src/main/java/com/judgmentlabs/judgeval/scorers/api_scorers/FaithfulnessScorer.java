@@ -5,6 +5,22 @@ import java.util.Arrays;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
+ * 
+ *             <p>
+ *             Migration example:
+ * 
+ *             <pre>{@code
+ * // Old way:
+ * FaithfulnessScorer scorer = FaithfulnessScorer.create();
+ * 
+ * // New way:
+ * Judgeval client = Judgeval.builder().build();
+ * FaithfulnessScorer scorer = client.scorers().builtIn().faithfulness().build();
+ * }</pre>
+ */
+@Deprecated
 public class FaithfulnessScorer extends APIScorer {
     public FaithfulnessScorer() {
         super(APIScorerType.FAITHFULNESS);

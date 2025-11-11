@@ -5,6 +5,22 @@ import java.util.Arrays;
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
+/**
+ * @deprecated Use {@link com.judgmentlabs.judgeval.v1.Judgeval} instead.
+ * 
+ *             <p>
+ *             Migration example:
+ * 
+ *             <pre>{@code
+ * // Old way:
+ * AnswerCorrectnessScorer scorer = AnswerCorrectnessScorer.create();
+ * 
+ * // New way:
+ * Judgeval client = Judgeval.builder().build();
+ * AnswerCorrectnessScorer scorer = client.scorers().builtIn().answerCorrectness().build();
+ * }</pre>
+ */
+@Deprecated
 public class AnswerCorrectnessScorer extends APIScorer {
     public AnswerCorrectnessScorer() {
         super(APIScorerType.ANSWER_CORRECTNESS);
