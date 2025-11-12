@@ -1,6 +1,7 @@
-package com.judgmentlabs.judgeval.v1;
+package com.judgmentlabs.judgeval;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -11,7 +12,7 @@ import com.judgmentlabs.judgeval.tracer.TracerFactory;
 class JudgevalTest {
     private static final String TEST_API_URL = "https://api.test.com";
     private static final String TEST_API_KEY = "test-key";
-    private static final String TEST_ORG_ID  = "test-org";
+    private static final String TEST_ORG_ID = "test-org";
 
     @Test
     void builder_withAllParameters_buildsSuccessfully() {

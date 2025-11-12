@@ -1,10 +1,9 @@
-package com.judgmentlabs.judgeval.v1;
+package com.judgmentlabs.judgeval;
 
 import java.util.Objects;
 
-import com.judgmentlabs.judgeval.Env;
-import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.evaluation.EvaluationFactory;
+import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.scorers.ScorersFactory;
 import com.judgmentlabs.judgeval.tracer.TracerFactory;
 
@@ -13,9 +12,9 @@ import com.judgmentlabs.judgeval.tracer.TracerFactory;
  * evaluation factories.
  */
 public class Judgeval {
-    private final String             apiKey;
-    private final String             organizationId;
-    private final String             apiUrl;
+    private final String apiKey;
+    private final String organizationId;
+    private final String apiUrl;
     private final JudgmentSyncClient internalClient;
 
     protected Judgeval(Builder builder) {
@@ -65,15 +64,15 @@ public class Judgeval {
      * Builder for configuring and creating Judgeval instances.
      */
     public static class Builder {
-        private String apiKey         = Env.JUDGMENT_API_KEY;
+        private String apiKey = Env.JUDGMENT_API_KEY;
         private String organizationId = Env.JUDGMENT_ORG_ID;
-        private String apiUrl         = Env.JUDGMENT_API_URL;
+        private String apiUrl = Env.JUDGMENT_API_URL;
 
         /**
          * Sets the API key for authentication.
          *
          * @param apiKey
-         *            the API key
+         *               the API key
          * @return this builder
          */
         public Builder apiKey(String apiKey) {
@@ -85,7 +84,7 @@ public class Judgeval {
          * Sets the organization ID.
          *
          * @param organizationId
-         *            the organization ID
+         *                       the organization ID
          * @return this builder
          */
         public Builder organizationId(String organizationId) {
@@ -97,7 +96,7 @@ public class Judgeval {
          * Sets the API URL.
          *
          * @param apiUrl
-         *            the API URL
+         *               the API URL
          * @return this builder
          */
         public Builder apiUrl(String apiUrl) {
