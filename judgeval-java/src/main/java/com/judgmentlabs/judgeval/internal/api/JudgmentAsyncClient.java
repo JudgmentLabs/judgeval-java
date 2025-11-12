@@ -98,7 +98,7 @@ public class JudgmentAsyncClient {
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<Object> logEvalResults(EvalResults payload) {
+    public CompletableFuture<LogEvalResultsResponse> logEvalResults(EvalResults payload) {
         String url = buildUrl("/log_eval_results/");
         String jsonPayload;
         try {
@@ -115,7 +115,7 @@ public class JudgmentAsyncClient {
                 .thenApply(this::handleResponse);
     }
 
-    public CompletableFuture<Object> fetchExperimentRun(EvalResultsFetch payload) {
+    public CompletableFuture<FetchExperimentRunResponse> fetchExperimentRun(EvalResultsFetch payload) {
         String url = buildUrl("/fetch_experiment_run/");
         String jsonPayload;
         try {

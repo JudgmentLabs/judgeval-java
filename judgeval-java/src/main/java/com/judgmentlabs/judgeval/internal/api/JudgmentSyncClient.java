@@ -93,7 +93,7 @@ public class JudgmentSyncClient {
         return handleResponse(response);
     }
 
-    public Object logEvalResults(EvalResults payload) throws IOException, InterruptedException {
+    public LogEvalResultsResponse logEvalResults(EvalResults payload) throws IOException, InterruptedException {
         String url = buildUrl("/log_eval_results/");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request = HttpRequest.newBuilder()
@@ -102,10 +102,11 @@ public class JudgmentSyncClient {
                 .headers(buildHeaders())
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return handleResponse(response);
+        return mapper.readValue(response.body(), LogEvalResultsResponse.class);
     }
 
-    public Object fetchExperimentRun(EvalResultsFetch payload) throws IOException, InterruptedException {
+    public FetchExperimentRunResponse fetchExperimentRun(EvalResultsFetch payload)
+            throws IOException, InterruptedException {
         String url = buildUrl("/fetch_experiment_run/");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request = HttpRequest.newBuilder()
@@ -114,7 +115,7 @@ public class JudgmentSyncClient {
                 .headers(buildHeaders())
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return handleResponse(response);
+        return mapper.readValue(response.body(), FetchExperimentRunResponse.class);
     }
 
     public ScorerExistsResponse scorerExists(ScorerExistsRequest payload) throws IOException, InterruptedException {
