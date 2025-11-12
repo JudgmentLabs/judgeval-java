@@ -2,15 +2,12 @@ package examples.simple_chat;
 
 import java.time.Duration;
 
-import com.judgmentlabs.judgeval.instrumentation.openai.OpenAITelemetry;
-import com.judgmentlabs.judgeval.v1.Judgeval;
-import com.judgmentlabs.judgeval.v1.data.Example;
+import com.judgmentlabs.judgeval.Judgeval;
+import com.judgmentlabs.judgeval.data.Example;
 import com.openai.client.OpenAIClient;
 import com.openai.client.okhttp.OpenAIOkHttpClient;
 import com.openai.models.ChatModel;
 import com.openai.models.chat.completions.ChatCompletionCreateParams;
-
-import io.opentelemetry.api.GlobalOpenTelemetry;
 
 public class SimpleChat {
     public static void main(String[] args) {
@@ -20,8 +17,7 @@ public class SimpleChat {
                 .build();
         var tracer = client.tracer().create().projectName("SimpleChat-Java").build();
 
-        OpenAIClient baseClient = OpenAIOkHttpClient.fromEnv();
-        var otelClient = OpenAITelemetry.builder(GlobalOpenTelemetry.get()).build().wrap(baseClient);
+        OpenAIClient otelClient = OpenAIOkHttpClient.fromEnv();
 
         tracer.span("chat.session", () -> {
 
