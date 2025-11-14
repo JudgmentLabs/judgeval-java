@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.data.APIScorerType;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
 /**

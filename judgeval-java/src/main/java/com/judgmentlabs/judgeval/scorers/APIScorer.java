@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.data.APIScorerType;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 
 /**
  * Base class for API-based scorers that evaluate using the Judgment backend.

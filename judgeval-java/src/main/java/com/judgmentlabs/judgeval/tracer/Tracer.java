@@ -20,6 +20,7 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 
 public final class Tracer extends BaseTracer {
     private SdkTracerProvider tracerProvider;
+    private final Attributes  resourceAttributes;
 
     private Tracer(Builder builder) {
         super(
@@ -27,6 +28,9 @@ public final class Tracer extends BaseTracer {
                 builder.enableEvaluation,
                 Objects.requireNonNull(builder.client, "client required"),
                 builder.serializer != null ? builder.serializer : new GsonSerializer());
+
+        this.resourceAttributes = builder.resourceAttributes != null ? builder.resourceAttributes
+                : Attributes.empty();
 
         if (builder.initialize) {
             initialize();
@@ -43,12 +47,14 @@ public final class Tracer extends BaseTracer {
     public void initialize() {
         SpanExporter spanExporter = getSpanExporter();
 
+        var attributesBuilder = Attributes.builder()
+                .put("service.name", projectName)
+                .put("telemetry.sdk.name", TRACER_NAME)
+                .put("telemetry.sdk.version", Version.getVersion())
+                .putAll(resourceAttributes);
+
         var resource = Resource.getDefault()
-                .merge(Resource.create(Attributes.builder()
-                        .put("service.name", projectName)
-                        .put("telemetry.sdk.name", TRACER_NAME)
-                        .put("telemetry.sdk.version", Version.getVersion())
-                        .build()));
+                .merge(Resource.create(attributesBuilder.build()));
 
         this.tracerProvider = SdkTracerProvider.builder()
                 .setResource(resource)
@@ -115,6 +121,7 @@ public final class Tracer extends BaseTracer {
         private boolean            enableEvaluation = true;
         private ISerializer        serializer;
         private boolean            initialize       = true;
+        private Attributes         resourceAttributes;
 
         /**
          * Sets the Judgment API client.
@@ -161,6 +168,18 @@ public final class Tracer extends BaseTracer {
          */
         public Builder serializer(ISerializer serializer) {
             this.serializer = serializer;
+            return this;
+        }
+
+        /**
+         * Sets additional resource attributes to be included in the tracer.
+         *
+         * @param resourceAttributes
+         *            the resource attributes
+         * @return this builder
+         */
+        public Builder resourceAttributes(Attributes resourceAttributes) {
+            this.resourceAttributes = resourceAttributes;
             return this;
         }
 

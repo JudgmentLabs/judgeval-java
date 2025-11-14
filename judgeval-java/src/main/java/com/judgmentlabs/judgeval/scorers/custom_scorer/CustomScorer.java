@@ -1,7 +1,7 @@
 package com.judgmentlabs.judgeval.scorers.custom_scorer;
 
-import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.data.APIScorerType;
+import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
 import com.judgmentlabs.judgeval.scorers.APIScorer;
 
 /**

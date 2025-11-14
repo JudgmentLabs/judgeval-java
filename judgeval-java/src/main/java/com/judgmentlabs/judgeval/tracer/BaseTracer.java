@@ -12,17 +12,17 @@ import java.util.UUID;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.judgmentlabs.judgeval.JudgmentAttributeKeys;
+import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
 import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
 import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
-import com.judgmentlabs.judgeval.utils.Logger;
-import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.scorers.custom_scorer.CustomScorer;
 import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
 import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;
+import com.judgmentlabs.judgeval.utils.Logger;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;

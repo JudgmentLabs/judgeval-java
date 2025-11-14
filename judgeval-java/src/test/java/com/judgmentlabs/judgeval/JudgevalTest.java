@@ -12,7 +12,7 @@ import com.judgmentlabs.judgeval.tracer.TracerFactory;
 class JudgevalTest {
     private static final String TEST_API_URL = "https://api.test.com";
     private static final String TEST_API_KEY = "test-key";
-    private static final String TEST_ORG_ID = "test-org";
+    private static final String TEST_ORG_ID  = "test-org";
 
     @Test
     void builder_withAllParameters_buildsSuccessfully() {
