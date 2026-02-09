@@ -12,24 +12,28 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class TraceEvaluationRun {
     @JsonProperty("id")
     private String              id;
-    @JsonProperty("project_name")
-    private String              projectName;
+    @JsonProperty("project_id")
+    private String              projectId;
     @JsonProperty("eval_name")
     private String              evalName;
-    @JsonProperty("custom_scorers")
-    private List<BaseScorer>    customScorers;
-    @JsonProperty("judgment_scorers")
-    private List<ScorerConfig>  judgmentScorers;
     @JsonProperty("model")
     private String              model;
     @JsonProperty("created_at")
     private String              createdAt;
+    @JsonProperty("user_id")
+    private String              userId;
+    @JsonProperty("scorers")
+    private List<Object>        scorers;
+    @JsonProperty("custom_scorers")
+    private List<BaseScorer>    customScorers;
+    @JsonProperty("judgment_scorers")
+    private List<ScorerConfig>  judgmentScorers;
     @JsonProperty("trace_and_span_ids")
-    private List<List<Object>>  traceAndSpanIds;
+    private List<List<String>>  traceAndSpanIds;
     @JsonProperty("is_offline")
     private Boolean             isOffline;
-    @JsonProperty("is_bucket_run")
-    private Boolean             isBucketRun;
+    @JsonProperty("is_behavior")
+    private Boolean             isBehavior;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -47,20 +51,12 @@ public class TraceEvaluationRun {
         return id;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public String getProjectId() {
+        return projectId;
     }
 
     public String getEvalName() {
         return evalName;
-    }
-
-    public List<BaseScorer> getCustomScorers() {
-        return customScorers;
-    }
-
-    public List<ScorerConfig> getJudgmentScorers() {
-        return judgmentScorers;
     }
 
     public String getModel() {
@@ -71,7 +67,23 @@ public class TraceEvaluationRun {
         return createdAt;
     }
 
-    public List<List<Object>> getTraceAndSpanIds() {
+    public String getUserId() {
+        return userId;
+    }
+
+    public List<Object> getScorers() {
+        return scorers;
+    }
+
+    public List<BaseScorer> getCustomScorers() {
+        return customScorers;
+    }
+
+    public List<ScorerConfig> getJudgmentScorers() {
+        return judgmentScorers;
+    }
+
+    public List<List<String>> getTraceAndSpanIds() {
         return traceAndSpanIds;
     }
 
@@ -79,28 +91,20 @@ public class TraceEvaluationRun {
         return isOffline;
     }
 
-    public Boolean getIsBucketRun() {
-        return isBucketRun;
+    public Boolean getIsBehavior() {
+        return isBehavior;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setProjectId(String projectId) {
+        this.projectId = projectId;
     }
 
     public void setEvalName(String evalName) {
         this.evalName = evalName;
-    }
-
-    public void setCustomScorers(List<BaseScorer> customScorers) {
-        this.customScorers = customScorers;
-    }
-
-    public void setJudgmentScorers(List<ScorerConfig> judgmentScorers) {
-        this.judgmentScorers = judgmentScorers;
     }
 
     public void setModel(String model) {
@@ -111,7 +115,23 @@ public class TraceEvaluationRun {
         this.createdAt = createdAt;
     }
 
-    public void setTraceAndSpanIds(List<List<Object>> traceAndSpanIds) {
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setScorers(List<Object> scorers) {
+        this.scorers = scorers;
+    }
+
+    public void setCustomScorers(List<BaseScorer> customScorers) {
+        this.customScorers = customScorers;
+    }
+
+    public void setJudgmentScorers(List<ScorerConfig> judgmentScorers) {
+        this.judgmentScorers = judgmentScorers;
+    }
+
+    public void setTraceAndSpanIds(List<List<String>> traceAndSpanIds) {
         this.traceAndSpanIds = traceAndSpanIds;
     }
 
@@ -119,8 +139,8 @@ public class TraceEvaluationRun {
         this.isOffline = isOffline;
     }
 
-    public void setIsBucketRun(Boolean isBucketRun) {
-        this.isBucketRun = isBucketRun;
+    public void setIsBehavior(Boolean isBehavior) {
+        this.isBehavior = isBehavior;
     }
 
     @Override
@@ -130,17 +150,19 @@ public class TraceEvaluationRun {
         if (obj == null || getClass() != obj.getClass())
             return false;
         TraceEvaluationRun other = (TraceEvaluationRun) obj;
-        return Objects.equals(id, other.id) && Objects.equals(projectName, other.projectName)
-                && Objects.equals(evalName, other.evalName) && Objects.equals(customScorers, other.customScorers)
-                && Objects.equals(judgmentScorers, other.judgmentScorers) && Objects.equals(model, other.model)
-                && Objects.equals(createdAt, other.createdAt) && Objects.equals(traceAndSpanIds, other.traceAndSpanIds)
-                && Objects.equals(isOffline, other.isOffline) && Objects.equals(isBucketRun, other.isBucketRun)
+        return Objects.equals(id, other.id) && Objects.equals(projectId, other.projectId)
+                && Objects.equals(evalName, other.evalName) && Objects.equals(model, other.model)
+                && Objects.equals(createdAt, other.createdAt) && Objects.equals(userId, other.userId)
+                && Objects.equals(scorers, other.scorers) && Objects.equals(customScorers, other.customScorers)
+                && Objects.equals(judgmentScorers, other.judgmentScorers)
+                && Objects.equals(traceAndSpanIds, other.traceAndSpanIds) && Objects.equals(isOffline, other.isOffline)
+                && Objects.equals(isBehavior, other.isBehavior)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, projectName, evalName, customScorers, judgmentScorers, model, createdAt,
-                traceAndSpanIds, isOffline, isBucketRun, Objects.hashCode(additionalProperties));
+        return Objects.hash(id, projectId, evalName, model, createdAt, userId, scorers, customScorers, judgmentScorers,
+                traceAndSpanIds, isOffline, isBehavior, Objects.hashCode(additionalProperties));
     }
 }

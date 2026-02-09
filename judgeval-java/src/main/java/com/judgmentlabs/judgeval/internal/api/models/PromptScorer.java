@@ -33,8 +33,6 @@ public class PromptScorer {
     private String              updatedAt;
     @JsonProperty("is_trace")
     private Boolean             isTrace;
-    @JsonProperty("is_bucket_rubric")
-    private Boolean             isBucketRubric;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -96,10 +94,6 @@ public class PromptScorer {
         return isTrace;
     }
 
-    public Boolean getIsBucketRubric() {
-        return isBucketRubric;
-    }
-
     public void setId(String id) {
         this.id = id;
     }
@@ -148,10 +142,6 @@ public class PromptScorer {
         this.isTrace = isTrace;
     }
 
-    public void setIsBucketRubric(Boolean isBucketRubric) {
-        this.isBucketRubric = isBucketRubric;
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -165,13 +155,12 @@ public class PromptScorer {
                 && Objects.equals(model, other.model) && Objects.equals(options, other.options)
                 && Objects.equals(description, other.description) && Objects.equals(createdAt, other.createdAt)
                 && Objects.equals(updatedAt, other.updatedAt) && Objects.equals(isTrace, other.isTrace)
-                && Objects.equals(isBucketRubric, other.isBucketRubric)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id, userId, organizationId, name, prompt, threshold, model, options, description, createdAt,
-                updatedAt, isTrace, isBucketRubric, Objects.hashCode(additionalProperties));
+                updatedAt, isTrace, Objects.hashCode(additionalProperties));
     }
 }

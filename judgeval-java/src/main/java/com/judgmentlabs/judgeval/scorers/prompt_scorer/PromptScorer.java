@@ -50,7 +50,6 @@ public final class PromptScorer extends APIScorer {
         cfg.setScoreType(getScoreType());
         cfg.setThreshold(getThreshold());
         cfg.setName(getName());
-        cfg.setStrictMode(getStrictMode());
         cfg.setRequiredParams(getRequiredParams());
 
         Map<String, Object> kwargs = new HashMap<>();

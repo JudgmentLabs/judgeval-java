@@ -12,10 +12,11 @@ import com.openai.models.chat.completions.ChatCompletionCreateParams;
 public class SimpleChat {
     public static void main(String[] args) {
         var client = Judgeval.builder()
+                .projectName("SimpleChat-Java")
                 .apiKey(System.getenv("JUDGMENT_API_KEY"))
                 .organizationId(System.getenv("JUDGMENT_ORG_ID"))
                 .build();
-        var tracer = client.tracer().create().projectName("SimpleChat-Java").build();
+        var tracer = client.tracer().create().build();
 
         OpenAIClient otelClient = OpenAIOkHttpClient.fromEnv();
 
@@ -36,7 +37,8 @@ public class SimpleChat {
                             .property("expected_output", "4")
                             .build());
 
-            tracer.asyncTraceEvaluate(client.scorers().tracePromptScorer().get("ExampleTraceScorer"));
+            tracer.asyncTraceEvaluate(
+                    client.scorers().tracePromptScorer().get("ExampleTraceScorer"));
 
         });
 

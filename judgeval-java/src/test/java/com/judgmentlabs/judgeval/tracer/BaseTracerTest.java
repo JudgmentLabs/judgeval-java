@@ -7,7 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,8 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
-import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
-import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
 import com.judgmentlabs.judgeval.tracer.exporters.JudgmentSpanExporter;
 import com.judgmentlabs.judgeval.tracer.exporters.NoOpSpanExporter;
 
@@ -37,11 +36,6 @@ class BaseTracerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        ResolveProjectNameResponse response = new ResolveProjectNameResponse();
-        response.setProjectId(TEST_PROJECT_ID);
-
-        lenient().when(mockClient.projectsResolve(any(ResolveProjectNameRequest.class)))
-                .thenReturn(response);
         lenient().when(mockClient.getApiUrl()).thenReturn("https://api.example.com");
         lenient().when(mockClient.getApiKey()).thenReturn("test-api-key");
         lenient().when(mockClient.getOrganizationId()).thenReturn("test-org-id");
@@ -51,13 +45,14 @@ class BaseTracerTest {
 
         tracer = new TestableBaseTracer(
                 TEST_PROJECT_NAME,
+                Optional.of(TEST_PROJECT_ID),
                 true,
                 mockClient,
                 mockSerializer);
     }
 
     @Test
-    void constructor_withValidParameters_resolvesProject() {
+    void constructor_withValidParameters_setsProject() {
         assertNotNull(tracer);
         assertEquals(TEST_PROJECT_NAME, tracer.getProjectName());
         assertTrue(tracer.isEnableEvaluation());
@@ -70,6 +65,7 @@ class BaseTracerTest {
         assertThrows(NullPointerException.class, () -> {
             new TestableBaseTracer(
                     null,
+                    Optional.of(TEST_PROJECT_ID),
                     true,
                     mockClient,
                     mockSerializer);
@@ -81,6 +77,7 @@ class BaseTracerTest {
         assertThrows(NullPointerException.class, () -> {
             new TestableBaseTracer(
                     TEST_PROJECT_NAME,
+                    Optional.of(TEST_PROJECT_ID),
                     true,
                     null,
                     mockSerializer);
@@ -92,6 +89,7 @@ class BaseTracerTest {
         assertThrows(NullPointerException.class, () -> {
             new TestableBaseTracer(
                     TEST_PROJECT_NAME,
+                    Optional.of(TEST_PROJECT_ID),
                     true,
                     mockClient,
                     null);
@@ -99,17 +97,15 @@ class BaseTracerTest {
     }
 
     @Test
-    void constructor_withFailedProjectResolution_hasEmptyProjectId() throws Exception {
-        when(mockClient.projectsResolve(any(ResolveProjectNameRequest.class)))
-                .thenThrow(new RuntimeException("Project not found"));
-
-        TestableBaseTracer failedTracer = new TestableBaseTracer(
+    void constructor_withEmptyProjectId_hasEmptyProjectId() {
+        TestableBaseTracer noProjectTracer = new TestableBaseTracer(
                 TEST_PROJECT_NAME,
+                Optional.empty(),
                 true,
                 mockClient,
                 mockSerializer);
 
-        assertFalse(failedTracer.getProjectId().isPresent());
+        assertFalse(noProjectTracer.getProjectId().isPresent());
     }
 
     @Test
@@ -120,17 +116,15 @@ class BaseTracerTest {
     }
 
     @Test
-    void getSpanExporter_withoutProjectId_returnsNoOpSpanExporter() throws Exception {
-        when(mockClient.projectsResolve(any(ResolveProjectNameRequest.class)))
-                .thenReturn(null);
-
-        TestableBaseTracer failedTracer = new TestableBaseTracer(
+    void getSpanExporter_withoutProjectId_returnsNoOpSpanExporter() {
+        TestableBaseTracer noProjectTracer = new TestableBaseTracer(
                 TEST_PROJECT_NAME,
+                Optional.empty(),
                 true,
                 mockClient,
                 mockSerializer);
 
-        SpanExporter exporter = failedTracer.getSpanExporter();
+        SpanExporter exporter = noProjectTracer.getSpanExporter();
         assertNotNull(exporter);
         assertTrue(exporter instanceof NoOpSpanExporter);
     }
@@ -147,9 +141,9 @@ class BaseTracerTest {
     }
 
     private static class TestableBaseTracer extends BaseTracer {
-        protected TestableBaseTracer(String projectName, boolean enableEvaluation, JudgmentSyncClient apiClient,
-                ISerializer serializer) {
-            super(projectName, enableEvaluation, apiClient, serializer);
+        protected TestableBaseTracer(String projectName, Optional<String> projectId,
+                boolean enableEvaluation, JudgmentSyncClient apiClient, ISerializer serializer) {
+            super(projectName, projectId, enableEvaluation, apiClient, serializer);
         }
 
         @Override

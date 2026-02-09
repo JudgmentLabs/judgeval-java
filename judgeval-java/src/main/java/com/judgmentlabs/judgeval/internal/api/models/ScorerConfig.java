@@ -18,12 +18,12 @@ public class ScorerConfig {
     private Double              threshold;
     @JsonProperty("model")
     private String              model;
-    @JsonProperty("strict_mode")
-    private Boolean             strictMode;
     @JsonProperty("required_params")
     private List<String>        requiredParams;
     @JsonProperty("kwargs")
     private Object              kwargs;
+    @JsonProperty("result_type")
+    private String              resultType;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -53,16 +53,16 @@ public class ScorerConfig {
         return model;
     }
 
-    public Boolean getStrictMode() {
-        return strictMode;
-    }
-
     public List<String> getRequiredParams() {
         return requiredParams;
     }
 
     public Object getKwargs() {
         return kwargs;
+    }
+
+    public String getResultType() {
+        return resultType;
     }
 
     public void setScoreType(String scoreType) {
@@ -81,16 +81,16 @@ public class ScorerConfig {
         this.model = model;
     }
 
-    public void setStrictMode(Boolean strictMode) {
-        this.strictMode = strictMode;
-    }
-
     public void setRequiredParams(List<String> requiredParams) {
         this.requiredParams = requiredParams;
     }
 
     public void setKwargs(Object kwargs) {
         this.kwargs = kwargs;
+    }
+
+    public void setResultType(String resultType) {
+        this.resultType = resultType;
     }
 
     @Override
@@ -102,14 +102,14 @@ public class ScorerConfig {
         ScorerConfig other = (ScorerConfig) obj;
         return Objects.equals(scoreType, other.scoreType) && Objects.equals(name, other.name)
                 && Objects.equals(threshold, other.threshold) && Objects.equals(model, other.model)
-                && Objects.equals(strictMode, other.strictMode) && Objects.equals(requiredParams, other.requiredParams)
-                && Objects.equals(kwargs, other.kwargs)
+                && Objects.equals(requiredParams, other.requiredParams) && Objects.equals(kwargs, other.kwargs)
+                && Objects.equals(resultType, other.resultType)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(scoreType, name, threshold, model, strictMode, requiredParams, kwargs,
+        return Objects.hash(scoreType, name, threshold, model, requiredParams, kwargs, resultType,
                 Objects.hashCode(additionalProperties));
     }
 }

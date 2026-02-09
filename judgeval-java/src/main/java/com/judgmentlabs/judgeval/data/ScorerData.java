@@ -1,24 +1,120 @@
 package com.judgmentlabs.judgeval.data;
 
+import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Represents the result of a single scorer evaluation.
- */
-public class ScorerData extends com.judgmentlabs.judgeval.internal.api.models.ScorerData {
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    /**
-     * Creates a new builder for configuring ScorerData.
-     *
-     * @return a new builder instance
-     */
+public class ScorerData {
+    @JsonProperty("name")
+    private String              name;
+    @JsonProperty("score")
+    private Double              score;
+    @JsonProperty("success")
+    private Boolean             success;
+    @JsonProperty("reason")
+    private String              reason;
+    @JsonProperty("threshold")
+    private Double              threshold;
+    @JsonProperty("strict_mode")
+    private Boolean             strictMode;
+    @JsonProperty("evaluation_model")
+    private String              evaluationModel;
+    @JsonProperty("error")
+    private String              error;
+    @JsonProperty("additional_metadata")
+    private Object              additionalMetadata;
+
+    private Map<String, Object> additionalProperties = new HashMap<>();
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String key, Object value) {
+        additionalProperties.put(key, value);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public Double getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(Double threshold) {
+        this.threshold = threshold;
+    }
+
+    public Boolean getStrictMode() {
+        return strictMode;
+    }
+
+    public void setStrictMode(Boolean strictMode) {
+        this.strictMode = strictMode;
+    }
+
+    public String getEvaluationModel() {
+        return evaluationModel;
+    }
+
+    public void setEvaluationModel(String evaluationModel) {
+        this.evaluationModel = evaluationModel;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public Object getAdditionalMetadata() {
+        return additionalMetadata;
+    }
+
+    public void setAdditionalMetadata(Object additionalMetadata) {
+        this.additionalMetadata = additionalMetadata;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
 
-    /**
-     * Builder for configuring and creating ScorerData instances.
-     */
     public static final class Builder {
         private final ScorerData scorerData;
 
@@ -26,138 +122,61 @@ public class ScorerData extends com.judgmentlabs.judgeval.internal.api.models.Sc
             this.scorerData = new ScorerData();
         }
 
-        /**
-         * Sets the scorer name.
-         *
-         * @param name
-         *            the scorer name
-         * @return this builder
-         */
         public Builder name(String name) {
             scorerData.setName(name);
             return this;
         }
 
-        /**
-         * Sets the evaluation score.
-         *
-         * @param score
-         *            the score value
-         * @return this builder
-         */
         public Builder score(Double score) {
             scorerData.setScore(score);
             return this;
         }
 
-        /**
-         * Sets whether the evaluation succeeded.
-         *
-         * @param success
-         *            true if evaluation succeeded
-         * @return this builder
-         */
         public Builder success(Boolean success) {
             scorerData.setSuccess(success);
             return this;
         }
 
-        /**
-         * Sets the reason for the evaluation result.
-         *
-         * @param reason
-         *            the evaluation reason
-         * @return this builder
-         */
         public Builder reason(String reason) {
             scorerData.setReason(reason);
             return this;
         }
 
-        /**
-         * Sets the evaluation threshold.
-         *
-         * @param threshold
-         *            the threshold value
-         * @return this builder
-         */
         public Builder threshold(Double threshold) {
             scorerData.setThreshold(threshold);
             return this;
         }
 
-        /**
-         * Sets strict mode for evaluation.
-         *
-         * @param strictMode
-         *            true for strict mode
-         * @return this builder
-         */
         public Builder strictMode(Boolean strictMode) {
             scorerData.setStrictMode(strictMode);
             return this;
         }
 
-        /**
-         * Sets the model used for evaluation.
-         *
-         * @param evaluationModel
-         *            the model name
-         * @return this builder
-         */
         public Builder evaluationModel(String evaluationModel) {
             scorerData.setEvaluationModel(evaluationModel);
             return this;
         }
 
-        /**
-         * Sets an error message if evaluation failed.
-         *
-         * @param error
-         *            the error message
-         * @return this builder
-         */
         public Builder error(String error) {
             scorerData.setError(error);
             return this;
         }
 
-        /**
-         * Sets additional metadata for the evaluation.
-         *
-         * @param additionalMetadata
-         *            the metadata map
-         * @return this builder
-         */
         public Builder additionalMetadata(Map<String, Object> additionalMetadata) {
             scorerData.setAdditionalMetadata(additionalMetadata);
             return this;
         }
 
-        /**
-         * Adds a single metadata entry.
-         *
-         * @param key
-         *            the metadata key
-         * @param value
-         *            the metadata value
-         * @return this builder
-         */
+        @SuppressWarnings("unchecked")
         public Builder metadata(String key, Object value) {
             if (scorerData.getAdditionalMetadata() == null) {
                 scorerData.setAdditionalMetadata(new java.util.HashMap<>());
             }
-            @SuppressWarnings("unchecked")
             Map<String, Object> metadata = (Map<String, Object>) scorerData.getAdditionalMetadata();
             metadata.put(key, value);
             return this;
         }
 
-        /**
-         * Builds and returns the configured ScorerData.
-         *
-         * @return the configured ScorerData
-         */
         public ScorerData build() {
             return scorerData;
         }

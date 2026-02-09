@@ -6,12 +6,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.judgmentlabs.judgeval.internal.api.models.*;
+import com.judgmentlabs.judgeval.utils.Logger;
 
 public class JudgmentSyncClient {
     private final HttpClient   client;
@@ -27,7 +31,7 @@ public class JudgmentSyncClient {
         this.client = HttpClient.newBuilder()
                 .version(HttpClient.Version.HTTP_1_1)
                 .build();
-        this.mapper = new ObjectMapper();
+        this.mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     public String getApiUrl() {
@@ -81,91 +85,400 @@ public class JudgmentSyncClient {
         }
     }
 
-    public Object addToRunEvalQueue(ExampleEvaluationRun payload) throws IOException, InterruptedException {
-        String url = buildUrl("/add_to_run_eval_queue/");
-        String jsonPayload = mapper.writeValueAsString(payload);
+    public Object postOtelV1Traces() throws IOException, InterruptedException {
+        String url = buildUrl("/otel/v1/traces");
+        String jsonPayload = mapper.writeValueAsString(new Object());
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                 .uri(URI.create(url))
                 .headers(buildHeaders())
                 .build();
+        Logger.debug("HTTP POST " + url);
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
         return handleResponse(response);
     }
 
-    public Object logEvalResults(EvalResults payload) throws IOException, InterruptedException {
-        String url = buildUrl("/log_eval_results/");
-        String jsonPayload = mapper.writeValueAsString(payload);
-        HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                .uri(URI.create(url))
-                .headers(buildHeaders())
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return handleResponse(response);
-    }
-
-    public Object fetchExperimentRun(EvalResultsFetch payload) throws IOException, InterruptedException {
-        String url = buildUrl("/fetch_experiment_run/");
-        String jsonPayload = mapper.writeValueAsString(payload);
-        HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                .uri(URI.create(url))
-                .headers(buildHeaders())
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return handleResponse(response);
-    }
-
-    public ScorerExistsResponse scorerExists(ScorerExistsRequest payload) throws IOException, InterruptedException {
-        String url = buildUrl("/scorer_exists/");
-        String jsonPayload = mapper.writeValueAsString(payload);
-        HttpRequest request = HttpRequest.newBuilder()
-                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
-                .uri(URI.create(url))
-                .headers(buildHeaders())
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return mapper.readValue(response.body(), ScorerExistsResponse.class);
-    }
-
-    public SavePromptScorerResponse saveScorer(SavePromptScorerRequest payload)
+    public TriggerRootSpanRulesResponse postOtelTriggerRootSpanRules(TriggerRootSpanRulesRequest payload)
             throws IOException, InterruptedException {
-        String url = buildUrl("/save_scorer/");
+        String url = buildUrl("/otel/trigger_root_span_rules");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                 .uri(URI.create(url))
                 .headers(buildHeaders())
                 .build();
+        Logger.debug("HTTP POST " + url);
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return mapper.readValue(response.body(), SavePromptScorerResponse.class);
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), TriggerRootSpanRulesResponse.class);
     }
 
-    public FetchPromptScorersResponse fetchScorers(FetchPromptScorersRequest payload)
+    public ResolveProjectResponse postProjectsResolve(ResolveProjectRequest payload)
             throws IOException, InterruptedException {
-        String url = buildUrl("/fetch_scorers/");
+        String url = buildUrl("/v1/projects/resolve/");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                 .uri(URI.create(url))
                 .headers(buildHeaders())
                 .build();
+        Logger.debug("HTTP POST " + url);
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), ResolveProjectResponse.class);
+    }
+
+    public AddProjectResponse postProjects(AddProjectRequest payload) throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), AddProjectResponse.class);
+    }
+
+    public DeleteProjectResponse deleteProjects(String projectId) throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId);
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP DELETE " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), DeleteProjectResponse.class);
+    }
+
+    public CreateDatasetResponse postProjectsDatasets(String projectId, CreateDatasetRequest payload)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/datasets");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), CreateDatasetResponse.class);
+    }
+
+    public List<DatasetInfo> getProjectsDatasets(String projectId) throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/datasets");
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP GET " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return handleResponse(response);
+    }
+
+    public InsertExamplesResponse postProjectsDatasetsByDatasetNameExamples(String projectId, String datasetName,
+            InsertExamplesRequest payload) throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/datasets/" + datasetName + "/examples");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), InsertExamplesResponse.class);
+    }
+
+    public PullDatasetResponse getProjectsDatasetsByDatasetName(String projectId, String datasetName)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/datasets/" + datasetName);
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP GET " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), PullDatasetResponse.class);
+    }
+
+    public Object postProjectsEvaluateExamples(String projectId, ExampleEvaluationRun payload)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/evaluate/examples");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return handleResponse(response);
+    }
+
+    public Object postProjectsEvaluateTraces(String projectId, TraceEvaluationRun payload)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/evaluate/traces");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return handleResponse(response);
+    }
+
+    public LogEvalResultsResponse postProjectsEvalResults(String projectId, LogEvalResultsRequest payload)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/eval-results");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), LogEvalResultsResponse.class);
+    }
+
+    public FetchExperimentRunResponse getProjectsExperimentsByRunId(String projectId, String runId)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/experiments/" + runId);
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP GET " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), FetchExperimentRunResponse.class);
+    }
+
+    public AddToRunEvalQueueExamplesResponse postProjectsEvalQueueExamples(String projectId,
+            ExampleEvaluationRun payload) throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/eval-queue/examples");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), AddToRunEvalQueueExamplesResponse.class);
+    }
+
+    public AddToRunEvalQueueTracesResponse postProjectsEvalQueueTraces(String projectId, TraceEvaluationRun payload)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/eval-queue/traces");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), AddToRunEvalQueueTracesResponse.class);
+    }
+
+    public FetchPromptResponse getProjectsPromptsByName(String projectId, String name, String commit_id, String tag)
+            throws IOException, InterruptedException {
+        Map<String, String> queryParams = new HashMap<>();
+        Optional.ofNullable(commit_id).ifPresent(v -> queryParams.put("commit_id", v));
+        Optional.ofNullable(tag).ifPresent(v -> queryParams.put("tag", v));
+        String url = buildUrl("/v1/projects/" + projectId + "/prompts/" + name, queryParams);
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP GET " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), FetchPromptResponse.class);
+    }
+
+    public InsertPromptResponse postProjectsPrompts(String projectId, InsertPromptRequest payload)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/prompts");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), InsertPromptResponse.class);
+    }
+
+    public TagPromptResponse postProjectsPromptsByNameTags(String projectId, String name, TagPromptRequest payload)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/prompts/" + name + "/tags");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), TagPromptResponse.class);
+    }
+
+    public UntagPromptResponse deleteProjectsPromptsByNameTags(String projectId, String name,
+            UntagPromptRequest payload) throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/prompts/" + name + "/tags");
+        HttpRequest request = HttpRequest.newBuilder()
+                .DELETE()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP DELETE " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), UntagPromptResponse.class);
+    }
+
+    public GetPromptVersionsResponse getProjectsPromptsByNameVersions(String projectId, String name)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/prompts/" + name + "/versions");
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP GET " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), GetPromptVersionsResponse.class);
+    }
+
+    public FetchPromptScorersResponse getProjectsScorers(String projectId, String names, String is_trace)
+            throws IOException, InterruptedException {
+        Map<String, String> queryParams = new HashMap<>();
+        Optional.ofNullable(names).ifPresent(v -> queryParams.put("names", v));
+        Optional.ofNullable(is_trace).ifPresent(v -> queryParams.put("is_trace", v));
+        String url = buildUrl("/v1/projects/" + projectId + "/scorers", queryParams);
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP GET " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
         return mapper.readValue(response.body(), FetchPromptScorersResponse.class);
     }
 
-    public ResolveProjectNameResponse projectsResolve(ResolveProjectNameRequest payload)
+    public ScorerExistsResponse getProjectsScorersByNameExists(String projectId, String name)
             throws IOException, InterruptedException {
-        String url = buildUrl("/projects/resolve/");
+        String url = buildUrl("/v1/projects/" + projectId + "/scorers/" + name + "/exists");
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP GET " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), ScorerExistsResponse.class);
+    }
+
+    public UploadCustomScorerResponse postProjectsScorersCustom(String projectId, UploadCustomScorerRequest payload)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/scorers/custom");
         String jsonPayload = mapper.writeValueAsString(payload);
         HttpRequest request = HttpRequest.newBuilder()
                 .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
                 .uri(URI.create(url))
                 .headers(buildHeaders())
                 .build();
+        Logger.debug("HTTP POST " + url);
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        return mapper.readValue(response.body(), ResolveProjectNameResponse.class);
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), UploadCustomScorerResponse.class);
+    }
+
+    public CustomScorerExistsResponse getProjectsScorersCustomByNameExists(String projectId, String name)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/scorers/custom/" + name + "/exists");
+        HttpRequest request = HttpRequest.newBuilder()
+                .GET()
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP GET " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), CustomScorerExistsResponse.class);
+    }
+
+    public AddTraceTagsResponse postProjectsTracesByTraceIdTags(String projectId, String traceId,
+            AddTraceTagsRequest payload) throws IOException, InterruptedException {
+        String url = buildUrl("/v1/projects/" + projectId + "/traces/" + traceId + "/tags");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return mapper.readValue(response.body(), AddTraceTagsResponse.class);
+    }
+
+    public List<Object> postE2eFetchTrace(E2EFetchTraceRequest payload) throws IOException, InterruptedException {
+        String url = buildUrl("/v1/e2e_fetch_trace/");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return handleResponse(response);
+    }
+
+    public List<Object> postE2eFetchSpanScore(E2EFetchSpanScoreRequest payload)
+            throws IOException, InterruptedException {
+        String url = buildUrl("/v1/e2e_fetch_span_score/");
+        String jsonPayload = mapper.writeValueAsString(payload);
+        HttpRequest request = HttpRequest.newBuilder()
+                .POST(HttpRequest.BodyPublishers.ofString(jsonPayload))
+                .uri(URI.create(url))
+                .headers(buildHeaders())
+                .build();
+        Logger.debug("HTTP POST " + url);
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        Logger.debug("HTTP " + response.statusCode() + " " + url);
+        return handleResponse(response);
     }
 
 }

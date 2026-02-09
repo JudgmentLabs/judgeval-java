@@ -10,13 +10,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.judgmentlabs.judgeval.JudgmentAttributeKeys;
 import com.judgmentlabs.judgeval.data.Example;
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.ExampleEvaluationRun;
-import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
-import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
 import com.judgmentlabs.judgeval.internal.api.models.TraceEvaluationRun;
 import com.judgmentlabs.judgeval.scorers.BaseScorer;
 import com.judgmentlabs.judgeval.scorers.custom_scorer.CustomScorer;
@@ -45,19 +44,14 @@ public abstract class BaseTracer {
     protected final ObjectMapper       jacksonMapper;
     protected final Optional<String>   projectId;
 
-    protected BaseTracer(String projectName,
+    protected BaseTracer(String projectName, Optional<String> projectId,
             boolean enableEvaluation, JudgmentSyncClient apiClient, ISerializer serializer) {
         this.projectName = Objects.requireNonNull(projectName, "projectName required");
+        this.projectId = projectId != null ? projectId : Optional.empty();
         this.enableEvaluation = enableEvaluation;
         this.apiClient = Objects.requireNonNull(apiClient, "apiClient required");
         this.serializer = Objects.requireNonNull(serializer, "serializer required");
-        this.jacksonMapper = new ObjectMapper();
-        this.projectId = resolveProjectId(projectName);
-
-        this.projectId.ifPresentOrElse(id -> {
-        }, () -> Logger.error("Failed to resolve project " + projectName
-                + ", please create it first at https://app.judgmentlabs.ai/org/" + this.apiClient.getOrganizationId()
-                + "/projects. Skipping Judgment export."));
+        this.jacksonMapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     /**
@@ -481,18 +475,6 @@ public abstract class BaseTracer {
                 .startSpan();
     }
 
-    private Optional<String> resolveProjectId(String name) {
-        try {
-            ResolveProjectNameRequest request = new ResolveProjectNameRequest();
-            request.setProjectName(name);
-            ResolveProjectNameResponse response = apiClient.projectsResolve(request);
-            return Optional.ofNullable(response.getProjectId())
-                    .map(Object::toString);
-        } catch (Exception e) {
-            return Optional.empty();
-        }
-    }
-
     private String buildEndpoint(String baseUrl) {
         return baseUrl.endsWith("/") ? baseUrl + "otel/v1/traces" : baseUrl + "/otel/v1/traces";
     }
@@ -517,7 +499,7 @@ public abstract class BaseTracer {
 
         ExampleEvaluationRun evaluationRun = new ExampleEvaluationRun();
         evaluationRun.setId(UUID.randomUUID().toString());
-        evaluationRun.setProjectName(projectName);
+        evaluationRun.setProjectId(projectId.orElse(""));
         evaluationRun.setEvalName(runId);
         evaluationRun.setTraceId(traceId);
         evaluationRun.setTraceSpanId(spanId);
@@ -541,13 +523,17 @@ public abstract class BaseTracer {
 
         TraceEvaluationRun evaluationRun = new TraceEvaluationRun();
         evaluationRun.setId(UUID.randomUUID().toString());
-        evaluationRun.setProjectName(projectName);
+        evaluationRun.setProjectId(projectId.orElse(""));
         evaluationRun.setEvalName(evalName);
         evaluationRun.setTraceAndSpanIds(List.of(List.of(traceId, spanId)));
-        evaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
-        evaluationRun.setCustomScorers(List.of());
+        if (scorer instanceof CustomScorer) {
+            evaluationRun.setJudgmentScorers(List.of());
+            evaluationRun.setCustomScorers(List.of((com.judgmentlabs.judgeval.internal.api.models.BaseScorer) scorer));
+        } else {
+            evaluationRun.setJudgmentScorers(List.of(scorer.getScorerConfig()));
+            evaluationRun.setCustomScorers(List.of());
+        }
         evaluationRun.setIsOffline(false);
-        evaluationRun.setIsBucketRun(false);
         evaluationRun.setCreatedAt(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ISO_INSTANT));
 
         return evaluationRun;
@@ -555,7 +541,7 @@ public abstract class BaseTracer {
 
     private void enqueueEvaluation(ExampleEvaluationRun evaluationRun) {
         try {
-            apiClient.addToRunEvalQueue(evaluationRun);
+            apiClient.postProjectsEvalQueueExamples(projectId.orElse(""), evaluationRun);
         } catch (Exception e) {
             Logger.error("Failed to enqueue evaluation run: " + e.getMessage());
         }

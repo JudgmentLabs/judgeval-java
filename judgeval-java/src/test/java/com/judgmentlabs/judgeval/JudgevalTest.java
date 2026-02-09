@@ -10,13 +10,15 @@ import com.judgmentlabs.judgeval.scorers.ScorersFactory;
 import com.judgmentlabs.judgeval.tracer.TracerFactory;
 
 class JudgevalTest {
-    private static final String TEST_API_URL = "https://api.test.com";
-    private static final String TEST_API_KEY = "test-key";
-    private static final String TEST_ORG_ID  = "test-org";
+    private static final String TEST_API_URL      = "https://api.test.com";
+    private static final String TEST_API_KEY      = "test-key";
+    private static final String TEST_ORG_ID       = "test-org";
+    private static final String TEST_PROJECT_NAME = "test-project";
 
     @Test
     void builder_withAllParameters_buildsSuccessfully() {
         Judgeval client = Judgeval.builder()
+                .projectName(TEST_PROJECT_NAME)
                 .apiKey(TEST_API_KEY)
                 .organizationId(TEST_ORG_ID)
                 .apiUrl(TEST_API_URL)
@@ -29,6 +31,7 @@ class JudgevalTest {
     void builder_withNullApiKey_throwsException() {
         assertThrows(NullPointerException.class, () -> {
             Judgeval.builder()
+                    .projectName(TEST_PROJECT_NAME)
                     .apiKey(null)
                     .organizationId(TEST_ORG_ID)
                     .build();
@@ -39,6 +42,7 @@ class JudgevalTest {
     void builder_withNullOrganizationId_throwsException() {
         assertThrows(NullPointerException.class, () -> {
             Judgeval.builder()
+                    .projectName(TEST_PROJECT_NAME)
                     .apiKey(TEST_API_KEY)
                     .organizationId(null)
                     .build();
@@ -46,8 +50,19 @@ class JudgevalTest {
     }
 
     @Test
+    void builder_withNullProjectName_throwsException() {
+        assertThrows(NullPointerException.class, () -> {
+            Judgeval.builder()
+                    .apiKey(TEST_API_KEY)
+                    .organizationId(TEST_ORG_ID)
+                    .build();
+        });
+    }
+
+    @Test
     void tracer_returnsTracerFactory() {
         Judgeval client = Judgeval.builder()
+                .projectName(TEST_PROJECT_NAME)
                 .apiKey(TEST_API_KEY)
                 .organizationId(TEST_ORG_ID)
                 .build();
@@ -59,6 +74,7 @@ class JudgevalTest {
     @Test
     void scorers_returnsScorersFactory() {
         Judgeval client = Judgeval.builder()
+                .projectName(TEST_PROJECT_NAME)
                 .apiKey(TEST_API_KEY)
                 .organizationId(TEST_ORG_ID)
                 .build();
@@ -70,6 +86,7 @@ class JudgevalTest {
     @Test
     void evaluation_returnsEvaluationFactory() {
         Judgeval client = Judgeval.builder()
+                .projectName(TEST_PROJECT_NAME)
                 .apiKey(TEST_API_KEY)
                 .organizationId(TEST_ORG_ID)
                 .build();

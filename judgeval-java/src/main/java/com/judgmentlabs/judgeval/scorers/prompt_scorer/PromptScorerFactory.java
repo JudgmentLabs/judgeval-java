@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
-import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersRequest;
 import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersResponse;
 import com.judgmentlabs.judgeval.utils.Logger;
 
@@ -16,11 +15,13 @@ import com.judgmentlabs.judgeval.utils.Logger;
  */
 public final class PromptScorerFactory {
     private final JudgmentSyncClient                                                               client;
+    private final String                                                                           projectId;
     private final boolean                                                                          isTrace;
     private static final Map<CacheKey, com.judgmentlabs.judgeval.internal.api.models.PromptScorer> cache = new ConcurrentHashMap<>();
 
-    public PromptScorerFactory(JudgmentSyncClient client, boolean isTrace) {
+    public PromptScorerFactory(JudgmentSyncClient client, String projectId, boolean isTrace) {
         this.client = client;
+        this.projectId = projectId;
         this.isTrace = isTrace;
     }
 
@@ -40,10 +41,7 @@ public final class PromptScorerFactory {
         }
 
         try {
-            FetchPromptScorersRequest request = new FetchPromptScorersRequest();
-            request.setNames(java.util.Collections.singletonList(name));
-
-            FetchPromptScorersResponse response = client.fetchScorers(request);
+            FetchPromptScorersResponse response = client.getProjectsScorers(projectId, name, String.valueOf(isTrace));
 
             com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorer = Optional.ofNullable(response)
                     .map(FetchPromptScorersResponse::getScorers)

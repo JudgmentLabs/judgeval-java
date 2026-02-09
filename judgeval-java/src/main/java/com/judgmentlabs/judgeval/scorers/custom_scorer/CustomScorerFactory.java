@@ -1,39 +1,27 @@
 package com.judgmentlabs.judgeval.scorers.custom_scorer;
 
-/**
- * Factory for creating custom scorer instances.
- */
+import java.util.Optional;
+
 public final class CustomScorerFactory {
-    public CustomScorerFactory() {
+    private final Optional<String> projectId;
+
+    public CustomScorerFactory(Optional<String> projectId) {
+        this.projectId = projectId;
     }
 
-    /**
-     * Creates a custom scorer with the specified name.
-     *
-     * @param name
-     *            the scorer name
-     * @return the configured custom scorer
-     */
     public CustomScorer get(String name) {
         return CustomScorer.builder()
                 .name(name)
                 .className(name)
+                .projectId(projectId.orElse(""))
                 .build();
     }
 
-    /**
-     * Creates a custom scorer with the specified name and class name.
-     *
-     * @param name
-     *            the scorer name
-     * @param className
-     *            the class name
-     * @return the configured custom scorer
-     */
     public CustomScorer get(String name, String className) {
         return CustomScorer.builder()
                 .name(name)
                 .className(className)
+                .projectId(projectId.orElse(""))
                 .build();
     }
 }
