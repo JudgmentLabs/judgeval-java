@@ -3,6 +3,7 @@ package com.judgmentlabs.judgeval.scorers.prompt_scorer;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.judgmentlabs.judgeval.data.APIScorerType;
 import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
@@ -37,7 +38,7 @@ public final class PromptScorer extends APIScorer {
     }
 
     public Map<String, Double> getOptions() {
-        return options != null ? new HashMap<>(options) : null;
+        return Optional.ofNullable(options).map(HashMap::new).orElse(null);
     }
 
     public String getScorerName() {
@@ -51,15 +52,10 @@ public final class PromptScorer extends APIScorer {
         cfg.setThreshold(getThreshold());
         cfg.setName(getName());
         cfg.setRequiredParams(getRequiredParams());
-
         Map<String, Object> kwargs = new HashMap<>();
         kwargs.put("prompt", prompt);
-        if (options != null) {
-            kwargs.put("options", options);
-        }
-        if (getAdditionalProperties() != null) {
-            kwargs.putAll(getAdditionalProperties());
-        }
+        Optional.ofNullable(options).ifPresent(o -> kwargs.put("options", o));
+        Optional.ofNullable(getAdditionalProperties()).ifPresent(kwargs::putAll);
         cfg.setKwargs(kwargs);
         return cfg;
     }

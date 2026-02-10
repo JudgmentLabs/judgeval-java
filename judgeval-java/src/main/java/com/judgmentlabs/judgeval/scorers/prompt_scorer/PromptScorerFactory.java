@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.internal.api.models.FetchPromptScorersResponse;
+import com.judgmentlabs.judgeval.utils.Guards;
 import com.judgmentlabs.judgeval.utils.Logger;
 
 /**
@@ -15,11 +16,11 @@ import com.judgmentlabs.judgeval.utils.Logger;
  */
 public final class PromptScorerFactory {
     private final JudgmentSyncClient                                                               client;
-    private final String                                                                           projectId;
+    private final Optional<String>                                                                 projectId;
     private final boolean                                                                          isTrace;
     private static final Map<CacheKey, com.judgmentlabs.judgeval.internal.api.models.PromptScorer> cache = new ConcurrentHashMap<>();
 
-    public PromptScorerFactory(JudgmentSyncClient client, String projectId, boolean isTrace) {
+    public PromptScorerFactory(JudgmentSyncClient client, Optional<String> projectId, boolean isTrace) {
         this.client = client;
         this.projectId = projectId;
         this.isTrace = isTrace;
@@ -34,6 +35,12 @@ public final class PromptScorerFactory {
      * @return the configured prompt scorer or null if not found or retrieval fails
      */
     public PromptScorer get(String name) {
+        return Guards.expectProjectId(projectId)
+                .map(pid -> fetchAndCache(name, pid))
+                .orElse(null);
+    }
+
+    private PromptScorer fetchAndCache(String name, String pid) {
         CacheKey key = new CacheKey(name, client.getApiKey(), client.getOrganizationId());
         com.judgmentlabs.judgeval.internal.api.models.PromptScorer cached = cache.get(key);
         if (cached != null) {
@@ -41,52 +48,49 @@ public final class PromptScorerFactory {
         }
 
         try {
-            FetchPromptScorersResponse response = client.getProjectsScorers(projectId, name, String.valueOf(isTrace));
+            FetchPromptScorersResponse response = client.getProjectsScorers(pid, name, String.valueOf(isTrace));
 
-            com.judgmentlabs.judgeval.internal.api.models.PromptScorer scorer = Optional.ofNullable(response)
+            return Optional.ofNullable(response)
                     .map(FetchPromptScorersResponse::getScorers)
                     .filter(scorers -> scorers != null && !scorers.isEmpty())
                     .map(scorers -> scorers.get(0))
-                    .orElseGet(
-                            () -> {
-                                Logger.error("Failed to fetch prompt scorer '" + name + "': not found");
-                                return null;
-                            });
-
-            if (scorer == null) {
-                return null;
-            }
-
-            if (Boolean.TRUE.equals(scorer.getIsTrace()) != isTrace) {
-                Logger.error("Scorer with name " + name + " is a "
-                        + (Boolean.TRUE.equals(scorer.getIsTrace()) ? "TracePromptScorer" : "PromptScorer") + ", not a "
-                        + (isTrace ? "TracePromptScorer" : "PromptScorer"));
-                return null;
-            }
-
-            cache.put(key, scorer);
-            return createFromModel(scorer, name);
+                    .filter(scorer -> {
+                        if (Boolean.TRUE.equals(scorer.getIsTrace()) != isTrace) {
+                            Logger.error("Scorer '" + name + "' is a "
+                                    + (Boolean.TRUE.equals(scorer.getIsTrace()) ? "TracePromptScorer" : "PromptScorer")
+                                    + ", not a " + (isTrace ? "TracePromptScorer" : "PromptScorer"));
+                            return false;
+                        }
+                        return true;
+                    })
+                    .map(scorer -> {
+                        cache.put(key, scorer);
+                        return createFromModel(scorer, name);
+                    })
+                    .orElseGet(() -> {
+                        Logger.error("Failed to fetch prompt scorer '" + name + "': not found");
+                        return null;
+                    });
         } catch (Exception e) {
             Logger.error("Failed to fetch prompt scorer '" + name + "': " + e.getMessage());
             return null;
         }
     }
 
+    @SuppressWarnings("unchecked")
     private PromptScorer createFromModel(com.judgmentlabs.judgeval.internal.api.models.PromptScorer model,
             String name) {
-        Map<String, Double> options = null;
-        if (model.getOptions() != null) {
-            if (model.getOptions() instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> rawOptions = (Map<String, Object>) model.getOptions();
-                options = new HashMap<>();
-                for (Map.Entry<String, Object> entry : rawOptions.entrySet()) {
-                    if (entry.getValue() instanceof Number) {
-                        options.put(entry.getKey(), ((Number) entry.getValue()).doubleValue());
-                    }
-                }
-            }
-        }
+        Map<String, Double> options = Optional.ofNullable(model.getOptions())
+                .filter(Map.class::isInstance)
+                .map(o -> (Map<String, Object>) o)
+                .map(raw -> {
+                    Map<String, Double> result = new HashMap<>();
+                    raw.forEach((k, v) -> {
+                        if (v instanceof Number) result.put(k, ((Number) v).doubleValue());
+                    });
+                    return result;
+                })
+                .orElse(null);
 
         return PromptScorer.builder()
                 .name(name)

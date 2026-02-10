@@ -72,10 +72,9 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
         cfg.setThreshold(getThreshold());
         cfg.setName(getName());
         cfg.setRequiredParams(getRequiredParams());
-        Map<String, Object> kwargs = new HashMap<>();
-        if (getAdditionalProperties() != null)
-            kwargs.putAll(getAdditionalProperties());
-        cfg.setKwargs(kwargs);
+        cfg.setKwargs(Optional.ofNullable(getAdditionalProperties())
+                .map(HashMap::new)
+                .orElseGet(HashMap::new));
         cfg.setResultType("numeric");
         return cfg;
     }

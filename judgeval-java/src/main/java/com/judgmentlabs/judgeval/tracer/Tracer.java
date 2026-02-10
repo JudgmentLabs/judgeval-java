@@ -140,6 +140,13 @@ public final class Tracer extends BaseTracer {
             return this;
         }
 
+        /**
+         * Sets whether evaluation is enabled.
+         *
+         * @param enableEvaluation
+         *            true to enable evaluation
+         * @return this builder
+         */
         public Builder enableEvaluation(boolean enableEvaluation) {
             this.enableEvaluation = enableEvaluation;
             return this;
