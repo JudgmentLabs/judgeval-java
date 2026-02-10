@@ -86,7 +86,8 @@ public final class PromptScorerFactory {
                 .map(raw -> {
                     Map<String, Double> result = new HashMap<>();
                     raw.forEach((k, v) -> {
-                        if (v instanceof Number) result.put(k, ((Number) v).doubleValue());
+                        if (v instanceof Number)
+                            result.put(k, ((Number) v).doubleValue());
                     });
                     return result;
                 })
