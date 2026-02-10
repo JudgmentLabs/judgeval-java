@@ -8,9 +8,11 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class SavePromptScorerResponse {
-    @JsonProperty("scorer_response")
-    private PromptScorer        scorerResponse;
+public class ErrorResponse {
+    @JsonProperty("error")
+    private String              error;
+    @JsonProperty("message")
+    private String              message;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -24,12 +26,20 @@ public class SavePromptScorerResponse {
         additionalProperties.put(name, value);
     }
 
-    public PromptScorer getScorerResponse() {
-        return scorerResponse;
+    public String getError() {
+        return error;
     }
 
-    public void setScorerResponse(PromptScorer scorerResponse) {
-        this.scorerResponse = scorerResponse;
+    public String getMessage() {
+        return message;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override
@@ -38,13 +48,13 @@ public class SavePromptScorerResponse {
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        SavePromptScorerResponse other = (SavePromptScorerResponse) obj;
-        return Objects.equals(scorerResponse, other.scorerResponse)
+        ErrorResponse other = (ErrorResponse) obj;
+        return Objects.equals(error, other.error) && Objects.equals(message, other.message)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(scorerResponse, Objects.hashCode(additionalProperties));
+        return Objects.hash(error, message, Objects.hashCode(additionalProperties));
     }
 }

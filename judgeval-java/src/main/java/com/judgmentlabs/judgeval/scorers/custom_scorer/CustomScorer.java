@@ -13,17 +13,23 @@ import com.judgmentlabs.judgeval.scorers.APIScorer;
  *      Docs: Upload Scorers</a>
  */
 public final class CustomScorer extends APIScorer {
+    private final String projectId;
+
     private CustomScorer(Builder builder) {
         super(APIScorerType.CUSTOM);
         setName(builder.name);
         setClassName(builder.className);
-        // Java SDK only supports server-hosted scorers
         setServerHosted(true);
+        this.projectId = builder.projectId;
     }
 
     @Override
     public ScorerConfig getScorerConfig() {
         throw new UnsupportedOperationException("CustomScorer does not use ScorerConfig");
+    }
+
+    public String getProjectId() {
+        return projectId;
     }
 
     /**
@@ -41,6 +47,7 @@ public final class CustomScorer extends APIScorer {
     public static final class Builder {
         private String name;
         private String className;
+        private String projectId;
 
         public Builder name(String name) {
             this.name = name;
@@ -49,6 +56,11 @@ public final class CustomScorer extends APIScorer {
 
         public Builder className(String className) {
             this.className = className;
+            return this;
+        }
+
+        public Builder projectId(String projectId) {
+            this.projectId = projectId;
             return this;
         }
 

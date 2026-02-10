@@ -1,6 +1,7 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -8,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ResolveProjectNameResponse {
-    @JsonProperty("project_id")
-    private String              projectId;
+public class UntagPromptResponse {
+    @JsonProperty("commit_ids")
+    private List<String>        commitIds;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -24,12 +25,12 @@ public class ResolveProjectNameResponse {
         additionalProperties.put(name, value);
     }
 
-    public String getProjectId() {
-        return projectId;
+    public List<String> getCommitIds() {
+        return commitIds;
     }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
+    public void setCommitIds(List<String> commitIds) {
+        this.commitIds = commitIds;
     }
 
     @Override
@@ -38,13 +39,13 @@ public class ResolveProjectNameResponse {
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        ResolveProjectNameResponse other = (ResolveProjectNameResponse) obj;
-        return Objects.equals(projectId, other.projectId)
+        UntagPromptResponse other = (UntagPromptResponse) obj;
+        return Objects.equals(commitIds, other.commitIds)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(projectId, Objects.hashCode(additionalProperties));
+        return Objects.hash(commitIds, Objects.hashCode(additionalProperties));
     }
 }

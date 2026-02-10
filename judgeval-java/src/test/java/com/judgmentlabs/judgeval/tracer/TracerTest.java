@@ -2,8 +2,9 @@ package com.judgmentlabs.judgeval.tracer;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,8 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
-import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameRequest;
-import com.judgmentlabs.judgeval.internal.api.models.ResolveProjectNameResponse;
 
 @ExtendWith(MockitoExtension.class)
 class TracerTest {
@@ -25,11 +24,9 @@ class TracerTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        ResolveProjectNameResponse response = new ResolveProjectNameResponse();
-        response.setProjectId(TEST_PROJECT_ID);
-
-        lenient().when(mockClient.projectsResolve(any(ResolveProjectNameRequest.class)))
-                .thenReturn(response);
+        lenient().when(mockClient.getApiUrl()).thenReturn("https://api.example.com");
+        lenient().when(mockClient.getApiKey()).thenReturn("test-api-key");
+        lenient().when(mockClient.getOrganizationId()).thenReturn("test-org-id");
     }
 
     @Test
@@ -44,6 +41,7 @@ class TracerTest {
             Tracer.builder()
                     .client(mockClient)
                     .projectName(null)
+                    .projectId(Optional.of(TEST_PROJECT_ID))
                     .build();
         });
     }
@@ -53,6 +51,7 @@ class TracerTest {
         assertThrows(NullPointerException.class, () -> {
             Tracer.builder()
                     .projectName(TEST_PROJECT_NAME)
+                    .projectId(Optional.of(TEST_PROJECT_ID))
                     .client(null)
                     .build();
         });

@@ -1,6 +1,7 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -8,9 +9,9 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ScorerExistsRequest {
-    @JsonProperty("name")
-    private String              name;
+public class AddTraceTagsRequest {
+    @JsonProperty("tags")
+    private List<String>        tags;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -24,12 +25,12 @@ public class ScorerExistsRequest {
         additionalProperties.put(name, value);
     }
 
-    public String getName() {
-        return name;
+    public List<String> getTags() {
+        return tags;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
     @Override
@@ -38,12 +39,12 @@ public class ScorerExistsRequest {
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        ScorerExistsRequest other = (ScorerExistsRequest) obj;
-        return Objects.equals(name, other.name) && Objects.equals(additionalProperties, other.additionalProperties);
+        AddTraceTagsRequest other = (AddTraceTagsRequest) obj;
+        return Objects.equals(tags, other.tags) && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, Objects.hashCode(additionalProperties));
+        return Objects.hash(tags, Objects.hashCode(additionalProperties));
     }
 }

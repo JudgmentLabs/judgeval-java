@@ -25,6 +25,7 @@ public final class Tracer extends BaseTracer {
     private Tracer(Builder builder) {
         super(
                 Objects.requireNonNull(builder.projectName, "projectName required"),
+                builder.projectId,
                 builder.enableEvaluation,
                 Objects.requireNonNull(builder.client, "client required"),
                 builder.serializer != null ? builder.serializer : new GsonSerializer());
@@ -118,32 +119,24 @@ public final class Tracer extends BaseTracer {
     public static final class Builder {
         private JudgmentSyncClient client;
         private String             projectName;
+        private Optional<String>   projectId;
         private boolean            enableEvaluation = true;
         private ISerializer        serializer;
         private boolean            initialize       = true;
         private Attributes         resourceAttributes;
 
-        /**
-         * Sets the Judgment API client.
-         *
-         * @param client
-         *            the API client
-         * @return this builder
-         */
-        public Builder client(JudgmentSyncClient client) {
+        Builder client(JudgmentSyncClient client) {
             this.client = client;
             return this;
         }
 
-        /**
-         * Sets the project name for this tracer.
-         *
-         * @param projectName
-         *            the project name
-         * @return this builder
-         */
-        public Builder projectName(String projectName) {
+        Builder projectName(String projectName) {
             this.projectName = projectName;
+            return this;
+        }
+
+        Builder projectId(Optional<String> projectId) {
+            this.projectId = projectId;
             return this;
         }
 

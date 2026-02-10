@@ -2,6 +2,8 @@ package com.judgmentlabs.judgeval.scorers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -11,16 +13,17 @@ import com.judgmentlabs.judgeval.scorers.custom_scorer.CustomScorerFactory;
 import com.judgmentlabs.judgeval.scorers.prompt_scorer.PromptScorerFactory;
 
 class ScorersFactoryTest {
-    private static final String TEST_API_URL = "https://api.test.com";
-    private static final String TEST_API_KEY = "test-key";
-    private static final String TEST_ORG_ID  = "test-org";
+    private static final String TEST_API_URL    = "https://api.test.com";
+    private static final String TEST_API_KEY    = "test-key";
+    private static final String TEST_ORG_ID     = "test-org";
+    private static final String TEST_PROJECT_ID = "test-project-id";
 
     private ScorersFactory      factory;
 
     @BeforeEach
     void setUp() {
         JudgmentSyncClient client = new JudgmentSyncClient(TEST_API_URL, TEST_API_KEY, TEST_ORG_ID);
-        factory = new ScorersFactory(client);
+        factory = new ScorersFactory(client, Optional.of(TEST_PROJECT_ID));
     }
 
     @Test

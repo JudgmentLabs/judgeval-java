@@ -1,7 +1,6 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -9,11 +8,11 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class EvalResults {
-    @JsonProperty("results")
-    private List<ScoringResult> results;
-    @JsonProperty("run")
-    private Object              run;
+public class TriggerRootSpanRulesResponse {
+    @JsonProperty("success")
+    private Boolean             success;
+    @JsonProperty("queued_traces")
+    private Double              queuedTraces;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -27,20 +26,20 @@ public class EvalResults {
         additionalProperties.put(name, value);
     }
 
-    public List<ScoringResult> getResults() {
-        return results;
+    public Boolean getSuccess() {
+        return success;
     }
 
-    public Object getRun() {
-        return run;
+    public Double getQueuedTraces() {
+        return queuedTraces;
     }
 
-    public void setResults(List<ScoringResult> results) {
-        this.results = results;
+    public void setSuccess(Boolean success) {
+        this.success = success;
     }
 
-    public void setRun(Object run) {
-        this.run = run;
+    public void setQueuedTraces(Double queuedTraces) {
+        this.queuedTraces = queuedTraces;
     }
 
     @Override
@@ -49,13 +48,13 @@ public class EvalResults {
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        EvalResults other = (EvalResults) obj;
-        return Objects.equals(results, other.results) && Objects.equals(run, other.run)
+        TriggerRootSpanRulesResponse other = (TriggerRootSpanRulesResponse) obj;
+        return Objects.equals(success, other.success) && Objects.equals(queuedTraces, other.queuedTraces)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(results, run, Objects.hashCode(additionalProperties));
+        return Objects.hash(success, queuedTraces, Objects.hashCode(additionalProperties));
     }
 }

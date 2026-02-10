@@ -1,5 +1,7 @@
 package com.judgmentlabs.judgeval.scorers;
 
+import java.util.Optional;
+
 import com.judgmentlabs.judgeval.internal.api.JudgmentSyncClient;
 import com.judgmentlabs.judgeval.scorers.built_in.BuiltInScorersFactory;
 import com.judgmentlabs.judgeval.scorers.custom_scorer.CustomScorerFactory;
@@ -10,9 +12,11 @@ import com.judgmentlabs.judgeval.scorers.prompt_scorer.PromptScorerFactory;
  */
 public final class ScorersFactory {
     private final JudgmentSyncClient client;
+    private final Optional<String>   projectId;
 
-    public ScorersFactory(JudgmentSyncClient client) {
+    public ScorersFactory(JudgmentSyncClient client, Optional<String> projectId) {
         this.client = client;
+        this.projectId = projectId;
     }
 
     /**
@@ -21,7 +25,7 @@ public final class ScorersFactory {
      * @return the prompt scorer factory
      */
     public PromptScorerFactory promptScorer() {
-        return new PromptScorerFactory(client, false);
+        return new PromptScorerFactory(client, projectId, false);
     }
 
     /**
@@ -30,7 +34,7 @@ public final class ScorersFactory {
      * @return the trace prompt scorer factory
      */
     public PromptScorerFactory tracePromptScorer() {
-        return new PromptScorerFactory(client, true);
+        return new PromptScorerFactory(client, projectId, true);
     }
 
     /**
@@ -39,7 +43,7 @@ public final class ScorersFactory {
      * @return the custom scorer factory
      */
     public CustomScorerFactory customScorer() {
-        return new CustomScorerFactory();
+        return new CustomScorerFactory(projectId);
     }
 
     /**

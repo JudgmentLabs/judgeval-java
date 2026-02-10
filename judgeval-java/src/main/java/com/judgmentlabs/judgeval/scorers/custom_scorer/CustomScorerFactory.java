@@ -1,10 +1,17 @@
 package com.judgmentlabs.judgeval.scorers.custom_scorer;
 
+import java.util.Optional;
+
+import com.judgmentlabs.judgeval.utils.Guards;
+
 /**
  * Factory for creating custom scorer instances.
  */
 public final class CustomScorerFactory {
-    public CustomScorerFactory() {
+    private final Optional<String> projectId;
+
+    public CustomScorerFactory(Optional<String> projectId) {
+        this.projectId = projectId;
     }
 
     /**
@@ -12,13 +19,10 @@ public final class CustomScorerFactory {
      *
      * @param name
      *            the scorer name
-     * @return the configured custom scorer
+     * @return the configured custom scorer, or null if project ID is not set
      */
     public CustomScorer get(String name) {
-        return CustomScorer.builder()
-                .name(name)
-                .className(name)
-                .build();
+        return get(name, name);
     }
 
     /**
@@ -28,12 +32,15 @@ public final class CustomScorerFactory {
      *            the scorer name
      * @param className
      *            the class name
-     * @return the configured custom scorer
+     * @return the configured custom scorer, or null if project ID is not set
      */
     public CustomScorer get(String name, String className) {
-        return CustomScorer.builder()
-                .name(name)
-                .className(className)
-                .build();
+        return Guards.expectProjectId(projectId)
+                .map(pid -> CustomScorer.builder()
+                        .name(name)
+                        .className(className)
+                        .projectId(pid)
+                        .build())
+                .orElse(null);
     }
 }

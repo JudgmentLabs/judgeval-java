@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class OtelTraceSpan {
+public class TraceSpan {
     @JsonProperty("organization_id")
     private String              organizationId;
     @JsonProperty("project_id")
@@ -37,15 +37,15 @@ public class OtelTraceSpan {
     @JsonProperty("span_attributes")
     private Object              spanAttributes;
     @JsonProperty("duration")
-    private Integer             duration;
+    private String              duration;
     @JsonProperty("status_code")
-    private Integer             statusCode;
+    private Double              statusCode;
     @JsonProperty("status_message")
     private String              statusMessage;
     @JsonProperty("events")
     private List<Object>        events;
     @JsonProperty("links")
-    private List<Object>        links;
+    private String              links;
 
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -111,11 +111,11 @@ public class OtelTraceSpan {
         return spanAttributes;
     }
 
-    public Integer getDuration() {
+    public String getDuration() {
         return duration;
     }
 
-    public Integer getStatusCode() {
+    public Double getStatusCode() {
         return statusCode;
     }
 
@@ -127,7 +127,7 @@ public class OtelTraceSpan {
         return events;
     }
 
-    public List<Object> getLinks() {
+    public String getLinks() {
         return links;
     }
 
@@ -183,11 +183,11 @@ public class OtelTraceSpan {
         this.spanAttributes = spanAttributes;
     }
 
-    public void setDuration(Integer duration) {
+    public void setDuration(String duration) {
         this.duration = duration;
     }
 
-    public void setStatusCode(Integer statusCode) {
+    public void setStatusCode(Double statusCode) {
         this.statusCode = statusCode;
     }
 
@@ -199,7 +199,7 @@ public class OtelTraceSpan {
         this.events = events;
     }
 
-    public void setLinks(List<Object> links) {
+    public void setLinks(String links) {
         this.links = links;
     }
 
@@ -209,7 +209,7 @@ public class OtelTraceSpan {
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        OtelTraceSpan other = (OtelTraceSpan) obj;
+        TraceSpan other = (TraceSpan) obj;
         return Objects.equals(organizationId, other.organizationId) && Objects.equals(projectId, other.projectId)
                 && Objects.equals(userId, other.userId) && Objects.equals(timestamp, other.timestamp)
                 && Objects.equals(traceId, other.traceId) && Objects.equals(spanId, other.spanId)

@@ -1,6 +1,7 @@
 package com.judgmentlabs.judgeval.internal.api.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -8,13 +9,13 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class EvalResultsFetch {
-    @JsonProperty("experiment_run_id")
-    private String              experimentRunId;
-    @JsonProperty("project_name")
-    private String              projectName;
+public class FetchExperimentRunResponse {
+    @JsonProperty("results")
+    private List<ExperimentRunItem> results;
+    @JsonProperty("ui_results_url")
+    private String                  uiResultsUrl;
 
-    private Map<String, Object> additionalProperties = new HashMap<>();
+    private Map<String, Object>     additionalProperties = new HashMap<>();
 
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
@@ -26,20 +27,20 @@ public class EvalResultsFetch {
         additionalProperties.put(name, value);
     }
 
-    public String getExperimentRunId() {
-        return experimentRunId;
+    public List<ExperimentRunItem> getResults() {
+        return results;
     }
 
-    public String getProjectName() {
-        return projectName;
+    public String getUiResultsUrl() {
+        return uiResultsUrl;
     }
 
-    public void setExperimentRunId(String experimentRunId) {
-        this.experimentRunId = experimentRunId;
+    public void setResults(List<ExperimentRunItem> results) {
+        this.results = results;
     }
 
-    public void setProjectName(String projectName) {
-        this.projectName = projectName;
+    public void setUiResultsUrl(String uiResultsUrl) {
+        this.uiResultsUrl = uiResultsUrl;
     }
 
     @Override
@@ -48,13 +49,13 @@ public class EvalResultsFetch {
             return true;
         if (obj == null || getClass() != obj.getClass())
             return false;
-        EvalResultsFetch other = (EvalResultsFetch) obj;
-        return Objects.equals(experimentRunId, other.experimentRunId) && Objects.equals(projectName, other.projectName)
+        FetchExperimentRunResponse other = (FetchExperimentRunResponse) obj;
+        return Objects.equals(results, other.results) && Objects.equals(uiResultsUrl, other.uiResultsUrl)
                 && Objects.equals(additionalProperties, other.additionalProperties);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(experimentRunId, projectName, Objects.hashCode(additionalProperties));
+        return Objects.hash(results, uiResultsUrl, Objects.hashCode(additionalProperties));
     }
 }

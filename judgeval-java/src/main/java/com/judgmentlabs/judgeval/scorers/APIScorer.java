@@ -2,7 +2,6 @@ package com.judgmentlabs.judgeval.scorers;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,6 +14,7 @@ import com.judgmentlabs.judgeval.internal.api.models.ScorerConfig;
  */
 public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.BaseScorer implements BaseScorer {
     private APIScorerType scoreType;
+    private Double        threshold;
 
     @JsonIgnore
     private List<String>  requiredParams;
@@ -22,6 +22,7 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
     public APIScorer(APIScorerType scoreType) {
         super();
         this.scoreType = scoreType;
+        this.threshold = 0.5;
         setName(scoreType.toString());
         setScoreType(scoreType.toString());
         this.requiredParams = new java.util.ArrayList<>();
@@ -34,7 +35,7 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
         if (threshold < 0 || threshold > 1) {
             throw new IllegalArgumentException("Threshold must be between 0 and 1, got: " + threshold);
         }
-        super.setThreshold(threshold);
+        this.threshold = threshold;
     }
 
     @JsonProperty("score_type")
@@ -50,9 +51,8 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
         this.requiredParams = requiredParams;
     }
 
-    @Override
     public Double getThreshold() {
-        return Optional.ofNullable(super.getThreshold())
+        return Optional.ofNullable(threshold)
                 .orElse(0.5);
     }
 
@@ -64,24 +64,17 @@ public class APIScorer extends com.judgmentlabs.judgeval.internal.api.models.Bas
     }
 
     @Override
-    public Boolean getStrictMode() {
-        return Optional.ofNullable(super.getStrictMode())
-                .orElse(false);
-    }
-
-    @Override
     @JsonIgnore
     public ScorerConfig getScorerConfig() {
         ScorerConfig cfg = new ScorerConfig();
         cfg.setScoreType(getScoreType());
         cfg.setThreshold(getThreshold());
         cfg.setName(getName());
-        cfg.setStrictMode(getStrictMode());
         cfg.setRequiredParams(getRequiredParams());
-        Map<String, Object> kwargs = new HashMap<>();
-        if (getAdditionalProperties() != null)
-            kwargs.putAll(getAdditionalProperties());
-        cfg.setKwargs(kwargs);
+        cfg.setKwargs(Optional.ofNullable(getAdditionalProperties())
+                .map(HashMap::new)
+                .orElseGet(HashMap::new));
+        cfg.setResultType("numeric");
         return cfg;
     }
 
